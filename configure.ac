@@ -107,7 +107,7 @@ esac],[enable_deprecated=$enable_deprecated])
 dnl ### Select the platform library ##
 AC_ARG_WITH(platform,
 AC_HELP_STRING([--with-platform=gnome-desktop], 
-  [Platform to compile (gnome-desktop, maemo, olpc or gpe)]),
+  [Platform to compile (gnome-desktop, maemo, maemo-leste, olpc or gpe)]),
 [case "${with_platform}" in
   gnome-desktop) 
 	PLATFORMDIR=libtinymail-gnome-desktop
@@ -127,6 +127,18 @@ AC_HELP_STRING([--with-platform=gnome-desktop],
 	build_demoui=true
 	PLATFORM=2
         ;;
+  maemo-leste)
+	PLATFORMDIR=libtinymail-maemo
+	PLATFORMSPECIFICNAME=Maemo Leste
+	build_gtkhtml=false
+	build_mozembed=false
+	build_gnome=false
+	build_maemo=false
+	build_maemo_leste=true
+	build_uigtk=true
+	build_demoui=true
+	PLATFORM=2
+	;;
   gpe) 
 	PLATFORMDIR=libtinymail-gpe
 	PLATFORMSPECIFICNAME=Gpe 
@@ -526,6 +538,7 @@ fi
 AM_CONDITIONAL(MAEMO_CONIC_DEVICE_DUMMY, test -n "$use_conic_device_dummy")
 AM_CONDITIONAL(MAEMO_CONIC_HAVE_CONIC, test "x$HAVE_CONIC" = "xyes")
 AM_CONDITIONAL(BUILD_MAEMO, test x$build_maemo = xtrue)
+AM_CONDITIONAL(BUILD_LESTE, test x$build_leste = xtrue)
 
 dnl ### libtinymail-gpe, a platform library implementation for the GPE platform ##
 if test x$PLATFORMDIR = xlibtinymail-gpe; then
