@@ -1,7 +1,7 @@
 #ifndef TNY_VFS_STREAM_H
 #define TNY_VFS_STREAM_H
 
-/* libtinymail-gnomevfs - The Tiny Mail base library for GnomeVFS
+/* libtinymail-gio - The Tiny Mail base library for GnomeVFS
  * Copyright (C) 2006-2007 Philip Van Hoof <pvanhoof@gnome.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -21,7 +21,7 @@
  */
 
 #include <glib.h>
-#include <libgnomevfs/gnome-vfs.h>
+#include <gio/gio.h>
 #include <glib-object.h>
 
 #include <tny-stream.h>
@@ -50,9 +50,9 @@ struct _TnyVfsStreamClass
 };
 
 GType tny_vfs_stream_get_type (void);
-TnyStream* tny_vfs_stream_new (GnomeVFSHandle *handle);
+TnyStream* tny_vfs_stream_new (GFile *handle);
 
-void tny_vfs_stream_set_handle (TnyVfsStream *self, GnomeVFSHandle *handle);
+void tny_vfs_stream_set_handle (TnyVfsStream *self, GFile *handle);
 
 G_END_DECLS
 

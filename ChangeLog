@@ -1,3 +1,8 @@
+2021-09-08 Jillian A. Bolton <jillian@rootaction.net>
+
+	For Maemo Leste, libtinymail-gio replaces outdated and
+	unmaintained gnomevfs.
+
 2011-04-02 Naikel Aparicio <naikel@gmail.com>
 
 	* libtinymailui-gtk/tny-gtk-folder-list-store.h:

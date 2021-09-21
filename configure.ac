@@ -429,6 +429,10 @@ elif test x$build_maemo = xtrue; then
 extragtkpkgs=
 extratnypkgs="gnome-vfs-2.0"
   PKG_CHECK_MODULES(LIBTINYMAIL_GNOMEVFS, glib-2.0 >= 2.8 gobject-2.0 gnome-vfs-2.0)
+elif test x$build_maemo_leste = xtrue; then
+extragtkpkgs=
+extratnypkgs="gio-2.0"
+  PKG_CHECK_MODULES(LIBTINYMAIL_GIO, glib-2.0 >= 2.8 gobject-2.0 gio-2.0)
 else
   LIBTINYMAIL_GNOMEVFS_CFLAGS=
   LIBTINYMAIL_GNOMEVFS_LIBS=
@@ -538,7 +542,7 @@ fi
 AM_CONDITIONAL(MAEMO_CONIC_DEVICE_DUMMY, test -n "$use_conic_device_dummy")
 AM_CONDITIONAL(MAEMO_CONIC_HAVE_CONIC, test "x$HAVE_CONIC" = "xyes")
 AM_CONDITIONAL(BUILD_MAEMO, test x$build_maemo = xtrue)
-AM_CONDITIONAL(BUILD_LESTE, test x$build_leste = xtrue)
+AM_CONDITIONAL(BUILD_LESTE, test x$build_maemo_leste = xtrue)
 
 dnl ### libtinymail-gpe, a platform library implementation for the GPE platform ##
 if test x$PLATFORMDIR = xlibtinymail-gpe; then
@@ -644,6 +648,7 @@ libtinymailui-gtkhtml/libtinymailui-gtkhtml.pc
 libtinymailui-mozembed/Makefile
 libtinymailui-mozembed/libtinymailui-mozembed.pc
 libtinymailui-gnome-keyring/Makefile
+libtinymail-gio/Makefile
 libtinymail-gnomevfs/Makefile
 libtinymail-gnomevfs/libtinymail-gnomevfs.pc
 libtinymail-gnome-desktop/Makefile

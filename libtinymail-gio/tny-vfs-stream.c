@@ -1,4 +1,4 @@
-/* libtinymail-gnomevfs - The Tiny Mail base library for GnomeVFS
+/* libtinymail-gio - The Tiny Mail base library for GnomeVFS
  * Copyright (C) 2006-2007 Philip Van Hoof <pvanhoof@gnome.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ typedef struct _TnyVfsStreamPriv TnyVfsStreamPriv;
 
 struct _TnyVfsStreamPriv
 {
-	GnomeVFSHandle *handle;
+	GFile *handle;
 	gboolean eos;
 	off_t position;		/* current postion in the stream */
 	off_t bound_start;	/* first valid position */
@@ -43,91 +43,128 @@ struct _TnyVfsStreamPriv
 
 
 static void
-tny_vfs_stream_set_errno (GnomeVFSResult res)
+tny_vfs_stream_set_errno (GError *res)
 {
-	switch(res) {
-	case GNOME_VFS_OK:
-		g_warning("tny-vfs-stream: calling set_errno with no error");
-		break;
-	case GNOME_VFS_ERROR_NOT_FOUND:
-	case GNOME_VFS_ERROR_HOST_NOT_FOUND:
-	case GNOME_VFS_ERROR_INVALID_HOST_NAME:
-	case GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS:
-	case GNOME_VFS_ERROR_SERVICE_NOT_AVAILABLE:
+	if (!res) {
+		errno = EIO;
+		return;
+	}
+
+	switch(*res) {
+	case G_IO_ERROR_NOT_FOUND:
+	case G_IO_ERROR_HOST_NOT_FOUND:
+	case G_IO_ERROR_CLOSED:
 		errno = ENOENT;
 		break;
-	case GNOME_VFS_ERROR_GENERIC:
-	case GNOME_VFS_ERROR_INTERNAL:
-	case GNOME_VFS_ERROR_IO:
-	case GNOME_VFS_ERROR_EOF: /* will be caught by read before here anyway */
-	case GNOME_VFS_ERROR_SERVICE_OBSOLETE:
-	case GNOME_VFS_ERROR_PROTOCOL_ERROR:
+	case G_IO_ERROR_CANT_CREATE_BACKUP:
+	case G_IO_ERROR_WRONG_ETAG:
+	case G_IO_ERROR_FAILED_HANDLED: /* Unless you want 0? */
 	default:
 		errno = EIO;
 		break;
-	case GNOME_VFS_ERROR_BAD_PARAMETERS:
-	case GNOME_VFS_ERROR_NOT_SUPPORTED:
-	case GNOME_VFS_ERROR_INVALID_URI:
-	case GNOME_VFS_ERROR_NOT_OPEN:
-	case GNOME_VFS_ERROR_INVALID_OPEN_MODE:
-	case GNOME_VFS_ERROR_NOT_SAME_FILE_SYSTEM:
+	case G_IO_ERROR_MESSAGE_TOO_LARGE:
+		errno = EMSGSIZE;
+		break;
+	case G_IO_ERROR_NOT_CONNECTED:
+		errno = ENOTCONN;
+		break;
+	case G_IO_ERROR_PROXY_FAILED:
+		errno = EHOSTDOWN;
+		break;
+	case G_IO_ERROR_PROXY_AUTH_FAILED:
+		errno = EKEYREJECTED;
+		break;
+	case G_IO_ERROR_PROXY_NEED_AUTH:
+		errno = ENOKEY;
+		break;
+	case G_IO_ERROR_PROXY_NOT_ALLOWED:
+		errno = EACCES;
+		break;
+	//case G_IO_ERROR_CONNECTION_CLOSED:
+	case G_IO_ERROR_BROKEN_PIPE:
+		errno = EPIPE;
+		break;
+	case G_IO_ERROR_CONNECTION_REFUSED:
+		errno = ECONNREFUSED;
+		break;
+	case G_IO_ERROR_NETWORK_UNREACHABLE:
+		errno = ENETUNREACH;
+		break;
+	case G_IO_ERROR_HOST_UNREACHABLE:
+		errno = EHOSTUNREACH;
+		break;
+	case G_IO_ERROR_DBUS_ERROR:
+		errno = ENOANO;
+		break;
+	case G_IO_ERROR_PARTIAL_INPUT:
+		errno = ENODATA;
+		break;
+	case G_IO_ERROR_INVALID_DATA:
+		errno = EBADMSG;
+		break;
+	case G_IO_ERROR_NOT_SUPPORTED:
+		errno = EOPNOTSUPP;
+		break;
+	case G_IO_ERROR_INVALID_ARGUMENT:
+	case G_IO_ERROR_INVALID_FILENAME:
+	case G_IO_ERROR_NOT_REGULAR_FILE:
+	case G_IO_ERROR_NOT_SYMBOLIC_LINK:
+	case G_IO_ERROR_NOT_MOUNTABLE_FILE:
+	case G_IO_ERROR_NOT_MOUNTED:
+	case G_IO_ERROR_ALREADY_MOUNTED:
 		errno = EINVAL;
 		break;
-	case GNOME_VFS_ERROR_CORRUPTED_DATA: /* not sure about these */
-	case GNOME_VFS_ERROR_WRONG_FORMAT:
-	case GNOME_VFS_ERROR_BAD_FILE:
-		errno = EBADF;
+	case G_IO_ERROR_ADDRESS_IN_USE:
+		errno = EADDRINUSE;
 		break;
-	case GNOME_VFS_ERROR_TOO_BIG:
-		errno = E2BIG;
-		break;
-	case GNOME_VFS_ERROR_NO_SPACE:
+	case G_IO_ERROR_NO_SPACE:
 		errno = ENOSPC;
 		break;
-	case GNOME_VFS_ERROR_READ_ONLY:
-	case GNOME_VFS_ERROR_READ_ONLY_FILE_SYSTEM:
+	case G_IO_ERROR_READ_ONLY:
 		errno = EROFS;
 		break;
-	case GNOME_VFS_ERROR_TOO_MANY_OPEN_FILES:
+	case G_IO_ERROR_TOO_MANY_OPEN_FILES:
 		errno = EMFILE;
 		break;
-	case GNOME_VFS_ERROR_NOT_A_DIRECTORY:
+	case G_IO_ERROR_NOT_DIRECTORY:
 		errno = ENOTDIR;
 		break;
-	case GNOME_VFS_ERROR_IN_PROGRESS:
-		errno = EINPROGRESS;
+	case G_IO_ERROR_TIMED_OUT:
+		errno = ETIMEDOUT;
 		break;
-	case GNOME_VFS_ERROR_INTERRUPTED:
-		errno = EINTR;
+	case G_IO_ERROR_NOT_INITIALIZED:
+		errno = EUNATCH;
 		break;
-	case GNOME_VFS_ERROR_FILE_EXISTS:
+	case G_IO_ERROR_CANCELLED:
+		errno = ECANCELED;
+		break;
+	case G_IO_ERROR_WOULD_MERGE:
+		errno = ENOTUNIQ;
+		break;
+	case G_IO_ERROR_EXISTS:
 		errno = EEXIST;
 		break;
-	case GNOME_VFS_ERROR_LOOP:
+	case G_IO_ERROR_WOULD_BLOCK:
+		errno = EWOULDBLOCK;
+		break;
+	case G_IO_ERROR_WOULD_RECURSE:
 		errno = ELOOP;
 		break;
-	case GNOME_VFS_ERROR_ACCESS_DENIED:
-	case GNOME_VFS_ERROR_NOT_PERMITTED:
-	case GNOME_VFS_ERROR_LOGIN_FAILED:
+	case G_IO_ERROR_PERMISSION_DENIED:
 		errno = EPERM;
 		break;
-	case GNOME_VFS_ERROR_IS_DIRECTORY:
-	case GNOME_VFS_ERROR_DIRECTORY_NOT_EMPTY: /* ?? */
+	case G_IO_ERROR_IS_DIRECTORY:
+	case G_IO_ERROR_NOT_EMPTY: /* ?? */
 		errno = EISDIR;
 		break;
-	case GNOME_VFS_ERROR_NO_MEMORY:
-		errno = ENOMEM;
-		break;
-	case GNOME_VFS_ERROR_CANCELLED:
-		errno = EINTR;
-		break;
-	case GNOME_VFS_ERROR_DIRECTORY_BUSY:
+	case G_IO_ERROR_PENDING:
+	case G_IO_ERROR_BUSY:
 		errno = EBUSY;
 		break;
-	case GNOME_VFS_ERROR_TOO_MANY_LINKS:
+	case G_IO_ERROR_TOO_MANY_LINKS:
 		errno = EMLINK;
 		break;
-	case GNOME_VFS_ERROR_NAME_TOO_LONG:
+	case G_IO_ERROR_FILENAME_TOO_LONG:
 		errno = ENAMETOOLONG;
 		break;
 	}
@@ -168,20 +205,20 @@ static gssize
 tny_vfs_stream_read  (TnyStream *self, char *buffer, gsize n)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
-	GnomeVFSFileSize nread = 0;
-	GnomeVFSResult result;
+	gssize nread = 0;
+	GError *result = NULL;
 
 	if (priv->bound_end != (~0))
 		n = MIN (priv->bound_end - priv->position, n);
 
-	result = gnome_vfs_read (priv->handle, buffer, n, &nread);
+	nread = g_input_stream_read ((GInputStream*)priv->handle, buffer, n, NULL, &result);
 
-	if (nread > 0 && result == GNOME_VFS_OK)
+	if (nread > 0)
 		priv->position += nread;
 	else {
-		if ((result != GNOME_VFS_OK) && (result != GNOME_VFS_ERROR_EOF))
+		if (nread < 0)
 			nread = -1;
-		else if (nread == 0)
+		else
 			priv->eos = TRUE;
 		tny_vfs_stream_set_errno (result);
 	}
@@ -193,20 +230,20 @@ static gssize
 tny_vfs_stream_write (TnyStream *self, const char *buffer, gsize n)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
-	GnomeVFSFileSize nwritten = 0;
-	GnomeVFSResult result;
+	gssize nwritten = 0;
+	GError *result = NULL;
 
 	if (priv->bound_end != (~0))
 		n = MIN (priv->bound_end - priv->position, n);
 
-	result = gnome_vfs_write (priv->handle, buffer, n, &nwritten);
+	nwritten = g_output_stream_write ((GOutputStream *)priv->handle, buffer, n, NULL, &result);
 
-	if (nwritten > 0 && result == GNOME_VFS_OK) {
+	if (nwritten > 0) {
 		priv->position += nwritten;
 	} else {
-		if ((result != GNOME_VFS_OK) && (result != GNOME_VFS_ERROR_EOF))
+		if (nwritten < 0)
 			nwritten = -1;
-		else if (nwritten == 0)
+		else
 			priv->eos = TRUE;
 		tny_vfs_stream_set_errno (result);
 	}
@@ -218,19 +255,20 @@ static gint
 tny_vfs_stream_close (TnyStream *self)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
-	GnomeVFSResult res;
+	GError *res = NULL;
+        gboolean success;
 
 	if (priv->handle == NULL)  {
 		errno = EINVAL;
 		return -1;
 	}
 
-	res = gnome_vfs_close (priv->handle);
+	success = g_io_stream_close ((GIOStream *)priv->handle, NULL, &res);
 
 	priv->handle = NULL;
 	priv->eos = TRUE;
 
-	if (res == GNOME_VFS_OK)
+	if (success)
 		return 0;
 
 	tny_vfs_stream_set_errno (res);
@@ -242,18 +280,18 @@ tny_vfs_stream_close (TnyStream *self)
 /**
  * tny_vfs_stream_set_handle:
  * @self: A #TnyVfsStream instance
- * @handle: The #GnomeVFSHandle to write to or read from
+ * @handle: The #GFile to write to or read from
  *
- * Set the #GnomeVFSHandle to play adaptor for
+ * Set the #GFile to play adaptor for
  *
  **/
 void
-tny_vfs_stream_set_handle (TnyVfsStream *self, GnomeVFSHandle *handle)
+tny_vfs_stream_set_handle (TnyVfsStream *self, GFile *handle)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 
 	if (priv->handle) {
-		gnome_vfs_close (priv->handle);
+		g_io_stream_close ((GIOStream *)priv->handle, NULL, NULL);
 		priv->handle = NULL;
 	}
 
@@ -263,21 +301,21 @@ tny_vfs_stream_set_handle (TnyVfsStream *self, GnomeVFSHandle *handle)
 	priv->handle = handle;
 	priv->eos = FALSE;
 	priv->position = 0;
-	gnome_vfs_seek (handle, GNOME_VFS_SEEK_CURRENT, priv->position);
+	g_seekable_seek ((GSeekable *)handle, priv->position, G_SEEK_SET, NULL, NULL);
 
 	return;
 }
 
 /**
  * tny_vfs_stream_new:
- * @handle: The #GnomeVFSHandle to write to or read from
+ * @handle: The #GFile to write to or read from
  *
- * Create an adaptor instance between #TnyStream and #GnomeVFSHandle
+ * Create an adaptor instance between #TnyStream and #GFile
  *
  * Return value: a new #TnyStream instance
  **/
 TnyStream*
-tny_vfs_stream_new (GnomeVFSHandle *handle)
+tny_vfs_stream_new (GFile *handle)
 {
 	TnyVfsStream *self = g_object_new (TNY_TYPE_VFS_STREAM, NULL);
 
@@ -308,7 +346,7 @@ tny_vfs_stream_finalize (GObject *object)
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 
 	if (G_LIKELY (priv->handle))
-		gnome_vfs_close (priv->handle);
+		g_io_stream_close ((GIOStream *)priv->handle, NULL, NULL);
 
 	(*parent_class->finalize) (object);
 
@@ -334,7 +372,7 @@ tny_vfs_reset (TnyStream *self)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	gint retval = 0;
-	GnomeVFSResult res;
+	GError *res = NULL;
 
 	if (priv->handle == NULL) 
 	{
@@ -342,9 +380,9 @@ tny_vfs_reset (TnyStream *self)
 		return -1;
 	}
 
-	res = gnome_vfs_seek (priv->handle, GNOME_VFS_SEEK_START, 0);
+	g_seekable_seek ((GSeekable *)priv->handle, 0, G_SEEK_SET, NULL, &res);
 
-	if (res == GNOME_VFS_OK) {
+	if (res == NULL) {
 		priv->position = 0;
 	} else {
 		tny_vfs_stream_set_errno (res);
@@ -361,9 +399,9 @@ static off_t
 tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
-	GnomeVFSFileSize real = 0;
-	GnomeVFSResult result;
-	GnomeVFSHandle *handle = priv->handle;
+	gssize real = 0;
+	GError *result = NULL;
+	GFile *handle = priv->handle;
 
 	switch (policy) {
 	case SEEK_SET:
@@ -374,10 +412,11 @@ tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 		break;
 	case SEEK_END:
 		if (priv->bound_end == (~0)) {
-			result = gnome_vfs_seek (handle, GNOME_VFS_SEEK_END, offset);
-			if (result != GNOME_VFS_OK)
+			g_seekable_seek ((GSeekable *)handle, offset, G_SEEK_END, NULL, &result);
+			if (result != NULL)
+				tny_vfs_stream_set_errno (result);
 				return -1;
-			gnome_vfs_tell (handle, &real);
+			real = g_seekable_tell ((GSeekable *)handle);
 			if (real != -1) {
 				if (real<priv->bound_start)
 					real = priv->bound_start;
@@ -393,9 +432,11 @@ tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 		real = MIN (real, priv->bound_end);
 	real = MAX (real, priv->bound_start);
 
-	result = gnome_vfs_seek (handle, GNOME_VFS_SEEK_START, real);
-	if (result != GNOME_VFS_OK)
+	g_seekable_seek ((GSeekable *)handle, real, G_SEEK_SET, NULL, &result);
+	if (result != NULL) {
+		tny_vfs_stream_set_errno (result);
 		return -1;
+	}
 
 	if (real != priv->position && priv->eos)
 		priv->eos = FALSE;

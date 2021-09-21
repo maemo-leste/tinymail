@@ -30,6 +30,10 @@ if BUILD_MAEMO
 SUBDIRS += libtinymail-gnomevfs
 endif
 
+if BUILD_LESTE
+SUBDIRS += libtinymail-gio
+endif
+
 SUBDIRS += libtinymail-camel $(PLATFORMDIR) 
 
 if BUILD_ACAP
@@ -71,6 +75,7 @@ endif
 DIST_SUBDIRS = \
 	libtinymail \
 	libtinymailui \
+	libtinymail-gio \
 	libtinymail-gnomevfs \
 	libtinymailui-gtk \
 	libtinymail-camel \
