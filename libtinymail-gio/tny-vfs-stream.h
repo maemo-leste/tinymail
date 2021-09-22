@@ -50,9 +50,9 @@ struct _TnyVfsStreamClass
 };
 
 GType tny_vfs_stream_get_type (void);
-TnyStream* tny_vfs_stream_new (GFile *handle);
+TnyStream* tny_vfs_stream_new (GFile *file);
 
-void tny_vfs_stream_set_handle (TnyVfsStream *self, GFile *handle);
+void tny_vfs_stream_set_file (TnyVfsStream *self, GFile *file);
 
 G_END_DECLS
 

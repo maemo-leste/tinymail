@@ -31,7 +31,7 @@ typedef struct _TnyVfsStreamPriv TnyVfsStreamPriv;
 
 struct _TnyVfsStreamPriv
 {
-	GFile *handle;
+	GFile *file;
 	gboolean eos;
 	off_t position;		/* current postion in the stream */
 	off_t bound_start;	/* first valid position */
@@ -222,7 +222,7 @@ tny_vfs_stream_read  (TnyStream *self, char *buffer, gsize n)
 	if (priv->bound_end != (~0))
 		n = MIN (priv->bound_end - priv->position, n);
 
-	nread = g_input_stream_read ((GInputStream*)priv->handle, buffer, n,
+	nread = g_input_stream_read ((GInputStream*)priv->file, buffer, n,
 				     NULL, &error);
 
 	if (nread > 0)
@@ -248,7 +248,7 @@ tny_vfs_stream_write (TnyStream *self, const char *buffer, gsize n)
 	if (priv->bound_end != (~0))
 		n = MIN (priv->bound_end - priv->position, n);
 
-	nwritten = g_output_stream_write ((GOutputStream *)priv->handle, buffer,
+	nwritten = g_output_stream_write ((GOutputStream *)priv->file, buffer,
 					  n, NULL, &error);
 
 	if (nwritten > 0) {
@@ -271,14 +271,14 @@ tny_vfs_stream_close (TnyStream *self)
 	GError *error = NULL;
 	gboolean success;
 
-	if (priv->handle == NULL)  {
+	if (priv->file == NULL)  {
 		errno = EINVAL;
 		return -1;
 	}
 
-	success = g_io_stream_close ((GIOStream *)priv->handle, NULL, &error);
+	success = g_io_stream_close ((GIOStream *)priv->file, NULL, &error);
 
-	priv->handle = NULL;
+	priv->file = NULL;
 	priv->eos = TRUE;
 
 	if (success)
@@ -293,28 +293,28 @@ tny_vfs_stream_close (TnyStream *self)
 /**
  * tny_vfs_stream_set_handle:
  * @self: A #TnyVfsStream instance
- * @handle: The #GFile to write to or read from
+ * @file: The #GFile to write to or read from
  *
  * Set the #GFile to play adaptor for
  *
  **/
 void
-tny_vfs_stream_set_handle (TnyVfsStream *self, GFile *handle)
+tny_vfs_stream_set_file (TnyVfsStream *self, GFile *file)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 
-	if (priv->handle) {
-		g_io_stream_close ((GIOStream *)priv->handle, NULL, NULL);
-		priv->handle = NULL;
+	if (priv->file) {
+		g_io_stream_close ((GIOStream *)priv->file, NULL, NULL);
+		priv->file = NULL;
 	}
 
-	if (!handle)
+	if (!file)
 		return;
 
-	priv->handle = handle;
+	priv->file = file;
 	priv->eos = FALSE;
 	priv->position = 0;
-	g_seekable_seek ((GSeekable *)handle, priv->position, G_SEEK_SET,
+	g_seekable_seek ((GSeekable *)file, priv->position, G_SEEK_SET,
 			 NULL, NULL);
 
 	return;
@@ -322,18 +322,18 @@ tny_vfs_stream_set_handle (TnyVfsStream *self, GFile *handle)
 
 /**
  * tny_vfs_stream_new:
- * @handle: The #GFile to write to or read from
+ * @file: The #GFile to write to or read from
  *
  * Create an adaptor instance between #TnyStream and #GFile
  *
  * Return value: a new #TnyStream instance
  **/
 TnyStream*
-tny_vfs_stream_new (GFile *handle)
+tny_vfs_stream_new (GFile *file)
 {
 	TnyVfsStream *self = g_object_new (TNY_TYPE_VFS_STREAM, NULL);
 
-	tny_vfs_stream_set_handle (self, handle);
+	tny_vfs_stream_set_file (self, file);
 
 	return TNY_STREAM (self);
 }
@@ -345,7 +345,7 @@ tny_vfs_stream_instance_init (GTypeInstance *instance, gpointer g_class)
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 
 	priv->eos = FALSE;
-	priv->handle = NULL;
+	priv->file = NULL;
 	priv->bound_start = 0;
 	priv->bound_end = (~0);
 	priv->position = 0;
@@ -359,8 +359,8 @@ tny_vfs_stream_finalize (GObject *object)
 	TnyVfsStream *self = (TnyVfsStream *)object;	
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 
-	if (G_LIKELY (priv->handle))
-		g_io_stream_close ((GIOStream *)priv->handle, NULL, NULL);
+	if (G_LIKELY (priv->file))
+		g_io_stream_close ((GIOStream *)priv->file, NULL, NULL);
 
 	(*parent_class->finalize) (object);
 
@@ -388,13 +388,13 @@ tny_vfs_reset (TnyStream *self)
 	gint retval = 0;
 	GError *error = NULL;
 
-	if (priv->handle == NULL) 
+	if (priv->file == NULL)
 	{
 		errno = EINVAL;
 		return -1;
 	}
 
-	g_seekable_seek ((GSeekable *)priv->handle, 0, G_SEEK_SET, NULL,
+	g_seekable_seek ((GSeekable *)priv->file, 0, G_SEEK_SET, NULL,
 			 &error);
 
 	if (error == NULL) {
@@ -416,7 +416,7 @@ tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	gssize real = 0;
 	GError *error = NULL;
-	GFile *handle = priv->handle;
+	GFile *file = priv->file;
 
 	switch (policy) {
 	case SEEK_SET:
@@ -427,13 +427,13 @@ tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 		break;
 	case SEEK_END:
 		if (priv->bound_end == (~0)) {
-			g_seekable_seek ((GSeekable *)handle, offset,
+			g_seekable_seek ((GSeekable *)file, offset,
 					 G_SEEK_END, NULL, &error);
 			if (error != NULL) {
 				tny_vfs_stream_set_errno (error);
 				return -1;
 			}
-			real = g_seekable_tell ((GSeekable *)handle);
+			real = g_seekable_tell ((GSeekable *)file);
 			if (real != -1) {
 				if (real<priv->bound_start)
 					real = priv->bound_start;
@@ -449,7 +449,7 @@ tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 		real = MIN (real, priv->bound_end);
 	real = MAX (real, priv->bound_start);
 
-	g_seekable_seek ((GSeekable *)handle, real, G_SEEK_SET, NULL, &error);
+	g_seekable_seek ((GSeekable *)file, real, G_SEEK_SET, NULL, &error);
 	if (error != NULL) {
 		tny_vfs_stream_set_errno (error);
 		return -1;
