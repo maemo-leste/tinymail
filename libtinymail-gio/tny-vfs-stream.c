@@ -25,11 +25,9 @@
 
 #include <tny-vfs-stream.h>
 
-static GObjectClass *parent_class = NULL;
+typedef struct _TnyVfsStreamPrivate TnyVfsStreamPrivate;
 
-typedef struct _TnyVfsStreamPriv TnyVfsStreamPriv;
-
-struct _TnyVfsStreamPriv
+struct _TnyVfsStreamPrivate
 {
 	GFile *file;
 	gboolean eos;
@@ -38,8 +36,24 @@ struct _TnyVfsStreamPriv
 	off_t bound_end;	/* first invalid position */
 };
 
-#define TNY_VFS_STREAM_GET_PRIVATE(o) \
-	(G_TYPE_INSTANCE_GET_PRIVATE ((o), TNY_TYPE_VFS_STREAM, TnyVfsStreamPriv))
+#define TNY_VFS_STREAM_GET_PRIVATE(stream) \
+	((TnyVfsStreamPrivate *)tny_vfs_stream_get_instance_private( \
+						(TnyVfsStream *)(stream)))
+
+static void
+tny_stream_init (gpointer g, gpointer iface_data);
+
+static void
+tny_seekable_init (gpointer g, gpointer iface_data);
+
+G_DEFINE_TYPE_WITH_CODE(
+		TnyVfsStream,
+		tny_vfs_stream,
+		G_TYPE_OBJECT,
+		G_IMPLEMENT_INTERFACE(TNY_TYPE_STREAM, tny_stream_init);
+		G_IMPLEMENT_INTERFACE(TNY_TYPE_SEEKABLE, tny_seekable_init);
+		G_ADD_PRIVATE(TnyVfsStream);
+);
 
 static void
 tny_vfs_stream_set_errno (GError *error)
@@ -193,8 +207,10 @@ tny_vfs_stream_write_to_stream (TnyStream *self, TnyStream *output)
 
 	while (G_UNLIKELY (!tny_stream_is_eos (self))) {
 		nb_read = tny_stream_read (self, tmp_buf, sizeof (tmp_buf));
+
 		if (G_UNLIKELY (nb_read < 0))
 			return -1;
+
 		else if (G_LIKELY (nb_read > 0)) {
 			nb_written = 0;
 	
@@ -204,18 +220,20 @@ tny_vfs_stream_write_to_stream (TnyStream *self, TnyStream *output)
 								  nb_read - nb_written);
 				if (G_UNLIKELY (len < 0))
 					return -1;
+
 				nb_written += len;
 			}
 			total += nb_written;
 		}
 	}
+
 	return total;
 }
 
 static gssize
 tny_vfs_stream_read  (TnyStream *self, char *buffer, gsize n)
 {
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	gssize nread = 0;
 	GError *error = NULL;
 
@@ -232,6 +250,7 @@ tny_vfs_stream_read  (TnyStream *self, char *buffer, gsize n)
 			nread = -1;
 		else
 			priv->eos = TRUE;
+
 		tny_vfs_stream_set_errno (error);
 	}
 
@@ -241,7 +260,7 @@ tny_vfs_stream_read  (TnyStream *self, char *buffer, gsize n)
 static gssize
 tny_vfs_stream_write (TnyStream *self, const char *buffer, gsize n)
 {
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	gssize nwritten = 0;
 	GError *error = NULL;
 
@@ -258,6 +277,7 @@ tny_vfs_stream_write (TnyStream *self, const char *buffer, gsize n)
 			nwritten = -1;
 		else
 			priv->eos = TRUE;
+
 		tny_vfs_stream_set_errno (error);
 	}
 
@@ -267,7 +287,7 @@ tny_vfs_stream_write (TnyStream *self, const char *buffer, gsize n)
 static gint
 tny_vfs_stream_close (TnyStream *self)
 {
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	GError *error = NULL;
 	gboolean success;
 
@@ -301,7 +321,7 @@ tny_vfs_stream_close (TnyStream *self)
 void
 tny_vfs_stream_set_file (TnyVfsStream *self, GFile *file)
 {
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 
 	if (priv->file) {
 		g_io_stream_close ((GIOStream *)priv->file, NULL, NULL);
@@ -314,10 +334,8 @@ tny_vfs_stream_set_file (TnyVfsStream *self, GFile *file)
 	priv->file = file;
 	priv->eos = FALSE;
 	priv->position = 0;
-	g_seekable_seek ((GSeekable *)file, priv->position, G_SEEK_SET,
-			 NULL, NULL);
-
-	return;
+	g_seekable_seek ((GSeekable *)file, priv->position, G_SEEK_SET, NULL,
+			 NULL);
 }
 
 /**
@@ -339,30 +357,27 @@ tny_vfs_stream_new (GFile *file)
 }
 
 static void
-tny_vfs_stream_instance_init (GTypeInstance *instance, gpointer g_class)
+tny_vfs_stream_init (TnyVfsStream *self)
 {
-	TnyVfsStream *self = (TnyVfsStream *)instance;
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 
 	priv->eos = FALSE;
 	priv->file = NULL;
 	priv->bound_start = 0;
 	priv->bound_end = (~0);
 	priv->position = 0;
-
-	return;
 }
 
 static void
 tny_vfs_stream_finalize (GObject *object)
 {
 	TnyVfsStream *self = (TnyVfsStream *)object;	
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 
 	if (G_LIKELY (priv->file))
 		g_io_stream_close ((GIOStream *)priv->file, NULL, NULL);
 
-	(*parent_class->finalize) (object);
+	G_OBJECT_CLASS(tny_vfs_stream_parent_class)->finalize (object);
 
 	return;
 }
@@ -376,7 +391,7 @@ tny_vfs_flush (TnyStream *self)
 static gboolean 
 tny_vfs_is_eos (TnyStream *self)
 {
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 
 	return priv->eos;
 }
@@ -384,12 +399,11 @@ tny_vfs_is_eos (TnyStream *self)
 static gint 
 tny_vfs_reset (TnyStream *self)
 {
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	gint retval = 0;
 	GError *error = NULL;
 
-	if (priv->file == NULL)
-	{
+	if (priv->file == NULL) {
 		errno = EINVAL;
 		return -1;
 	}
@@ -413,7 +427,7 @@ tny_vfs_reset (TnyStream *self)
 static off_t 
 tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 {
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	gssize real = 0;
 	GError *error = NULL;
 	GFile *file = priv->file;
@@ -429,27 +443,35 @@ tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 		if (priv->bound_end == (~0)) {
 			g_seekable_seek ((GSeekable *)file, offset,
 					 G_SEEK_END, NULL, &error);
+
 			if (error != NULL) {
 				tny_vfs_stream_set_errno (error);
 				return -1;
 			}
+
 			real = g_seekable_tell ((GSeekable *)file);
+
 			if (real != -1) {
 				if (real<priv->bound_start)
 					real = priv->bound_start;
+
 				priv->position = real;
 			}
+
 			return real;
 		}
+
 		real = priv->bound_end + offset;
 		break;
 	}
 
 	if (priv->bound_end != (~0))
 		real = MIN (real, priv->bound_end);
+
 	real = MAX (real, priv->bound_start);
 
 	g_seekable_seek ((GSeekable *)file, real, G_SEEK_SET, NULL, &error);
+
 	if (error != NULL) {
 		tny_vfs_stream_set_errno (error);
 		return -1;
@@ -466,33 +488,32 @@ tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 static off_t
 tny_vfs_tell (TnySeekable *self)
 {
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	return priv->position;
 }
 
 static gint 
 tny_vfs_set_bounds (TnySeekable *self, off_t start, off_t end)
 {
-	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
+	TnyVfsStreamPrivate *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	priv->bound_end = end;
 	priv->bound_start = start;
+
 	return 0;
 }
 
 static void
 tny_stream_init (gpointer g, gpointer iface_data)
 {
-	TnyStreamIface *klass = (TnyStreamIface *)g;
+	TnyStreamIface *iface = (TnyStreamIface *)g;
 
-	klass->reset= tny_vfs_reset;
-	klass->flush= tny_vfs_flush;
-	klass->is_eos= tny_vfs_is_eos;
-	klass->read= tny_vfs_stream_read;
-	klass->write= tny_vfs_stream_write;
-	klass->close= tny_vfs_stream_close;
-	klass->write_to_stream= tny_vfs_stream_write_to_stream;
-
-	return;
+	iface->reset= tny_vfs_reset;
+	iface->flush= tny_vfs_flush;
+	iface->is_eos= tny_vfs_is_eos;
+	iface->read= tny_vfs_stream_read;
+	iface->write= tny_vfs_stream_write;
+	iface->close= tny_vfs_stream_close;
+	iface->write_to_stream= tny_vfs_stream_write_to_stream;
 }
 
 
@@ -504,75 +525,10 @@ tny_seekable_init (gpointer g, gpointer iface_data)
 	klass->seek= tny_vfs_seek;
 	klass->tell= tny_vfs_tell;
 	klass->set_bounds= tny_vfs_set_bounds;
-
-	return;
 }
 
 static void 
-tny_vfs_stream_class_init (TnyVfsStreamClass *class)
+tny_vfs_stream_class_init (TnyVfsStreamClass *klass)
 {
-	GObjectClass *object_class;
-
-	parent_class = g_type_class_peek_parent (class);
-	object_class = (GObjectClass*) class;
-
-	object_class->finalize = tny_vfs_stream_finalize;
-
-	g_type_class_add_private (object_class, sizeof (TnyVfsStreamPriv));
-
-	return;
-}
-
-static gpointer 
-tny_vfs_stream_register_type (gpointer notused)
-{
-	GType type = 0;
-
-	static const GTypeInfo info = 
-		{
-			sizeof (TnyVfsStreamClass),
-			NULL,   /* base_init */
-			NULL,   /* base_finalize */
-			(GClassInitFunc) tny_vfs_stream_class_init,   /* class_init */
-			NULL,   /* class_finalize */
-			NULL,   /* class_data */
-			sizeof (TnyVfsStream),
-			0,      /* n_preallocs */
-			tny_vfs_stream_instance_init,/* instance_init */
-			NULL
-		};
-	
-	static const GInterfaceInfo tny_stream_info = 
-		{
-			(GInterfaceInitFunc) tny_stream_init, /* interface_init */
-			NULL,         /* interface_finalize */
-			NULL          /* interface_data */
-		};
-	
-	static const GInterfaceInfo tny_seekable_info = 
-		{
-			(GInterfaceInitFunc) tny_seekable_init, /* interface_init */
-			NULL,         /* interface_finalize */
-			NULL          /* interface_data */
-		};
-	
-	type = g_type_register_static (G_TYPE_OBJECT,
-				       "TnyVfsStream",
-				       &info, 0);
-	
-	g_type_add_interface_static (type, TNY_TYPE_STREAM, 
-				     &tny_stream_info);
-	
-	g_type_add_interface_static (type, TNY_TYPE_SEEKABLE, 
-				     &tny_seekable_info);
-	
-	return GSIZE_TO_POINTER (type);
-}
-
-GType 
-tny_vfs_stream_get_type (void)
-{
-	static GOnce once = G_ONCE_INIT;
-	g_once (&once, tny_vfs_stream_register_type, NULL);
-	return GPOINTER_TO_SIZE (once.retval);
+	G_OBJECT_CLASS(klass)->finalize = tny_vfs_stream_finalize;
 }
