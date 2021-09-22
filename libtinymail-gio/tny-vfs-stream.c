@@ -311,7 +311,7 @@ tny_vfs_stream_close (TnyStream *self)
 
 
 /**
- * tny_vfs_stream_set_handle:
+ * tny_vfs_stream_set_file:
  * @self: A #TnyVfsStream instance
  * @file: The #GFile to write to or read from
  *
