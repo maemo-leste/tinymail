@@ -41,26 +41,26 @@ struct _TnyVfsStreamPriv
 #define TNY_VFS_STREAM_GET_PRIVATE(o) \
 	(G_TYPE_INSTANCE_GET_PRIVATE ((o), TNY_TYPE_VFS_STREAM, TnyVfsStreamPriv))
 
-
 static void
-tny_vfs_stream_set_errno (GError *res)
+tny_vfs_stream_set_errno (GError *error)
 {
-	if (!res) {
+	if (!error || error->domain != G_IO_ERROR) {
 		errno = EIO;
 		return;
 	}
 
-	switch(*res) {
+	switch(error->code) {
 	case G_IO_ERROR_NOT_FOUND:
 	case G_IO_ERROR_HOST_NOT_FOUND:
-	case G_IO_ERROR_CLOSED:
 		errno = ENOENT;
 		break;
 	case G_IO_ERROR_CANT_CREATE_BACKUP:
 	case G_IO_ERROR_WRONG_ETAG:
-	case G_IO_ERROR_FAILED_HANDLED: /* Unless you want 0? */
-	default:
+	case G_IO_ERROR_FAILED:
 		errno = EIO;
+		break;
+	case G_IO_ERROR_FAILED_HANDLED:
+		errno = 0;
 		break;
 	case G_IO_ERROR_MESSAGE_TOO_LARGE:
 		errno = EMSGSIZE;
@@ -80,8 +80,11 @@ tny_vfs_stream_set_errno (GError *res)
 	case G_IO_ERROR_PROXY_NOT_ALLOWED:
 		errno = EACCES;
 		break;
-	//case G_IO_ERROR_CONNECTION_CLOSED:
+	case G_IO_ERROR_CLOSED:
+	case G_IO_ERROR_CONNECTION_CLOSED:
+#if G_IO_ERROR_CONNECTION_CLOSED != G_IO_ERROR_BROKEN_PIPE
 	case G_IO_ERROR_BROKEN_PIPE:
+#endif
 		errno = EPIPE;
 		break;
 	case G_IO_ERROR_CONNECTION_REFUSED:
@@ -105,13 +108,19 @@ tny_vfs_stream_set_errno (GError *res)
 	case G_IO_ERROR_NOT_SUPPORTED:
 		errno = EOPNOTSUPP;
 		break;
-	case G_IO_ERROR_INVALID_ARGUMENT:
-	case G_IO_ERROR_INVALID_FILENAME:
 	case G_IO_ERROR_NOT_REGULAR_FILE:
 	case G_IO_ERROR_NOT_SYMBOLIC_LINK:
 	case G_IO_ERROR_NOT_MOUNTABLE_FILE:
+		errno = EMEDIUMTYPE;
+		break;
 	case G_IO_ERROR_NOT_MOUNTED:
+		errno = ENOMEDIUM;
+		break;
 	case G_IO_ERROR_ALREADY_MOUNTED:
+		errno = EBUSY;
+		break;
+	case G_IO_ERROR_INVALID_ARGUMENT:
+	case G_IO_ERROR_INVALID_FILENAME:
 		errno = EINVAL;
 		break;
 	case G_IO_ERROR_ADDRESS_IN_USE:
@@ -154,8 +163,10 @@ tny_vfs_stream_set_errno (GError *res)
 		errno = EPERM;
 		break;
 	case G_IO_ERROR_IS_DIRECTORY:
-	case G_IO_ERROR_NOT_EMPTY: /* ?? */
 		errno = EISDIR;
+		break;
+	case G_IO_ERROR_NOT_EMPTY:
+		errno = ENOTEMPTY;
 		break;
 	case G_IO_ERROR_PENDING:
 	case G_IO_ERROR_BUSY:
@@ -206,12 +217,13 @@ tny_vfs_stream_read  (TnyStream *self, char *buffer, gsize n)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	gssize nread = 0;
-	GError *result = NULL;
+	GError *error = NULL;
 
 	if (priv->bound_end != (~0))
 		n = MIN (priv->bound_end - priv->position, n);
 
-	nread = g_input_stream_read ((GInputStream*)priv->handle, buffer, n, NULL, &result);
+	nread = g_input_stream_read ((GInputStream*)priv->handle, buffer, n,
+				     NULL, &error);
 
 	if (nread > 0)
 		priv->position += nread;
@@ -220,7 +232,7 @@ tny_vfs_stream_read  (TnyStream *self, char *buffer, gsize n)
 			nread = -1;
 		else
 			priv->eos = TRUE;
-		tny_vfs_stream_set_errno (result);
+		tny_vfs_stream_set_errno (error);
 	}
 
 	return nread;
@@ -231,12 +243,13 @@ tny_vfs_stream_write (TnyStream *self, const char *buffer, gsize n)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	gssize nwritten = 0;
-	GError *result = NULL;
+	GError *error = NULL;
 
 	if (priv->bound_end != (~0))
 		n = MIN (priv->bound_end - priv->position, n);
 
-	nwritten = g_output_stream_write ((GOutputStream *)priv->handle, buffer, n, NULL, &result);
+	nwritten = g_output_stream_write ((GOutputStream *)priv->handle, buffer,
+					  n, NULL, &error);
 
 	if (nwritten > 0) {
 		priv->position += nwritten;
@@ -245,7 +258,7 @@ tny_vfs_stream_write (TnyStream *self, const char *buffer, gsize n)
 			nwritten = -1;
 		else
 			priv->eos = TRUE;
-		tny_vfs_stream_set_errno (result);
+		tny_vfs_stream_set_errno (error);
 	}
 
 	return nwritten;
@@ -255,15 +268,15 @@ static gint
 tny_vfs_stream_close (TnyStream *self)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
-	GError *res = NULL;
-        gboolean success;
+	GError *error = NULL;
+	gboolean success;
 
 	if (priv->handle == NULL)  {
 		errno = EINVAL;
 		return -1;
 	}
 
-	success = g_io_stream_close ((GIOStream *)priv->handle, NULL, &res);
+	success = g_io_stream_close ((GIOStream *)priv->handle, NULL, &error);
 
 	priv->handle = NULL;
 	priv->eos = TRUE;
@@ -271,7 +284,7 @@ tny_vfs_stream_close (TnyStream *self)
 	if (success)
 		return 0;
 
-	tny_vfs_stream_set_errno (res);
+	tny_vfs_stream_set_errno (error);
 
 	return -1;
 }
@@ -301,7 +314,8 @@ tny_vfs_stream_set_handle (TnyVfsStream *self, GFile *handle)
 	priv->handle = handle;
 	priv->eos = FALSE;
 	priv->position = 0;
-	g_seekable_seek ((GSeekable *)handle, priv->position, G_SEEK_SET, NULL, NULL);
+	g_seekable_seek ((GSeekable *)handle, priv->position, G_SEEK_SET,
+			 NULL, NULL);
 
 	return;
 }
@@ -372,7 +386,7 @@ tny_vfs_reset (TnyStream *self)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	gint retval = 0;
-	GError *res = NULL;
+	GError *error = NULL;
 
 	if (priv->handle == NULL) 
 	{
@@ -380,12 +394,13 @@ tny_vfs_reset (TnyStream *self)
 		return -1;
 	}
 
-	g_seekable_seek ((GSeekable *)priv->handle, 0, G_SEEK_SET, NULL, &res);
+	g_seekable_seek ((GSeekable *)priv->handle, 0, G_SEEK_SET, NULL,
+			 &error);
 
-	if (res == NULL) {
+	if (error == NULL) {
 		priv->position = 0;
 	} else {
-		tny_vfs_stream_set_errno (res);
+		tny_vfs_stream_set_errno (error);
 		retval = -1;
 	}
 	priv->eos = FALSE;
@@ -400,7 +415,7 @@ tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 {
 	TnyVfsStreamPriv *priv = TNY_VFS_STREAM_GET_PRIVATE (self);
 	gssize real = 0;
-	GError *result = NULL;
+	GError *error = NULL;
 	GFile *handle = priv->handle;
 
 	switch (policy) {
@@ -412,10 +427,12 @@ tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 		break;
 	case SEEK_END:
 		if (priv->bound_end == (~0)) {
-			g_seekable_seek ((GSeekable *)handle, offset, G_SEEK_END, NULL, &result);
-			if (result != NULL)
-				tny_vfs_stream_set_errno (result);
+			g_seekable_seek ((GSeekable *)handle, offset,
+					 G_SEEK_END, NULL, &error);
+			if (error != NULL) {
+				tny_vfs_stream_set_errno (error);
 				return -1;
+			}
 			real = g_seekable_tell ((GSeekable *)handle);
 			if (real != -1) {
 				if (real<priv->bound_start)
@@ -432,9 +449,9 @@ tny_vfs_seek (TnySeekable *self, off_t offset, int policy)
 		real = MIN (real, priv->bound_end);
 	real = MAX (real, priv->bound_start);
 
-	g_seekable_seek ((GSeekable *)handle, real, G_SEEK_SET, NULL, &result);
-	if (result != NULL) {
-		tny_vfs_stream_set_errno (result);
+	g_seekable_seek ((GSeekable *)handle, real, G_SEEK_SET, NULL, &error);
+	if (error != NULL) {
+		tny_vfs_stream_set_errno (error);
 		return -1;
 	}
 
