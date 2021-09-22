@@ -127,3 +127,27 @@ Description: memory-effective framework for accessing e-mail - development files
  and NNTP. It can be used to send messages over SMTP and by using sendmail.
  .
  This package contains the development files for libtinymail-maemo.
+
+Package: libtinymail-gio-1.0-0
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: memory-effective framework for accessing e-mail - Camel library
+ Tinymail is a development framework for accessing E-mail services using
+ devices with few memory resources.
+ .
+ It supports local mail storage (Maildir,mh,spool & mbox), IMAP, Exchange
+ and NNTP. It can be used to send messages over SMTP and by using sendmail.
+ .
+ This package contains the library for GNOME VFS specific functionality.
+
+Package: libtinymail-gio-1.0-0-dev
+Architecture: any
+Depends: libtinymail-gio-1.0-0
+Description: memory-effective framework for accessing e-mail - development files
+ Tinymail is a development framework for accessing E-mail services using
+ devices with few memory resources.
+ .
+ It supports local mail storage (Maildir,mh,spool & mbox), IMAP, Exchange
+ and NNTP. It can be used to send messages over SMTP and by using sendmail.
+ .
+ This package contains the development files for libtinymail-gio.
