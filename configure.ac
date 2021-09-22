@@ -649,6 +649,7 @@ libtinymailui-mozembed/Makefile
 libtinymailui-mozembed/libtinymailui-mozembed.pc
 libtinymailui-gnome-keyring/Makefile
 libtinymail-gio/Makefile
+libtinymail-gio/libtinymail-gio.pc
 libtinymail-gnomevfs/Makefile
 libtinymail-gnomevfs/libtinymail-gnomevfs.pc
 libtinymail-gnome-desktop/Makefile
