@@ -272,6 +272,13 @@ camel_providerdir=$camel_lite_providerdir
 AC_SUBST(camel_lite_providerdir)
 AC_SUBST(camel_providerdir)
 
+PKG_CHECK_EXISTS([glib-2.0 < 2.22.0], [use_e_array=yes])
+AM_CONDITIONAL(USE_E_ARRAY, test -n "$use_e_array")
+
+if test x$use_e_array == xyes; then
+	AC_DEFINE(CAMEL_USE_E_ARRAY,,[Whether to use GArray replacement])
+fi
+
 AC_OUTPUT([
 Makefile
 bs/Makefile
@@ -289,4 +296,3 @@ camel/camel-lite-provider.pc
 libedataserver/Makefile
 summary/Makefile
 ])
-

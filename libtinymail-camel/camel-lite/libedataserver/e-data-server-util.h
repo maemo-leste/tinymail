@@ -50,6 +50,9 @@ const char  *e_util_get_localedir (void) G_GNUC_CONST;
 char        *e_util_replace_prefix (const char *configure_time_prefix, const char *runtime_prefix, const char *configure_time_path);
 #endif
 
+typedef struct _ENamedParameters ENamedParameters;
+typedef struct _CamelSettings CamelSettings;
+
 G_END_DECLS
 
 #endif

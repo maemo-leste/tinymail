@@ -11,6 +11,12 @@ INCLUDES =								\
 
 noinst_LTLIBRARIES = libedataserver-1.2.la
 
+if USE_E_ARRAY
+E_ARARAY_SOURCES = \
+	e-array.c			\
+	e-array.h
+endif
+
 libedataserver_1_2_la_SOURCES =		\
 	e-trie.c			\
 	e-iconv.c			\
@@ -19,8 +25,7 @@ libedataserver_1_2_la_SOURCES =		\
 	e-sexp.c			\
 	e-time-utils.c			\
 	e-data-server-util.c		\
-	e-array.c			\
-	e-array.h			\
+	$(E_ARARAY_SOURCES)		\
 	md5-utils.c
 
 libedataserverincludedir = $(includedir)/libedataserver-lite/libedataserver

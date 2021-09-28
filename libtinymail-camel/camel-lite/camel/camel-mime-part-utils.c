@@ -33,7 +33,12 @@
 #include <unistd.h>
 
 #include <libedataserver/e-iconv.h>
+#ifdef CAMEL_USE_E_ARRAY
 #include <libedataserver/e-array.h>
+#else
+#define e_byte_array_new g_byte_array_new
+#define e_byte_array_append g_byte_array_append
+#endif
 
 #include "camel-charset-map.h"
 #include "camel-html-parser.h"
