@@ -2,7 +2,10 @@
 
 export DH_VERBOSE=1
 
-export DEB_CFLAGS_MAINT_APPEND += -Wall -Wno-error=format-security -Wno-unused-but-set-variable -Wno-deprecated-declarations
+export DEB_CFLAGS_MAINT_APPEND += -Wall \
+	-Wno-unused-but-set-variable -Wno-deprecated-declarations \
+	-Werror=int-to-pointer-cast -Werror=pointer-to-int-cast
+
 export DEB_LDFLAGS_MAINT_APPEND += -Wl,--as-needed
 
 %:
