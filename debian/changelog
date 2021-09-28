@@ -1,3 +1,11 @@
+tinymail (1.1.94) unstable; urgency=low
+
+  * Do not use local g_array implementation on glib >= 2.22
+  * gio: use GxStream, not GFile for io operations
+  * Fix some complier warnings
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Tue, 28 Sep 2021 19:19:11 +0300
+
 tinymail (1.1.93) unstable; urgency=low
 
   * add gio module
