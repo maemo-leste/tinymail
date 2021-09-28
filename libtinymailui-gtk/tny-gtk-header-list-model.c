@@ -176,7 +176,7 @@ tny_gtk_header_list_model_get_iter (GtkTreeModel *self, GtkTreeIter *iter, GtkTr
 	else {
 		if (i >= 0 && i < tlen) {
 			iter->stamp = priv->stamp;
-			iter->user_data = (gpointer) i;
+			iter->user_data = GINT_TO_POINTER (i);
 			retval = TRUE;
 		}
 	}
@@ -199,7 +199,7 @@ tny_gtk_header_list_model_get_path (GtkTreeModel *self, GtkTreeIter *iter)
 
 	g_static_rec_mutex_lock (priv->iterator_lock);
 
-	i = (gint) iter->user_data;
+	i = GPOINTER_TO_INT (iter->user_data);
 
 	g_mutex_lock (priv->ra_lock);
 	tlen = priv->cur_len;
@@ -263,8 +263,8 @@ tny_gtk_header_list_model_received_date_sort_func (GtkTreeModel *model, GtkTreeI
 
 	g_static_rec_mutex_lock (priv->iterator_lock);
 
-	hdr_a = priv->items->pdata[(gint)a->user_data];
-	hdr_b = priv->items->pdata[(gint)b->user_data];
+	hdr_a = priv->items->pdata[GPOINTER_TO_INT (a->user_data)];
+	hdr_b = priv->items->pdata[GPOINTER_TO_INT (b->user_data)];
 
 	recv_a = tny_header_get_date_received (hdr_a);
 	recv_b = tny_header_get_date_received (hdr_b);
@@ -300,8 +300,8 @@ tny_gtk_header_list_model_sent_date_sort_func (GtkTreeModel *model, GtkTreeIter 
 
 	g_static_rec_mutex_lock (priv->iterator_lock);
 
-	hdr_a = priv->items->pdata[(gint)a->user_data];
-	hdr_b = priv->items->pdata[(gint)b->user_data];
+	hdr_a = priv->items->pdata[GPOINTER_TO_INT (a->user_data)];
+	hdr_b = priv->items->pdata[GPOINTER_TO_INT (b->user_data)];
 
 	recv_a = tny_header_get_date_sent (hdr_a);
 	recv_b = tny_header_get_date_sent (hdr_b);
@@ -369,7 +369,7 @@ tny_gtk_header_list_model_get_value (GtkTreeModel *self, GtkTreeIter *iter, gint
 	 * the GPtrArray. This must be quite efficient, as this is called lots
 	 * of times while you are sorting things. */
 
-	i = (gint) iter->user_data;
+	i = GPOINTER_TO_INT (iter->user_data);
 
 	/* Exception on list_model->cur_len (this one truly allows the full 
 	 * length of the available data in the array, not only the registered
@@ -487,9 +487,9 @@ tny_gtk_header_list_model_iter_next (GtkTreeModel *self, GtkTreeIter *iter)
 	 * always make sure that such an iter doesn't contain an index that
 	 * can't be part of the GPtrArray instance (would be devastating). */
 
-	newv = ((gint) iter->user_data);
+	newv = GPOINTER_TO_INT (iter->user_data);
 	newv++; 
-	iter->user_data = (gpointer) newv;
+	iter->user_data = GINT_TO_POINTER (newv);
 
 	g_mutex_lock (priv->ra_lock);
 	retval = (newv >= 0 && newv < priv->cur_len);
@@ -497,7 +497,7 @@ tny_gtk_header_list_model_iter_next (GtkTreeModel *self, GtkTreeIter *iter)
 
 	if (!retval) {
 		iter->stamp = -1;
-		iter->user_data = (gpointer) 0;
+		iter->user_data = GINT_TO_POINTER(0);
 	}
 
 	g_static_rec_mutex_unlock (priv->iterator_lock);
@@ -553,11 +553,11 @@ tny_gtk_header_list_model_iter_nth_child (GtkTreeModel *self, GtkTreeIter *iter,
 	if (n >= 0 && n < tlen) 
 	{
 		iter->stamp = priv->stamp;
-		iter->user_data = (gpointer) n;
+		iter->user_data = GINT_TO_POINTER (n);
 		retval = TRUE;
 	} else {
 		iter->stamp = -1;
-		iter->user_data = (gpointer) 0;
+		iter->user_data = GINT_TO_POINTER (0);
 	}
 
 	g_static_rec_mutex_unlock (priv->iterator_lock);
@@ -704,7 +704,7 @@ notify_views_add (gpointer data)
 	for (i = already_registered; i < going_tb_registered; i++)
 	{
 		iter.stamp = priv->stamp;
-		iter.user_data = (gpointer) i;
+		iter.user_data = GINT_TO_POINTER (i);
 		path = gtk_tree_path_new_internal (i);
 		priv->cur_len = i+1;
 		gtk_tree_model_row_inserted ((GtkTreeModel *) data, path, &iter);
@@ -865,7 +865,7 @@ notify_views_delete (gpointer data)
 	if (found)
 	{
 		iter.stamp = priv->stamp;
-		iter.user_data = (gpointer) i;
+		iter.user_data = GINT_TO_POINTER (i);
 		path = gtk_tree_path_new ();
 		gtk_tree_path_append_index (path, i);
 		gtk_tree_model_row_deleted ((GtkTreeModel *) stuff->self, path);
@@ -967,7 +967,7 @@ notify_views_delete_list (gpointer data)
 		if (found)
 		{
 			iter.stamp = priv->stamp;
-			iter.user_data = (gpointer) i;
+			iter.user_data = GINT_TO_POINTER (i);
 			path = gtk_tree_path_new ();
 			gtk_tree_path_append_index (path, i);
 			gtk_tree_model_row_deleted ((GtkTreeModel *) stuff->self, path);

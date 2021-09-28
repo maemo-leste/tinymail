@@ -4252,8 +4252,8 @@ get_folder_info_online (CamelStore *store, const char *top, guint32 flags, Camel
 
 		if (imap_store->namespaces->personal) {
 			get_folders_sync_ns (imap_store, imap_store->namespaces->personal, 
-				(gboolean) imap_store->namespaces->other, 
-				(gboolean) imap_store->namespaces->shared, ex);
+				!!imap_store->namespaces->other,
+				!!imap_store->namespaces->shared, ex);
 			if (imap_store->namespaces->personal) {
 				delim = imap_store->namespaces->personal->delim;
 				has_d = TRUE;

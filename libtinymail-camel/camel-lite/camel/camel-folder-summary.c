@@ -344,8 +344,8 @@ camel_folder_summary_finalize (CamelObject *obj)
 
 	g_static_rec_mutex_lock (s->dump_lock);
 
-	g_ptr_array_foreach (s->messages, foreach_msginfo, (gpointer)s->message_info_size);
-	g_ptr_array_foreach (s->expunged, foreach_msginfo, (gpointer)s->message_info_size);
+	g_ptr_array_foreach (s->messages, foreach_msginfo, GSIZE_TO_POINTER (s->message_info_size));
+	g_ptr_array_foreach (s->expunged, foreach_msginfo, GSIZE_TO_POINTER (s->message_info_size));
 
 	g_ptr_array_free(s->messages, TRUE);
 	g_ptr_array_free(s->expunged, TRUE);

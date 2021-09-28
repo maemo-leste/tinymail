@@ -1129,7 +1129,7 @@ bodystruct_parse (guchar *inbuf, guint inlen, GError **err)
 	} else {
 
 		start += 13;
-		lendif = (int) start - (int) inbuf;
+		lendif = GPOINTER_TO_INT (start) - GPOINTER_TO_INT (inbuf);
 		
 		r = bodystruct_part_decode (&start, (unsigned char *) ( start + (inlen - lendif) ), NULL, 1, err);
 	}
@@ -1148,7 +1148,7 @@ envelope_parse (guchar *inbuf, guint inlen, GError **err)
 		return decode_envelope (&inbuf, inbuf + inlen, err);
 
 	start += 8;
-	lendif = (int) start - (int) inbuf;
+	lendif = GPOINTER_TO_INT (start) - GPOINTER_TO_INT (inbuf);
 
 	return decode_envelope (&start, (unsigned char *) ( start + (inlen - lendif) ), err);
 }

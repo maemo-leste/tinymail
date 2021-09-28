@@ -180,7 +180,7 @@ camel_pop3_logbook_is_open (CamelPOP3Logbook *book, const gchar *uid)
 	gboolean truth = FALSE;
 
 	g_static_rec_mutex_lock (book->lock);
-	truth = (gboolean) book->registered;
+	truth = !!book->registered;
 	g_static_rec_mutex_unlock (book->lock);
 
 	return truth;

@@ -240,7 +240,7 @@ on_send_queue_error_happened (TnySendQueue *self, TnyHeader *header, TnyMsg *msg
 		if (!rem_dialog)
 		{
 			rem_dialog = gtk_message_dialog_new (NULL, 0,
-				GTK_MESSAGE_ERROR, GTK_BUTTONS_YES_NO, str);
+				GTK_MESSAGE_ERROR, GTK_BUTTONS_YES_NO, "%s", str);
 			info->self = g_object_ref (user_data);
 			info->header = g_object_ref (header);
 			g_signal_connect (G_OBJECT (rem_dialog), "response",
@@ -775,7 +775,7 @@ on_get_msg (TnyFolder *folder, gboolean cancelled, TnyMsg *msg, GError *merr, gp
 				  GTK_DIALOG_DESTROY_WITH_PARENT,
 				  GTK_MESSAGE_ERROR,
 				  GTK_BUTTONS_CLOSE,
-				  merr->message);
+				  "%s", merr->message);
 		g_signal_connect_swapped (edialog, "response",
 			G_CALLBACK (gtk_widget_destroy), edialog);
 		gtk_widget_show_all (edialog);
@@ -882,7 +882,7 @@ set_folder_cb (TnyFolder *self, gboolean cancelled, TnyList *headers, GError *er
 				  GTK_DIALOG_DESTROY_WITH_PARENT,
 				  GTK_MESSAGE_ERROR,
 				  GTK_BUTTONS_CLOSE,
-				  err->message);
+				  "%s", err->message);
 		g_signal_connect_swapped (edialog, "response",
 			G_CALLBACK (gtk_widget_destroy), edialog);
 		gtk_widget_show_all (edialog);
@@ -1128,7 +1128,7 @@ on_rename (TnyFolder *self, gboolean cancelled, TnyFolderStore *into, TnyFolder 
 			  GTK_DIALOG_DESTROY_WITH_PARENT,
 			  GTK_MESSAGE_ERROR,
 			  GTK_BUTTONS_CLOSE,
-			  err->message);
+			  "%s", err->message);
 		g_signal_connect_swapped (edialog, "response",
 			G_CALLBACK (gtk_widget_destroy), edialog);
 		gtk_widget_show_all (edialog);
@@ -1352,7 +1352,7 @@ on_delete_folder_activate (GtkMenuItem *mitem, gpointer user_data)
 										  GTK_DIALOG_DESTROY_WITH_PARENT,
 										  GTK_MESSAGE_ERROR,
 										  GTK_BUTTONS_CLOSE,
-										  err->message);
+										  "%s", err->message);
 						g_signal_connect_swapped (edialog, "response",
 							G_CALLBACK (gtk_widget_destroy), edialog);
 						gtk_widget_show_all (edialog);
@@ -1533,7 +1533,7 @@ create_cb (TnyFolderStore *store, gboolean cancelled, TnyFolder *new_folder, GEr
 						  GTK_DIALOG_DESTROY_WITH_PARENT,
 						  GTK_MESSAGE_ERROR,
 						  GTK_BUTTONS_CLOSE,
-						  err->message);
+						  "%s", err->message);
 		g_signal_connect_swapped (edialog, "response",
 			G_CALLBACK (gtk_widget_destroy), edialog);
 		gtk_widget_show_all (edialog);

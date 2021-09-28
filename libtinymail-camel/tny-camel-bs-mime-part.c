@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <ctype.h>
 
 #include <tny-mime-part.h>
 #include <tny-camel-shared.h>
@@ -70,7 +71,7 @@ static GObjectClass *parent_class = NULL;
 #include "tny-common-priv.h"
 #undef TINYMAIL_ENABLE_PRIVATE_API
 
-
+#include <libedataserver/e-iconv.h>
 
 static ssize_t
 decode_to_stream (CamelStream *from_stream, CamelStream *stream, const gchar *encoding, gboolean text)

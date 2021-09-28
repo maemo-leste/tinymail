@@ -656,7 +656,7 @@ tny_camel_mime_part_write_to_stream_default (TnyMimePart *self, TnyStream *strea
 	if (bytes < 0) {
 		g_set_error (err, TNY_ERROR_DOMAIN,
 				TNY_IO_ERROR_WRITE,
-				strerror (errno));
+				"%s", strerror (errno));
 	}
 	
 	return bytes;
@@ -761,7 +761,7 @@ tny_camel_mime_part_decode_to_stream_default (TnyMimePart *self, TnyStream *stre
 	if (bytes < 0) {
 		g_set_error (err, TNY_ERROR_DOMAIN,
 				TNY_IO_ERROR_WRITE,
-				strerror (errno));
+				"%s", strerror (errno));
 	}
 
 	return bytes;

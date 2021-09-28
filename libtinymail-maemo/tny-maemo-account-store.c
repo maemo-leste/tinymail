@@ -122,7 +122,7 @@ tny_maemo_account_store_alert (TnyAccountStore *self, TnyAccount *account, TnyAl
 	}
 
 	dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL,
-		gtktype, GTK_BUTTONS_YES_NO, error->message);
+		gtktype, GTK_BUTTONS_YES_NO, "%s", error->message);
 
 	if (gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_YES)
 		retval = TRUE;

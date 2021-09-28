@@ -785,7 +785,7 @@ void
 camel_service_can_idle (CamelService *service,
 			gboolean can_idle)
 {
-	g_return_val_if_fail (CAMEL_IS_SERVICE (service), NULL);
+	g_return_if_fail (CAMEL_IS_SERVICE (service));
 
 	CSERV_CLASS (service)->can_idle (service, can_idle);
 }

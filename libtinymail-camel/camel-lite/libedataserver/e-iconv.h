@@ -41,6 +41,7 @@ const char *e_iconv_locale_charset(void);
 /* languages */
 const char *e_iconv_locale_language (void);
 const char *e_iconv_charset_language (const char *charset);
+const char *e_iconv_charset_name(const char *charset);
 
 #ifdef __cplusplus
 }

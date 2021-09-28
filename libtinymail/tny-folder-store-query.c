@@ -274,7 +274,7 @@ tny_folder_store_query_add_item (TnyFolderStoreQuery *query, const gchar *patter
 		er = regcomp (regex, (const char*)pattern, 0);
 		if (er != 0) {
 			gchar *erstr = get_regerror (er, regex);
-			g_warning (erstr);
+			g_warning ("%s", erstr);
 			g_free (erstr);
 			regfree (regex);
 			addit = FALSE;
