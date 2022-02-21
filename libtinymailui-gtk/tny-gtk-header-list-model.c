@@ -140,6 +140,10 @@ tny_gtk_header_list_model_get_column_type (GtkTreeModel *self, gint column)
 			break;
 		case TNY_GTK_HEADER_LIST_MODEL_DATE_SENT_TIME_T_COLUMN:
 		case TNY_GTK_HEADER_LIST_MODEL_DATE_RECEIVED_TIME_T_COLUMN:
+			if (sizeof (time_t) == sizeof (gint64)) {
+				retval = G_TYPE_INT64;
+				break;
+			}
 		case TNY_GTK_HEADER_LIST_MODEL_MESSAGE_SIZE_COLUMN:
 		case TNY_GTK_HEADER_LIST_MODEL_FLAGS_COLUMN:
 			retval = G_TYPE_INT;
@@ -328,6 +332,11 @@ set_dummy (gint column, GValue *value)
 			break;
 		case TNY_GTK_HEADER_LIST_MODEL_DATE_SENT_TIME_T_COLUMN:
 		case TNY_GTK_HEADER_LIST_MODEL_DATE_RECEIVED_TIME_T_COLUMN:
+			if (sizeof (time_t) == sizeof (gint64)) {
+				g_value_init (value, G_TYPE_INT64);
+				g_value_set_int64 (value, -1);
+				break;
+			}
 		case TNY_GTK_HEADER_LIST_MODEL_MESSAGE_SIZE_COLUMN:
 			g_value_init (value, G_TYPE_INT);
 			g_value_set_int (value, -1);
@@ -420,17 +429,28 @@ tny_gtk_header_list_model_get_value (GtkTreeModel *self, GtkTreeIter *iter, gint
 			else
 				g_value_set_string (value, "");
 			break;
-		case TNY_GTK_HEADER_LIST_MODEL_DATE_SENT_TIME_T_COLUMN:
-			g_value_init (value, G_TYPE_INT);
-			g_value_set_int (value, 
-					    tny_header_get_date_sent ((TnyHeader*) priv->items->pdata[i]));
+		case TNY_GTK_HEADER_LIST_MODEL_DATE_SENT_TIME_T_COLUMN: {
+			time_t date = 	tny_header_get_date_sent ((TnyHeader*) priv->items->pdata[i]);
+			if (sizeof (time_t) == sizeof (gint64)) {
+				g_value_init (value, G_TYPE_INT64);
+				g_value_set_int64 (value, date);
+			} else {
+				g_value_init (value, G_TYPE_INT);
+				g_value_set_int (value, date);
+			}
 			break;
-		case TNY_GTK_HEADER_LIST_MODEL_DATE_RECEIVED_TIME_T_COLUMN:
-			g_value_init (value, G_TYPE_INT);
-			g_value_set_int (value, 
-					 tny_header_get_date_received ((TnyHeader*) priv->items->pdata[i]));
+		}
+		case TNY_GTK_HEADER_LIST_MODEL_DATE_RECEIVED_TIME_T_COLUMN: {
+			time_t date = tny_header_get_date_received ((TnyHeader*) priv->items->pdata[i]);
+			if (sizeof (time_t) == sizeof (gint64)) {
+				g_value_init (value, G_TYPE_INT64);
+				g_value_set_int64 (value, date);
+			} else {
+				g_value_init (value, G_TYPE_INT);
+				g_value_set_int (value, date);
+			}
 			break;
-
+		}
 		case TNY_GTK_HEADER_LIST_MODEL_MESSAGE_SIZE_COLUMN:
 			g_value_init (value, G_TYPE_INT);
 			g_value_set_int (value, tny_header_get_message_size((TnyHeader*) priv->items->pdata[i]));
