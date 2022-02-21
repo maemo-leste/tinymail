@@ -26,9 +26,9 @@
 
 #include <camel/camel-mime-filter.h>
 
-#define CAMEL_MIME_FILTER_TOHTML(obj)         CAMEL_CHECK_CAST (obj, camel_mime_filter_tohtml_get_type (), CamelMimeFilterToHTML)
-#define CAMEL_MIME_FILTER_TOHTML_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_mime_filter_tohtml_get_type (), CamelMimeFilterToHTMLClass)
-#define CAMEL_IS_MIME_FILTER_TOHTML(obj)      CAMEL_CHECK_TYPE (obj, camel_mime_filter_tohtml_get_type ())
+#define CAMEL_MIME_FILTER_TOHTML(obj)         CAMEL_CHECK_CAST (obj, camel_lite_mime_filter_tohtml_get_type (), CamelMimeFilterToHTML)
+#define CAMEL_MIME_FILTER_TOHTML_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_mime_filter_tohtml_get_type (), CamelMimeFilterToHTMLClass)
+#define CAMEL_IS_MIME_FILTER_TOHTML(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_mime_filter_tohtml_get_type ())
 
 #define CAMEL_MIME_FILTER_TOHTML_PRE               (1 << 0)
 #define CAMEL_MIME_FILTER_TOHTML_CONVERT_NL        (1 << 1)
@@ -63,14 +63,14 @@ struct _CamelMimeFilterToHTMLClass {
 };
 
 
-CamelType        camel_mime_filter_tohtml_get_type (void);
+CamelType        camel_lite_mime_filter_tohtml_get_type (void);
 
-CamelMimeFilter *camel_mime_filter_tohtml_new (guint32 flags, guint32 colour);
+CamelMimeFilter *camel_lite_mime_filter_tohtml_new (guint32 flags, guint32 colour);
 
 
 /* utility functions to replace e_text_to_html shit */
 
-char *camel_text_to_html (const char *in, guint32 flags, guint32 colour);
+char *camel_lite_text_to_html (const char *in, guint32 flags, guint32 colour);
 
 G_END_DECLS
 

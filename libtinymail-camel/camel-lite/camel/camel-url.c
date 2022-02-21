@@ -47,7 +47,7 @@ static void output_param (GQuark key_id, gpointer data, gpointer user_data);
 static void append_url_encoded (GString *str, const char *in, const char *extra_enc_chars);
 
 /**
- * camel_url_new_with_base:
+ * camel_lite_url_new_with_base:
  * @base: a base URL
  * @url_string: the URL
  *
@@ -56,7 +56,7 @@ static void append_url_encoded (GString *str, const char *in, const char *extra_
  * Returns a parsed #CamelURL
  **/
 CamelURL *
-camel_url_new_with_base (CamelURL *base, const char *url_string)
+camel_lite_url_new_with_base (CamelURL *base, const char *url_string)
 {
 	CamelURL *url;
 	const char *start;
@@ -77,7 +77,7 @@ camel_url_new_with_base (CamelURL *base, const char *url_string)
 	if (hash) {
 		if (hash[1]) {
 			url->fragment = g_strdup (hash + 1);
-			camel_url_decode (url->fragment);
+			camel_lite_url_decode (url->fragment);
 		}
 	} else
 		end = url_string + strlen (url_string);
@@ -90,7 +90,7 @@ camel_url_new_with_base (CamelURL *base, const char *url_string)
 
 	if (p > url_string && *p == ':') {
 		url->protocol = g_strndup (url_string, p - url_string);
-		camel_strdown (url->protocol);
+		camel_lite_strdown (url->protocol);
 		url_string = p + 1;
 	}
 
@@ -117,7 +117,7 @@ camel_url_new_with_base (CamelURL *base, const char *url_string)
 							 at - colon - 1);
 				if (url->passwd)
 					mlock (url->passwd, strlen (url->passwd));
-				camel_url_decode (url->passwd);
+				camel_lite_url_decode (url->passwd);
 			} else {
 				url->passwd = NULL;
 				colon = at;
@@ -128,14 +128,14 @@ camel_url_new_with_base (CamelURL *base, const char *url_string)
 			    !g_ascii_strncasecmp (semi, ";auth=", 6)) {
 				url->authmech = g_strndup (semi + 6,
 							   colon - semi - 6);
-				camel_url_decode (url->authmech);
+				camel_lite_url_decode (url->authmech);
 			} else {
 				url->authmech = NULL;
 				semi = colon;
 			}
 
 			url->user = g_strndup (url_string, semi - url_string);
-			camel_url_decode (url->user);
+			camel_lite_url_decode (url->user);
 			url_string = at + 1;
 		} else
 			url->user = url->passwd = url->authmech = NULL;
@@ -147,7 +147,7 @@ camel_url_new_with_base (CamelURL *base, const char *url_string)
 			url->port = strtoul (colon + 1, NULL, 10);
 		} else {
 			url->host = g_strndup (url_string, slash - url_string);
-			camel_url_decode (url->host);
+			camel_lite_url_decode (url->host);
 			url->port = 0;
 		}
 
@@ -160,7 +160,7 @@ camel_url_new_with_base (CamelURL *base, const char *url_string)
 		if (question[1]) {
 			url->query = g_strndup (question + 1,
 						end - (question + 1));
-			camel_url_decode (url->query);
+			camel_lite_url_decode (url->query);
 		}
 		end = question;
 	}
@@ -180,12 +180,12 @@ camel_url_new_with_base (CamelURL *base, const char *url_string)
 				if (eq) {
 					name = g_strndup (cur, eq - cur);
 					value = g_strndup (eq + 1, p - (eq + 1));
-					camel_url_decode (value);
+					camel_lite_url_decode (value);
 				} else {
 					name = g_strndup (cur, p - cur);
 					value = g_strdup ("");
 				}
-				camel_url_decode (name);
+				camel_lite_url_decode (name);
 				g_datalist_set_data_full (&url->params, name,
 							  value, g_free);
 				g_free (name);
@@ -196,7 +196,7 @@ camel_url_new_with_base (CamelURL *base, const char *url_string)
 
 	if (end != url_string) {
 		url->path = g_strndup (url_string, end - url_string);
-		camel_url_decode (url->path);
+		camel_lite_url_decode (url->path);
 	}
 
 	/* Apply base URL. Again, this is spelled out in RFC 1808. */
@@ -295,7 +295,7 @@ copy_param (GQuark key_id, gpointer data, gpointer user_data)
 }
 
 /**
- * camel_url_new:
+ * camel_lite_url_new:
  * @url_string: a URL string
  * @ex: a #CamelException
  *
@@ -304,18 +304,18 @@ copy_param (GQuark key_id, gpointer data, gpointer user_data)
  * Returns a #CamelURL if it can be parsed, or %NULL otherwise
  **/
 CamelURL *
-camel_url_new (const char *url_string, CamelException *ex)
+camel_lite_url_new (const char *url_string, CamelException *ex)
 {
 	CamelURL *url;
 
 	if (!url_string || !*url_string)
 		return NULL;
 
-	url = camel_url_new_with_base (NULL, url_string);
+	url = camel_lite_url_new_with_base (NULL, url_string);
 
 	if (!url->protocol) {
-		camel_url_free (url);
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_URL_INVALID,
+		camel_lite_url_free (url);
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_URL_INVALID,
 				      _("Could not parse URL `%s'"),
 				      url_string);
 		return NULL;
@@ -324,7 +324,7 @@ camel_url_new (const char *url_string, CamelException *ex)
 }
 
 /**
- * camel_url_to_string:
+ * camel_lite_url_to_string:
  * @url: a #CamelURL
  * @flags: additional translation options
  *
@@ -333,7 +333,7 @@ camel_url_new (const char *url_string, CamelException *ex)
  * Returns a string representing @url, which the caller must free
  **/
 char *
-camel_url_to_string (CamelURL *url, guint32 flags)
+camel_lite_url_to_string (CamelURL *url, guint32 flags)
 {
 	GString *str;
 	char *return_result;
@@ -408,13 +408,13 @@ output_param (GQuark key_id, gpointer data, gpointer user_data)
 }
 
 /**
- * camel_url_free:
+ * camel_lite_url_free:
  * @url: a #CamelURL
  *
  * Frees @url.
  **/
 void
-camel_url_free (CamelURL *url)
+camel_lite_url_free (CamelURL *url)
 {
 	if (url) {
 		if (url->passwd)
@@ -441,7 +441,7 @@ camel_url_free (CamelURL *url)
 
 #define DEFINE_CAMEL_URL_SET(part)			\
 void							\
-camel_url_set_##part (CamelURL *url, const char *part)	\
+camel_lite_url_set_##part (CamelURL *url, const char *part)	\
 {							\
 	g_return_if_fail (url != NULL);			\
 							\
@@ -451,7 +451,7 @@ camel_url_set_##part (CamelURL *url, const char *part)	\
 
 
 /**
- * camel_url_set_protocol:
+ * camel_lite_url_set_protocol:
  * @url: a #CamelURL
  * @protocol: protocol schema
  *
@@ -461,7 +461,7 @@ DEFINE_CAMEL_URL_SET (protocol)
 
 
 /**
- * camel_url_set_user:
+ * camel_lite_url_set_user:
  * @url: a #CamelURL
  * @user: username
  *
@@ -471,7 +471,7 @@ DEFINE_CAMEL_URL_SET (user)
 
 
 /**
- * camel_url_set_authmech:
+ * camel_lite_url_set_authmech:
  * @url: a #CamelURL
  * @authmech: authentication mechanism
  *
@@ -481,7 +481,7 @@ DEFINE_CAMEL_URL_SET (authmech)
 
 
 /**
- * camel_url_set_passwd:
+ * camel_lite_url_set_passwd:
  * @url: a #CamelURL
  * @passwd: password
  *
@@ -491,7 +491,7 @@ DEFINE_CAMEL_URL_SET (passwd)
 
 
 /**
- * camel_url_set_host:
+ * camel_lite_url_set_host:
  * @url: a #CamelURL
  * @host: hostname
  *
@@ -501,7 +501,7 @@ DEFINE_CAMEL_URL_SET (host)
 
 
 /**
- * camel_url_set_path:
+ * camel_lite_url_set_path:
  * @url: a #CamelURL
  * @path: path
  *
@@ -511,7 +511,7 @@ DEFINE_CAMEL_URL_SET (path)
 
 
 /**
- * camel_url_set_query:
+ * camel_lite_url_set_query:
  * @url: a #CamelURL
  * @query: url query
  *
@@ -521,7 +521,7 @@ DEFINE_CAMEL_URL_SET (query)
 
 
 /**
- * camel_url_set_fragment:
+ * camel_lite_url_set_fragment:
  * @url: a #CamelURL
  * @fragment: url fragment
  *
@@ -531,14 +531,14 @@ DEFINE_CAMEL_URL_SET (fragment)
 
 
 /**
- * camel_url_set_port:
+ * camel_lite_url_set_port:
  * @url: a #CamelURL
  * @port: port
  *
  * Set the port on a #CamelURL.
  **/
 void
-camel_url_set_port (CamelURL *url, int port)
+camel_lite_url_set_port (CamelURL *url, int port)
 {
 	g_return_if_fail (url != NULL);
 
@@ -547,7 +547,7 @@ camel_url_set_port (CamelURL *url, int port)
 
 
 /**
- * camel_url_set_param:
+ * camel_lite_url_set_param:
  * @url: a #CamelURL
  * @name: name of the param to set
  * @value: value of the param to set
@@ -555,7 +555,7 @@ camel_url_set_port (CamelURL *url, int port)
  * Set a param on the #CamelURL.
  **/
 void
-camel_url_set_param (CamelURL *url, const char *name, const char *value)
+camel_lite_url_set_param (CamelURL *url, const char *name, const char *value)
 {
 	g_return_if_fail (url != NULL);
 
@@ -567,7 +567,7 @@ camel_url_set_param (CamelURL *url, const char *name, const char *value)
 
 
 /**
- * camel_url_get_param:
+ * camel_lite_url_get_param:
  * @url: a #CamelURL
  * @name: name of the param
  *
@@ -576,7 +576,7 @@ camel_url_set_param (CamelURL *url, const char *name, const char *value)
  * Returns the value of a param if found or %NULL otherwise
  **/
 const char *
-camel_url_get_param (CamelURL *url, const char *name)
+camel_lite_url_get_param (CamelURL *url, const char *name)
 {
 	g_return_val_if_fail (url != NULL, NULL);
 
@@ -618,7 +618,7 @@ append_url_encoded (GString *str, const char *in, const char *extra_enc_chars)
 }
 
 /**
- * camel_url_encode:
+ * camel_lite_url_encode:
  * @part: a URL part
  * @escape_extra: additional characters beyond " \"%#<>{}|\^[]`"
  * to escape (or %NULL)
@@ -629,7 +629,7 @@ append_url_encoded (GString *str, const char *in, const char *extra_enc_chars)
  * Returns the encoded string
  **/
 char *
-camel_url_encode (const char *part, const char *escape_extra)
+camel_lite_url_encode (const char *part, const char *escape_extra)
 {
 	GString *str;
 	char *encoded;
@@ -645,7 +645,7 @@ camel_url_encode (const char *part, const char *escape_extra)
 }
 
 /**
- * camel_url_decode:
+ * camel_lite_url_decode:
  * @part: a URL part
  *
  * %-decodes the passed-in URL *in place*. The decoded version is
@@ -653,7 +653,7 @@ camel_url_encode (const char *part, const char *escape_extra)
  * be any additional space at the end of the string.
  */
 void
-camel_url_decode (char *part)
+camel_lite_url_decode (char *part)
 {
 	unsigned char *s, *d;
 
@@ -673,7 +673,7 @@ camel_url_decode (char *part)
 
 
 guint
-camel_url_hash (const void *v)
+camel_lite_url_hash (const void *v)
 {
 	const CamelURL *u = v;
 	guint hash = 0;
@@ -708,7 +708,7 @@ check_equal (char *s1, char *s2)
 }
 
 int
-camel_url_equal(const void *v, const void *v2)
+camel_lite_url_equal(const void *v, const void *v2)
 {
 	const CamelURL *u1 = v, *u2 = v2;
 
@@ -723,7 +723,7 @@ camel_url_equal(const void *v, const void *v2)
 
 
 /**
- * camel_url_copy:
+ * camel_lite_url_copy:
  * @in: a #CamelURL to copy
  *
  * Copy a #CamelURL.
@@ -731,7 +731,7 @@ camel_url_equal(const void *v, const void *v2)
  * Returns a duplicate copy of @in
  **/
 CamelURL *
-camel_url_copy(const CamelURL *in)
+camel_lite_url_copy(const CamelURL *in)
 {
 	CamelURL *out;
 

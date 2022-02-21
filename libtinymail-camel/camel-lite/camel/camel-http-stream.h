@@ -29,7 +29,7 @@
 #include <camel/camel-stream.h>
 #include <camel/camel-url.h>
 
-#define CAMEL_HTTP_STREAM_TYPE     (camel_http_stream_get_type ())
+#define CAMEL_HTTP_STREAM_TYPE     (camel_lite_http_stream_get_type ())
 #define CAMEL_HTTP_STREAM(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_HTTP_STREAM_TYPE, CamelHttpStream))
 #define CAMEL_HTTP_STREAM_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_HTTP_STREAM_TYPE, CamelHttpStreamClass))
 #define CAMEL_IS_HTTP_STREAM(o)    (CAMEL_CHECK_TYPE((o), CAMEL_HTTP_STREAM_TYPE))
@@ -56,7 +56,7 @@ struct _CamelHttpStream {
 	CamelMimeParser *parser;
 
 	CamelContentType *content_type;
-	struct _camel_header_raw *headers;
+	struct _camel_lite_header_raw *headers;
 
 	CamelHttpMethod method;
 	struct _CamelSession *session;
@@ -83,18 +83,18 @@ struct _CamelHttpStreamClass {
 };
 
 /* Standard Camel function */
-CamelType camel_http_stream_get_type (void);
+CamelType camel_lite_http_stream_get_type (void);
 
 /* public methods */
-CamelStream *camel_http_stream_new (CamelHttpMethod method, CamelService *service, CamelURL *url);
+CamelStream *camel_lite_http_stream_new (CamelHttpMethod method, CamelService *service, CamelURL *url);
 
-void camel_http_stream_set_user_agent (CamelHttpStream *http_stream, const char *user_agent);
+void camel_lite_http_stream_set_user_agent (CamelHttpStream *http_stream, const char *user_agent);
 
-void camel_http_stream_set_proxy (CamelHttpStream *http_stream, const char *proxy_url);
-void camel_http_stream_set_proxy_authrealm (CamelHttpStream *http_stream, const char *proxy_authrealm);
-void camel_http_stream_set_proxy_authpass (CamelHttpStream *http_stream, const char *proxy_authpass);
+void camel_lite_http_stream_set_proxy (CamelHttpStream *http_stream, const char *proxy_url);
+void camel_lite_http_stream_set_proxy_authrealm (CamelHttpStream *http_stream, const char *proxy_authrealm);
+void camel_lite_http_stream_set_proxy_authpass (CamelHttpStream *http_stream, const char *proxy_authpass);
 
-CamelContentType *camel_http_stream_get_content_type (CamelHttpStream *http_stream);
+CamelContentType *camel_lite_http_stream_get_content_type (CamelHttpStream *http_stream);
 
 G_END_DECLS
 

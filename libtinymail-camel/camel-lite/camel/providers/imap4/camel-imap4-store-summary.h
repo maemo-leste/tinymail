@@ -26,9 +26,9 @@
 #include <camel/camel-store-summary.h>
 #include "camel-imap4-engine.h"
 
-#define CAMEL_IMAP4_STORE_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_imap4_store_summary_get_type (), CamelIMAP4StoreSummary)
-#define CAMEL_IMAP4_STORE_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_imap4_store_summary_get_type (), CamelIMAP4StoreSummaryClass)
-#define CAMEL_IS_IMAP4_STORE_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_imap4_store_summary_get_type ())
+#define CAMEL_IMAP4_STORE_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_lite_imap4_store_summary_get_type (), CamelIMAP4StoreSummary)
+#define CAMEL_IMAP4_STORE_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_imap4_store_summary_get_type (), CamelIMAP4StoreSummaryClass)
+#define CAMEL_IS_IMAP4_STORE_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_imap4_store_summary_get_type ())
 
 G_BEGIN_DECLS
 
@@ -67,19 +67,19 @@ struct _CamelIMAP4StoreSummaryClass {
 };
 
 
-CamelType camel_imap4_store_summary_get_type (void);
+CamelType camel_lite_imap4_store_summary_get_type (void);
 
-CamelIMAP4StoreSummary *camel_imap4_store_summary_new (void);
+CamelIMAP4StoreSummary *camel_lite_imap4_store_summary_new (void);
 
-void camel_imap4_store_summary_set_capabilities (CamelIMAP4StoreSummary *s, guint32 capa);
-void camel_imap4_store_summary_set_namespaces (CamelIMAP4StoreSummary *s, const CamelIMAP4NamespaceList *ns);
+void camel_lite_imap4_store_summary_set_capabilities (CamelIMAP4StoreSummary *s, guint32 capa);
+void camel_lite_imap4_store_summary_set_namespaces (CamelIMAP4StoreSummary *s, const CamelIMAP4NamespaceList *ns);
 
 /* add the info to the cache if we don't already have it, otherwise do nothing */
-void camel_imap4_store_summary_note_info (CamelIMAP4StoreSummary *s, struct _CamelFolderInfo *fi);
+void camel_lite_imap4_store_summary_note_info (CamelIMAP4StoreSummary *s, struct _CamelFolderInfo *fi);
 
-void camel_imap4_store_summary_unnote_info (CamelIMAP4StoreSummary *s, struct _CamelFolderInfo *fi);
+void camel_lite_imap4_store_summary_unnote_info (CamelIMAP4StoreSummary *s, struct _CamelFolderInfo *fi);
 
-struct _CamelFolderInfo *camel_imap4_store_summary_get_folder_info (CamelIMAP4StoreSummary *s, const char *top, guint32 flags);
+struct _CamelFolderInfo *camel_lite_imap4_store_summary_get_folder_info (CamelIMAP4StoreSummary *s, const char *top, guint32 flags);
 
 G_END_DECLS
 

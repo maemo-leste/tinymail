@@ -41,7 +41,7 @@
 #include "camel-imap4-specials.h"
 #include "camel-imap4-stream.h"
 
-#define d(x) (camel_debug ("imap4:command") ? (x) : 0)
+#define d(x) (camel_lite_debug ("imap4:command") ? (x) : 0)
 
 
 enum {
@@ -89,7 +89,7 @@ imap4_string_is_quote_safe (const char *str)
 #endif
 
 static size_t
-camel_imap4_literal_length (CamelIMAP4Literal *literal)
+camel_lite_imap4_literal_length (CamelIMAP4Literal *literal)
 {
 	CamelStream *stream, *null;
 	CamelMimeFilter *crlf;
@@ -98,19 +98,19 @@ camel_imap4_literal_length (CamelIMAP4Literal *literal)
 	if (literal->type == CAMEL_IMAP4_LITERAL_STRING)
 		return strlen (literal->literal.string);
 
-	null = camel_stream_null_new ();
-	crlf = camel_mime_filter_crlf_new (CAMEL_MIME_FILTER_CRLF_ENCODE, CAMEL_MIME_FILTER_CRLF_MODE_CRLF_ONLY);
-	stream = (CamelStream *) camel_stream_filter_new_with_stream (null);
-	camel_stream_filter_add ((CamelStreamFilter *) stream, crlf);
-	camel_object_unref (crlf);
+	null = camel_lite_stream_null_new ();
+	crlf = camel_lite_mime_filter_crlf_new (CAMEL_MIME_FILTER_CRLF_ENCODE, CAMEL_MIME_FILTER_CRLF_MODE_CRLF_ONLY);
+	stream = (CamelStream *) camel_lite_stream_filter_new_with_stream (null);
+	camel_lite_stream_filter_add ((CamelStreamFilter *) stream, crlf);
+	camel_lite_object_unref (crlf);
 
 	switch (literal->type) {
 	case CAMEL_IMAP4_LITERAL_STREAM:
-		camel_stream_write_to_stream (literal->literal.stream, stream);
-		camel_stream_reset (literal->literal.stream);
+		camel_lite_stream_write_to_stream (literal->literal.stream, stream);
+		camel_lite_stream_reset (literal->literal.stream);
 		break;
 	case CAMEL_IMAP4_LITERAL_WRAPPER:
-		camel_data_wrapper_write_to_stream (literal->literal.wrapper, stream);
+		camel_lite_data_wrapper_write_to_stream (literal->literal.wrapper, stream);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -119,8 +119,8 @@ camel_imap4_literal_length (CamelIMAP4Literal *literal)
 
 	len = ((CamelStreamNull *) null)->written;
 
-	camel_object_unref (stream);
-	camel_object_unref (null);
+	camel_lite_object_unref (stream);
+	camel_lite_object_unref (null);
 
 	return len;
 }
@@ -182,7 +182,7 @@ imap4_command_append_string (CamelIMAP4Engine *engine, CamelIMAP4CommandPart **t
 }
 
 CamelIMAP4Command *
-camel_imap4_command_newv (CamelIMAP4Engine *engine, CamelIMAP4Folder *imap4_folder, const char *format, va_list args)
+camel_lite_imap4_command_newv (CamelIMAP4Engine *engine, CamelIMAP4Folder *imap4_folder, const char *format, va_list args)
 {
 	CamelIMAP4CommandPart *parts, *part, *tail;
 	CamelIMAP4Command *ic;
@@ -232,7 +232,7 @@ camel_imap4_command_newv (CamelIMAP4Engine *engine, CamelIMAP4Folder *imap4_fold
 			case 'F':
 				/* CamelIMAP4Folder */
 				folder = va_arg (args, CamelIMAP4Folder *);
-				string = (char *) camel_imap4_folder_utf7_name (folder);
+				string = (char *) camel_lite_imap4_folder_utf7_name (folder);
 				imap4_command_append_string (engine, &tail, str, string);
 				break;
 			case 'L':
@@ -250,10 +250,10 @@ camel_imap4_command_newv (CamelIMAP4Engine *engine, CamelIMAP4Folder *imap4_fold
 					g_assert_not_reached ();
 				}
 
-				camel_object_ref (obj);
+				camel_lite_object_ref (obj);
 
 				/* FIXME: take advantage of LITERAL+? */
-				len = camel_imap4_literal_length (literal);
+				len = camel_lite_imap4_literal_length (literal);
 				g_string_append_printf (str, "{%lu}\r\n", len);
 
 				tail->buffer = g_strdup (str->str);
@@ -325,10 +325,10 @@ camel_imap4_command_newv (CamelIMAP4Engine *engine, CamelIMAP4Folder *imap4_fold
 	ic->parts = parts;
 	ic->part = parts;
 
-	camel_exception_init (&ic->ex);
+	camel_lite_exception_init (&ic->ex);
 
 	if (imap4_folder) {
-		camel_object_ref (imap4_folder);
+		camel_lite_object_ref (imap4_folder);
 		ic->folder = imap4_folder;
 	} else
 		ic->folder = NULL;
@@ -337,32 +337,32 @@ camel_imap4_command_newv (CamelIMAP4Engine *engine, CamelIMAP4Folder *imap4_fold
 }
 
 CamelIMAP4Command *
-camel_imap4_command_new (CamelIMAP4Engine *engine, CamelIMAP4Folder *folder, const char *format, ...)
+camel_lite_imap4_command_new (CamelIMAP4Engine *engine, CamelIMAP4Folder *folder, const char *format, ...)
 {
 	CamelIMAP4Command *command;
 	va_list args;
 
 	va_start (args, format);
-	command = camel_imap4_command_newv (engine, folder, format, args);
+	command = camel_lite_imap4_command_newv (engine, folder, format, args);
 	va_end (args);
 
 	return command;
 }
 
 void
-camel_imap4_command_register_untagged (CamelIMAP4Command *ic, const char *atom, CamelIMAP4UntaggedCallback untagged)
+camel_lite_imap4_command_register_untagged (CamelIMAP4Command *ic, const char *atom, CamelIMAP4UntaggedCallback untagged)
 {
 	g_hash_table_insert (ic->untagged, g_strdup (atom), untagged);
 }
 
 void
-camel_imap4_command_ref (CamelIMAP4Command *ic)
+camel_lite_imap4_command_ref (CamelIMAP4Command *ic)
 {
 	ic->ref_count++;
 }
 
 void
-camel_imap4_command_unref (CamelIMAP4Command *ic)
+camel_lite_imap4_command_unref (CamelIMAP4Command *ic)
 {
 	CamelIMAP4CommandPart *part, *next;
 	int i;
@@ -373,7 +373,7 @@ camel_imap4_command_unref (CamelIMAP4Command *ic)
 	ic->ref_count--;
 	if (ic->ref_count == 0) {
 		if (ic->folder)
-			camel_object_unref (ic->folder);
+			camel_lite_object_unref (ic->folder);
 
 		g_free (ic->tag);
 
@@ -381,14 +381,14 @@ camel_imap4_command_unref (CamelIMAP4Command *ic)
 			CamelIMAP4RespCode *resp_code;
 
 			resp_code = ic->resp_codes->pdata[i];
-			camel_imap4_resp_code_free (resp_code);
+			camel_lite_imap4_resp_code_free (resp_code);
 		}
 		g_ptr_array_free (ic->resp_codes, TRUE);
 
 		g_hash_table_foreach (ic->untagged, (GHFunc) g_free, NULL);
 		g_hash_table_destroy (ic->untagged);
 
-		camel_exception_clear (&ic->ex);
+		camel_lite_exception_clear (&ic->ex);
 
 		part = ic->parts;
 		while (part != NULL) {
@@ -399,10 +399,10 @@ camel_imap4_command_unref (CamelIMAP4Command *ic)
 					g_free (part->literal->literal.string);
 					break;
 				case CAMEL_IMAP4_LITERAL_STREAM:
-					camel_object_unref (part->literal->literal.stream);
+					camel_lite_object_unref (part->literal->literal.stream);
 					break;
 				case CAMEL_IMAP4_LITERAL_WRAPPER:
-					camel_object_unref (part->literal->literal.wrapper);
+					camel_lite_object_unref (part->literal->literal.wrapper);
 					break;
 				}
 
@@ -429,36 +429,36 @@ imap4_literal_write_to_stream (CamelIMAP4Literal *literal, CamelStream *stream)
 
 	if (literal->type == CAMEL_IMAP4_LITERAL_STRING) {
 		string = literal->literal.string;
-		if (camel_stream_write (stream, string, strlen (string)) == -1)
+		if (camel_lite_stream_write (stream, string, strlen (string)) == -1)
 			return -1;
 
 		return 0;
 	}
 
-	crlf = camel_mime_filter_crlf_new (CAMEL_MIME_FILTER_CRLF_ENCODE, CAMEL_MIME_FILTER_CRLF_MODE_CRLF_ONLY);
-	ostream = (CamelStream *) camel_stream_filter_new_with_stream (stream);
-	camel_stream_filter_add ((CamelStreamFilter *) ostream, crlf);
-	camel_object_unref (crlf);
+	crlf = camel_lite_mime_filter_crlf_new (CAMEL_MIME_FILTER_CRLF_ENCODE, CAMEL_MIME_FILTER_CRLF_MODE_CRLF_ONLY);
+	ostream = (CamelStream *) camel_lite_stream_filter_new_with_stream (stream);
+	camel_lite_stream_filter_add ((CamelStreamFilter *) ostream, crlf);
+	camel_lite_object_unref (crlf);
 
 	/* write the literal */
 	switch (literal->type) {
 	case CAMEL_IMAP4_LITERAL_STREAM:
 		istream = literal->literal.stream;
-		if (camel_stream_write_to_stream (istream, ostream) == -1)
+		if (camel_lite_stream_write_to_stream (istream, ostream) == -1)
 			goto exception;
 		break;
 	case CAMEL_IMAP4_LITERAL_WRAPPER:
 		wrapper = literal->literal.wrapper;
-		if (camel_data_wrapper_write_to_stream (wrapper, ostream) == -1)
+		if (camel_lite_data_wrapper_write_to_stream (wrapper, ostream) == -1)
 			goto exception;
 		break;
 	}
 
-	camel_object_unref (ostream);
+	camel_lite_object_unref (ostream);
 	ostream = NULL;
 
 #if 0
-	if (camel_stream_write (stream, "\r\n", 2) == -1)
+	if (camel_lite_stream_write (stream, "\r\n", 2) == -1)
 		return -1;
 #endif
 
@@ -466,14 +466,14 @@ imap4_literal_write_to_stream (CamelIMAP4Literal *literal, CamelStream *stream)
 
  exception:
 
-	camel_object_unref (ostream);
+	camel_lite_object_unref (ostream);
 
 	return -1;
 }
 
 
 static void
-unexpected_token (camel_imap4_token_t *token)
+unexpected_token (camel_lite_imap4_token_t *token)
 {
 	switch (token->token) {
 	case CAMEL_IMAP4_TOKEN_NO_DATA:
@@ -501,12 +501,12 @@ unexpected_token (camel_imap4_token_t *token)
 }
 
 int
-camel_imap4_command_step (CamelIMAP4Command *ic)
+camel_lite_imap4_command_step (CamelIMAP4Command *ic)
 {
 	CamelIMAP4Engine *engine = ic->engine;
 	int result = CAMEL_IMAP4_RESULT_NONE;
 	CamelIMAP4Literal *literal;
-	camel_imap4_token_t token;
+	camel_lite_imap4_token_t token;
 	unsigned char *linebuf;
 	size_t len;
 
@@ -514,11 +514,11 @@ camel_imap4_command_step (CamelIMAP4Command *ic)
 
 	if (ic->part == ic->parts) {
 		ic->tag = g_strdup_printf ("%c%.5u", engine->tagprefix, engine->tag++);
-		camel_stream_printf (engine->ostream, "%s ", ic->tag);
+		camel_lite_stream_printf (engine->ostream, "%s ", ic->tag);
 		d(fprintf (stderr, "sending: %s ", ic->tag));
 	}
 
-	if (camel_debug ("imap4:command")) {
+	if (camel_lite_debug ("imap4:command")) {
 		int sending = ic->part != ic->parts;
 		unsigned char *eoln, *eob;
 
@@ -545,15 +545,15 @@ camel_imap4_command_step (CamelIMAP4Command *ic)
 	linebuf = ic->part->buffer;
 	len = ic->part->buflen;
 
-	if (camel_stream_write (engine->ostream, linebuf, len) == -1) {
-		camel_exception_setv (&ic->ex, CAMEL_EXCEPTION_SYSTEM,
+	if (camel_lite_stream_write (engine->ostream, linebuf, len) == -1) {
+		camel_lite_exception_setv (&ic->ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Failed sending command to IMAP server %s: %s"),
 				      engine->url->host, g_strerror (errno));
 		goto exception;
 	}
 
-	if (camel_stream_flush (engine->ostream) == -1) {
-		camel_exception_setv (&ic->ex, CAMEL_EXCEPTION_SYSTEM,
+	if (camel_lite_stream_flush (engine->ostream) == -1) {
+		camel_lite_exception_setv (&ic->ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Failed sending command to IMAP server %s: %s"),
 				      engine->url->host, g_strerror (errno));
 		goto exception;
@@ -562,14 +562,14 @@ camel_imap4_command_step (CamelIMAP4Command *ic)
 	/* now we need to read the response(s) from the IMAP4 server */
 
 	do {
-		if (camel_imap4_engine_next_token (engine, &token, &ic->ex) == -1)
+		if (camel_lite_imap4_engine_next_token (engine, &token, &ic->ex) == -1)
 			goto exception;
 
 		if (token.token == '+') {
 			/* we got a continuation response from the server */
 			literal = ic->part->literal;
 
-			if (camel_imap4_engine_line (engine, &linebuf, &len, &ic->ex) == -1)
+			if (camel_lite_imap4_engine_line (engine, &linebuf, &len, &ic->ex) == -1)
 				goto exception;
 
 			if (literal) {
@@ -597,13 +597,13 @@ camel_imap4_command_step (CamelIMAP4Command *ic)
 			linebuf = NULL;
 		} else if (token.token == '*') {
 			/* we got an untagged response, let the engine handle this */
-			if (camel_imap4_engine_handle_untagged_1 (engine, &token, &ic->ex) == -1)
+			if (camel_lite_imap4_engine_handle_untagged_1 (engine, &token, &ic->ex) == -1)
 				goto exception;
 		} else if (token.token == CAMEL_IMAP4_TOKEN_ATOM && !strcmp (token.v.atom, ic->tag)) {
 			/* we got "<tag> OK/NO/BAD" */
 			d(fprintf (stderr, "got %s response\n", token.v.atom));
 
-			if (camel_imap4_engine_next_token (engine, &token, &ic->ex) == -1)
+			if (camel_lite_imap4_engine_next_token (engine, &token, &ic->ex) == -1)
 				goto exception;
 
 			if (token.token == CAMEL_IMAP4_TOKEN_ATOM) {
@@ -619,21 +619,21 @@ camel_imap4_command_step (CamelIMAP4Command *ic)
 					goto unexpected;
 				}
 
-				if (camel_imap4_engine_next_token (engine, &token, &ic->ex) == -1)
+				if (camel_lite_imap4_engine_next_token (engine, &token, &ic->ex) == -1)
 					goto exception;
 
 				if (token.token == '[') {
 					/* we have a response code */
-					camel_imap4_stream_unget_token (engine->istream, &token);
-					if (camel_imap4_engine_parse_resp_code (engine, &ic->ex) == -1)
+					camel_lite_imap4_stream_unget_token (engine->istream, &token);
+					if (camel_lite_imap4_engine_parse_resp_code (engine, &ic->ex) == -1)
 						goto exception;
 				} else if (token.token != '\n') {
 					/* just gobble up the rest of the line */
-					if (camel_imap4_engine_line (engine, NULL, NULL, &ic->ex) == -1)
+					if (camel_lite_imap4_engine_line (engine, NULL, NULL, &ic->ex) == -1)
 						goto exception;
 				}
 			} else {
-				if (camel_debug ("imap4:command")) {
+				if (camel_lite_debug ("imap4:command")) {
 					fprintf (stderr, "expected anything but this: ");
 					unexpected_token (&token);
 					fprintf (stderr, "\n");
@@ -644,7 +644,7 @@ camel_imap4_command_step (CamelIMAP4Command *ic)
 
 			break;
 		} else {
-			if (camel_debug ("imap4:command")) {
+			if (camel_lite_debug ("imap4:command")) {
 				fprintf (stderr, "wtf is this: ");
 				unexpected_token (&token);
 				fprintf (stderr, "\n");
@@ -653,10 +653,10 @@ camel_imap4_command_step (CamelIMAP4Command *ic)
 		unexpected:
 
 			/* no fucking clue what we got... */
-			if (camel_imap4_engine_line (engine, &linebuf, &len, &ic->ex) == -1)
+			if (camel_lite_imap4_engine_line (engine, &linebuf, &len, &ic->ex) == -1)
 				goto exception;
 
-			camel_exception_setv (&ic->ex, CAMEL_EXCEPTION_SYSTEM,
+			camel_lite_exception_setv (&ic->ex, CAMEL_EXCEPTION_SYSTEM,
 					      _("Unexpected response from IMAP4 server %s: %s"),
 					      engine->url->host, linebuf);
 
@@ -687,12 +687,12 @@ camel_imap4_command_step (CamelIMAP4Command *ic)
 
 
 void
-camel_imap4_command_reset (CamelIMAP4Command *ic)
+camel_lite_imap4_command_reset (CamelIMAP4Command *ic)
 {
 	int i;
 
 	for (i = 0; i < ic->resp_codes->len; i++)
-		camel_imap4_resp_code_free (ic->resp_codes->pdata[i]);
+		camel_lite_imap4_resp_code_free (ic->resp_codes->pdata[i]);
 	g_ptr_array_set_size (ic->resp_codes, 0);
 
 	ic->status = CAMEL_IMAP4_COMMAND_QUEUED;
@@ -701,5 +701,5 @@ camel_imap4_command_reset (CamelIMAP4Command *ic)
 	g_free (ic->tag);
 	ic->tag = NULL;
 
-	camel_exception_clear (&ic->ex);
+	camel_lite_exception_clear (&ic->ex);
 }

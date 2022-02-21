@@ -55,12 +55,12 @@ struct _CamelPartitionTablePrivate {
 
 
 static void
-camel_partition_table_class_init(CamelPartitionTableClass *klass)
+camel_lite_partition_table_class_init(CamelPartitionTableClass *klass)
 {
 }
 
 static void
-camel_partition_table_init(CamelPartitionTable *cpi)
+camel_lite_partition_table_init(CamelPartitionTable *cpi)
 {
 	struct _CamelPartitionTablePrivate *p;
 
@@ -71,7 +71,7 @@ camel_partition_table_init(CamelPartitionTable *cpi)
 }
 
 static void
-camel_partition_table_finalise(CamelPartitionTable *cpi)
+camel_lite_partition_table_finalise(CamelPartitionTable *cpi)
 {
 	CamelBlock *bl;
 	struct _CamelPartitionTablePrivate *p;
@@ -80,12 +80,12 @@ camel_partition_table_finalise(CamelPartitionTable *cpi)
 
 	if (cpi->blocks) {
 		while ((bl = (CamelBlock *)e_dlist_remhead(&cpi->partition))) {
-			camel_block_file_sync_block(cpi->blocks, bl);
-			camel_block_file_unref_block(cpi->blocks, bl);
+			camel_lite_block_file_sync_block(cpi->blocks, bl);
+			camel_lite_block_file_unref_block(cpi->blocks, bl);
 		}
-		camel_block_file_sync(cpi->blocks);
+		camel_lite_block_file_sync(cpi->blocks);
 
-		camel_object_unref((CamelObject *)cpi->blocks);
+		camel_lite_object_unref((CamelObject *)cpi->blocks);
 	}
 
 	pthread_mutex_destroy(&p->lock);
@@ -95,18 +95,18 @@ camel_partition_table_finalise(CamelPartitionTable *cpi)
 }
 
 CamelType
-camel_partition_table_get_type(void)
+camel_lite_partition_table_get_type(void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register(camel_object_get_type(), "CamelPartitionTable",
+		type = camel_lite_type_register(camel_lite_object_get_type(), "CamelLitePartitionTable",
 					   sizeof (CamelPartitionTable),
 					   sizeof (CamelPartitionTableClass),
-					   (CamelObjectClassInitFunc) camel_partition_table_class_init,
+					   (CamelObjectClassInitFunc) camel_lite_partition_table_class_init,
 					   NULL,
-					   (CamelObjectInitFunc) camel_partition_table_init,
-					   (CamelObjectFinalizeFunc) camel_partition_table_finalise);
+					   (CamelObjectInitFunc) camel_lite_partition_table_init,
+					   (CamelObjectFinalizeFunc) camel_lite_partition_table_finalise);
 	}
 
 	return type;
@@ -130,9 +130,9 @@ lookup word, if nameid is deleted, mark it in wordlist as unused and mark for wr
 /* ********************************************************************** */
 
 /* This simple hash seems to work quite well */
-static camel_hash_t hash_key(const char *key)
+static camel_lite_hash_t hash_key(const char *key)
 {
-	camel_hash_t hash = 0xABADF00D;
+	camel_lite_hash_t hash = 0xABADF00D;
 
 	while (*key) {
 		hash = hash * (*key) ^ (*key);
@@ -143,7 +143,7 @@ static camel_hash_t hash_key(const char *key)
 }
 
 /* Call with lock held */
-static CamelBlock *find_partition(CamelPartitionTable *cpi, camel_hash_t id, int *indexp)
+static CamelBlock *find_partition(CamelPartitionTable *cpi, camel_lite_hash_t id, int *indexp)
 {
 	int index, jump;
 	CamelBlock *bl;
@@ -190,21 +190,21 @@ static CamelBlock *find_partition(CamelPartitionTable *cpi, camel_hash_t id, int
 	return NULL;
 }
 
-CamelPartitionTable *camel_partition_table_new(struct _CamelBlockFile *bs, camel_block_t root)
+CamelPartitionTable *camel_lite_partition_table_new(struct _CamelBlockFile *bs, camel_lite_block_t root)
 {
 	CamelPartitionTable *cpi;
 	CamelPartitionMapBlock *ptb;
 	CamelPartitionKeyBlock *kb;
 	CamelBlock *block, *pblock;
 
-	cpi = (CamelPartitionTable *)camel_object_new(camel_partition_table_get_type());
+	cpi = (CamelPartitionTable *)camel_lite_object_new(camel_lite_partition_table_get_type());
 	cpi->rootid = root;
 	cpi->blocks = bs;
-	camel_object_ref((CamelObject *)bs);
+	camel_lite_object_ref((CamelObject *)bs);
 
 	/* read the partition table into memory */
 	do {
-		block = camel_block_file_get_block(bs, root);
+		block = camel_lite_block_file_get_block(bs, root);
 		if (block == NULL)
 			goto fail;
 
@@ -214,9 +214,9 @@ CamelPartitionTable *camel_partition_table_new(struct _CamelBlockFile *bs, camel
 
 		/* if we have no data, prime initial block */
 		if (ptb->used == 0 && e_dlist_empty(&cpi->partition) && ptb->next == 0) {
-			pblock = camel_block_file_new_block(bs);
+			pblock = camel_lite_block_file_new_block(bs);
 			if (pblock == NULL) {
-				camel_block_file_unref_block(bs, block);
+				camel_lite_block_file_unref_block(bs, block);
 				goto fail;
 			}
 			kb = (CamelPartitionKeyBlock *)&pblock->data;
@@ -224,29 +224,29 @@ CamelPartitionTable *camel_partition_table_new(struct _CamelBlockFile *bs, camel
 			ptb->used = 1;
 			ptb->partition[0].hashid = 0xffffffff;
 			ptb->partition[0].blockid = pblock->id;
-			camel_block_file_touch_block(bs, pblock);
-			camel_block_file_unref_block(bs, pblock);
-			camel_block_file_touch_block(bs, block);
+			camel_lite_block_file_touch_block(bs, pblock);
+			camel_lite_block_file_unref_block(bs, pblock);
+			camel_lite_block_file_touch_block(bs, block);
 #ifdef SYNC_UPDATES
-			camel_block_file_sync_block(bs, block);
+			camel_lite_block_file_sync_block(bs, block);
 #endif
 		}
 
 		root = ptb->next;
-		camel_block_file_detach_block(bs, block);
+		camel_lite_block_file_detach_block(bs, block);
 		e_dlist_addtail(&cpi->partition, (EDListNode *)block);
 	} while (root);
 
 	return cpi;
 
 fail:
-	camel_object_unref((CamelObject *)cpi);
+	camel_lite_object_unref((CamelObject *)cpi);
 	return NULL;
 }
 
 /* sync our blocks, the caller must still sync the blockfile itself */
 int
-camel_partition_table_sync(CamelPartitionTable *cpi)
+camel_lite_partition_table_sync(CamelPartitionTable *cpi)
 {
 	CamelBlock *bl, *bn;
 	int ret = 0;
@@ -257,7 +257,7 @@ camel_partition_table_sync(CamelPartitionTable *cpi)
 		bl = (CamelBlock *)cpi->partition.head;
 		bn = bl->next;
 		while (bn) {
-			ret = camel_block_file_sync_block(cpi->blocks, bl);
+			ret = camel_lite_block_file_sync_block(cpi->blocks, bl);
 			if (ret == -1)
 				goto fail;
 			bl = bn;
@@ -270,13 +270,13 @@ fail:
 	return ret;
 }
 
-camel_key_t camel_partition_table_lookup(CamelPartitionTable *cpi, const char *key)
+camel_lite_key_t camel_lite_partition_table_lookup(CamelPartitionTable *cpi, const char *key)
 {
 	CamelPartitionKeyBlock *pkb;
 	CamelPartitionMapBlock *ptb;
 	CamelBlock *block, *ptblock;
-	camel_hash_t hashid;
-	camel_key_t keyid = 0;
+	camel_lite_hash_t hashid;
+	camel_lite_key_t keyid = 0;
 	int index, i;
 
 	hashid = hash_key(key);
@@ -289,7 +289,7 @@ camel_key_t camel_partition_table_lookup(CamelPartitionTable *cpi, const char *k
 		return 0;
 	}
 	ptb = (CamelPartitionMapBlock *)&ptblock->data;
-	block = camel_block_file_get_block(cpi->blocks, ptb->partition[index].blockid);
+	block = camel_lite_block_file_get_block(cpi->blocks, ptb->partition[index].blockid);
 	if (block == NULL) {
 		CAMEL_PARTITION_TABLE_UNLOCK(cpi, lock);
 		return 0;
@@ -309,17 +309,17 @@ camel_key_t camel_partition_table_lookup(CamelPartitionTable *cpi, const char *k
 
 	CAMEL_PARTITION_TABLE_UNLOCK(cpi, lock);
 
-	camel_block_file_unref_block(cpi->blocks, block);
+	camel_lite_block_file_unref_block(cpi->blocks, block);
 
 	return keyid;
 }
 
-void camel_partition_table_remove(CamelPartitionTable *cpi, const char *key)
+void camel_lite_partition_table_remove(CamelPartitionTable *cpi, const char *key)
 {
 	CamelPartitionKeyBlock *pkb;
 	CamelPartitionMapBlock *ptb;
 	CamelBlock *block, *ptblock;
-	camel_hash_t hashid;
+	camel_lite_hash_t hashid;
 	int index, i;
 
 	hashid = hash_key(key);
@@ -332,7 +332,7 @@ void camel_partition_table_remove(CamelPartitionTable *cpi, const char *key)
 		return;
 	}
 	ptb = (CamelPartitionMapBlock *)&ptblock->data;
-	block = camel_block_file_get_block(cpi->blocks, ptb->partition[index].blockid);
+	block = camel_lite_block_file_get_block(cpi->blocks, ptb->partition[index].blockid);
 	if (block == NULL) {
 		CAMEL_PARTITION_TABLE_UNLOCK(cpi, lock);
 		return;
@@ -351,14 +351,14 @@ void camel_partition_table_remove(CamelPartitionTable *cpi, const char *key)
 				pkb->keys[i].keyid = pkb->keys[i+1].keyid;
 				pkb->keys[i].hashid = pkb->keys[i+1].hashid;
 			}
-			camel_block_file_touch_block(cpi->blocks, block);
+			camel_lite_block_file_touch_block(cpi->blocks, block);
 			break;
 		}
 	}
 
 	CAMEL_PARTITION_TABLE_UNLOCK(cpi, lock);
 
-	camel_block_file_unref_block(cpi->blocks, block);
+	camel_lite_block_file_unref_block(cpi->blocks, block);
 }
 
 static int
@@ -376,9 +376,9 @@ keys_cmp(const void *ap, const void *bp)
 }
 
 int
-camel_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_key_t keyid)
+camel_lite_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_lite_key_t keyid)
 {
-	camel_hash_t hashid, partid;
+	camel_lite_hash_t hashid, partid;
 	int index, newindex = 0; /* initialisation of this and pkb/nkb is just to silence compiler */
 	CamelPartitionMapBlock *ptb, *ptn;
 	CamelPartitionKeyBlock *kb, *newkb, *nkb = NULL, *pkb = NULL;
@@ -398,7 +398,7 @@ camel_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_key_t
 		return -1;
 	}
 	ptb = (CamelPartitionMapBlock *)&ptblock->data;
-	block = camel_block_file_get_block(cpi->blocks, ptb->partition[index].blockid);
+	block = camel_lite_block_file_get_block(cpi->blocks, ptb->partition[index].blockid);
 	if (block == NULL) {
 		CAMEL_PARTITION_TABLE_UNLOCK(cpi, lock);
 		return -1;
@@ -420,16 +420,16 @@ camel_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_key_t
 		/* TODO: Should look at next/previous partition table block as well ... */
 
 		if (index > 0) {
-			pblock = camel_block_file_get_block(cpi->blocks, ptb->partition[index-1].blockid);
+			pblock = camel_lite_block_file_get_block(cpi->blocks, ptb->partition[index-1].blockid);
 			if (pblock == NULL)
 				goto fail;
 			pkb = (CamelPartitionKeyBlock *)&pblock->data;
 		}
 		if (index < (ptb->used-1)) {
-			nblock = camel_block_file_get_block(cpi->blocks, ptb->partition[index+1].blockid);
+			nblock = camel_lite_block_file_get_block(cpi->blocks, ptb->partition[index+1].blockid);
 			if (nblock == NULL) {
 				if (pblock)
-					camel_block_file_unref_block(cpi->blocks, pblock);
+					camel_lite_block_file_unref_block(cpi->blocks, pblock);
 				goto fail;
 			}
 			nkb = (CamelPartitionKeyBlock *)&nblock->data;
@@ -460,15 +460,15 @@ camel_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_key_t
 			/* See if we have room in the partition table for this block or need to split that too */
 			if (ptb->used >= sizeof(ptb->partition)/sizeof(ptb->partition[0])) {
 				/* TODO: Could check next block to see if it'll fit there first */
-				ptnblock = camel_block_file_new_block(cpi->blocks);
+				ptnblock = camel_lite_block_file_new_block(cpi->blocks);
 				if (ptnblock == NULL) {
 					if (nblock)
-						camel_block_file_unref_block(cpi->blocks, nblock);
+						camel_lite_block_file_unref_block(cpi->blocks, nblock);
 					if (pblock)
-						camel_block_file_unref_block(cpi->blocks, pblock);
+						camel_lite_block_file_unref_block(cpi->blocks, pblock);
 					goto fail;
 				}
-				camel_block_file_detach_block(cpi->blocks, ptnblock);
+				camel_lite_block_file_detach_block(cpi->blocks, ptnblock);
 
 				/* split block and link on-disk, always sorted */
 				ptn = (CamelPartitionMapBlock *)&ptnblock->data;
@@ -486,14 +486,14 @@ camel_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_key_t
 				ptnblock->prev = ptblock;
 
 				/* write in right order to ensure structure */
-				camel_block_file_touch_block(cpi->blocks, ptnblock);
+				camel_lite_block_file_touch_block(cpi->blocks, ptnblock);
 #ifdef SYNC_UPDATES
-				camel_block_file_sync_block(cpi->blocks, ptnblock);
+				camel_lite_block_file_sync_block(cpi->blocks, ptnblock);
 #endif
 				if (index > len) {
-					camel_block_file_touch_block(cpi->blocks, ptblock);
+					camel_lite_block_file_touch_block(cpi->blocks, ptblock);
 #ifdef SYNC_UPDATES
-					camel_block_file_sync_block(cpi->blocks, ptblock);
+					camel_lite_block_file_sync_block(cpi->blocks, ptblock);
 #endif
 					index -= len;
 					ptb = ptn;
@@ -502,12 +502,12 @@ camel_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_key_t
 			}
 
 			/* try get newblock before modifying existing */
-			newblock = camel_block_file_new_block(cpi->blocks);
+			newblock = camel_lite_block_file_new_block(cpi->blocks);
 			if (newblock == NULL) {
 				if (nblock)
-					camel_block_file_unref_block(cpi->blocks, nblock);
+					camel_lite_block_file_unref_block(cpi->blocks, nblock);
 				if (pblock)
-					camel_block_file_unref_block(cpi->blocks, pblock);
+					camel_lite_block_file_unref_block(cpi->blocks, pblock);
 				goto fail;
 			}
 
@@ -525,18 +525,18 @@ camel_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_key_t
 			ptb->partition[newindex].blockid = newblock->id;
 
 			if (nblock)
-				camel_block_file_unref_block(cpi->blocks, nblock);
+				camel_lite_block_file_unref_block(cpi->blocks, nblock);
 			if (pblock)
-				camel_block_file_unref_block(cpi->blocks, pblock);
+				camel_lite_block_file_unref_block(cpi->blocks, pblock);
 		} else {
 			newkb = (CamelPartitionKeyBlock *)&newblock->data;
 
 			if (newblock == pblock) {
 				if (nblock)
-					camel_block_file_unref_block(cpi->blocks, nblock);
+					camel_lite_block_file_unref_block(cpi->blocks, nblock);
 			} else {
 				if (pblock)
-					camel_block_file_unref_block(cpi->blocks, pblock);
+					camel_lite_block_file_unref_block(cpi->blocks, pblock);
 			}
 		}
 
@@ -568,16 +568,16 @@ camel_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_key_t
 			ptb->partition[newindex].hashid = partid;
 		}
 
-		camel_block_file_touch_block(cpi->blocks, ptblock);
+		camel_lite_block_file_touch_block(cpi->blocks, ptblock);
 #ifdef SYNC_UPDATES
-		camel_block_file_sync_block(cpi->blocks, ptblock);
+		camel_lite_block_file_sync_block(cpi->blocks, ptblock);
 #endif
-		camel_block_file_touch_block(cpi->blocks, newblock);
-		camel_block_file_unref_block(cpi->blocks, newblock);
+		camel_lite_block_file_touch_block(cpi->blocks, newblock);
+		camel_lite_block_file_unref_block(cpi->blocks, newblock);
 	}
 
-	camel_block_file_touch_block(cpi->blocks, block);
-	camel_block_file_unref_block(cpi->blocks, block);
+	camel_lite_block_file_touch_block(cpi->blocks, block);
+	camel_lite_block_file_unref_block(cpi->blocks, block);
 
 	ret = 0;
 fail:
@@ -598,12 +598,12 @@ struct _CamelKeyTablePrivate {
 
 
 static void
-camel_key_table_class_init(CamelKeyTableClass *klass)
+camel_lite_key_table_class_init(CamelKeyTableClass *klass)
 {
 }
 
 static void
-camel_key_table_init(CamelKeyTable *ki)
+camel_lite_key_table_init(CamelKeyTable *ki)
 {
 	struct _CamelKeyTablePrivate *p;
 
@@ -612,7 +612,7 @@ camel_key_table_init(CamelKeyTable *ki)
 }
 
 static void
-camel_key_table_finalise(CamelKeyTable *ki)
+camel_lite_key_table_finalise(CamelKeyTable *ki)
 {
 	struct _CamelKeyTablePrivate *p;
 
@@ -620,11 +620,11 @@ camel_key_table_finalise(CamelKeyTable *ki)
 
 	if (ki->blocks) {
 		if (ki->root_block) {
-			camel_block_file_sync_block(ki->blocks, ki->root_block);
-			camel_block_file_unref_block(ki->blocks, ki->root_block);
+			camel_lite_block_file_sync_block(ki->blocks, ki->root_block);
+			camel_lite_block_file_unref_block(ki->blocks, ki->root_block);
 		}
-		camel_block_file_sync(ki->blocks);
-		camel_object_unref((CamelObject *)ki->blocks);
+		camel_lite_block_file_sync(ki->blocks);
+		camel_lite_object_unref((CamelObject *)ki->blocks);
 	}
 
 	pthread_mutex_destroy(&p->lock);
@@ -634,18 +634,18 @@ camel_key_table_finalise(CamelKeyTable *ki)
 }
 
 CamelType
-camel_key_table_get_type(void)
+camel_lite_key_table_get_type(void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register(camel_object_get_type(), "CamelKeyTable",
+		type = camel_lite_type_register(camel_lite_object_get_type(), "CamelLiteKeyTable",
 					   sizeof (CamelKeyTable),
 					   sizeof (CamelKeyTableClass),
-					   (CamelObjectClassInitFunc) camel_key_table_class_init,
+					   (CamelObjectClassInitFunc) camel_lite_key_table_class_init,
 					   NULL,
-					   (CamelObjectInitFunc) camel_key_table_init,
-					   (CamelObjectFinalizeFunc) camel_key_table_finalise);
+					   (CamelObjectInitFunc) camel_lite_key_table_init,
+					   (CamelObjectFinalizeFunc) camel_lite_key_table_finalise);
 	}
 
 	return type;
@@ -653,22 +653,22 @@ camel_key_table_get_type(void)
 
 
 CamelKeyTable *
-camel_key_table_new(CamelBlockFile *bs, camel_block_t root)
+camel_lite_key_table_new(CamelBlockFile *bs, camel_lite_block_t root)
 {
 	CamelKeyTable *ki;
 
-	ki = (CamelKeyTable *)camel_object_new(camel_key_table_get_type());
+	ki = (CamelKeyTable *)camel_lite_object_new(camel_lite_key_table_get_type());
 
 	ki->blocks = bs;
-	camel_object_ref((CamelObject *)bs);
+	camel_lite_object_ref((CamelObject *)bs);
 	ki->rootid = root;
 
-	ki->root_block = camel_block_file_get_block(bs, ki->rootid);
+	ki->root_block = camel_lite_block_file_get_block(bs, ki->rootid);
 	if (ki->root_block == NULL) {
-		camel_object_unref((CamelObject *)ki);
+		camel_lite_object_unref((CamelObject *)ki);
 		ki = NULL;
 	} else {
-		camel_block_file_detach_block(bs, ki->root_block);
+		camel_lite_block_file_detach_block(bs, ki->root_block);
 		ki->root = (CamelKeyRootBlock *)&ki->root_block->data;
 
 		k(printf("Opening key index\n"));
@@ -679,23 +679,23 @@ camel_key_table_new(CamelBlockFile *bs, camel_block_t root)
 }
 
 int
-camel_key_table_sync(CamelKeyTable *ki)
+camel_lite_key_table_sync(CamelKeyTable *ki)
 {
 #ifdef SYNC_UPDATES
 	return 0;
 #else
-	return camel_block_file_sync_block(ki->blocks, ki->root_block);
+	return camel_lite_block_file_sync_block(ki->blocks, ki->root_block);
 #endif
 }
 
-camel_key_t
-camel_key_table_add(CamelKeyTable *ki, const char *key, camel_block_t data, unsigned int flags)
+camel_lite_key_t
+camel_lite_key_table_add(CamelKeyTable *ki, const char *key, camel_lite_block_t data, unsigned int flags)
 {
 	CamelBlock *last, *next;
 	CamelKeyBlock *kblast, *kbnext;
 	int len, left;
 	unsigned int offset;
-	camel_key_t keyid = 0;
+	camel_lite_key_t keyid = 0;
 
 	/* Maximum key size = 128 chars */
 	len = strlen(key);
@@ -705,14 +705,14 @@ camel_key_table_add(CamelKeyTable *ki, const char *key, camel_block_t data, unsi
 	CAMEL_KEY_TABLE_LOCK(ki, lock);
 
 	if (ki->root->last == 0) {
-		last = camel_block_file_new_block(ki->blocks);
+		last = camel_lite_block_file_new_block(ki->blocks);
 		if (last == NULL)
 			goto fail;
 		ki->root->last = ki->root->first = last->id;
-		camel_block_file_touch_block(ki->blocks, ki->root_block);
+		camel_lite_block_file_touch_block(ki->blocks, ki->root_block);
 		k(printf("adding first block, first = %u\n", ki->root->first));
 	} else {
-		last = camel_block_file_get_block(ki->blocks, ki->root->last);
+		last = camel_lite_block_file_get_block(ki->blocks, ki->root->last);
 		if (last == NULL)
 			goto fail;
 	}
@@ -730,18 +730,18 @@ camel_key_table_add(CamelKeyTable *ki, const char *key, camel_block_t data, unsi
 			 sizeof(kblast->u.keydata) - kblast->u.keys[kblast->used-1].offset,
 			 left, len));
 		if (left < len) {
-			next = camel_block_file_new_block(ki->blocks);
+			next = camel_lite_block_file_new_block(ki->blocks);
 			if (next == NULL) {
-				camel_block_file_unref_block(ki->blocks, last);
+				camel_lite_block_file_unref_block(ki->blocks, last);
 				goto fail;
 			}
 			kbnext = (CamelKeyBlock *)&next->data;
 			kblast->next = next->id;
 			ki->root->last = next->id;
 			d(printf("adding new block, first = %u, last = %u\n", ki->root->first, ki->root->last));
-			camel_block_file_touch_block(ki->blocks, ki->root_block);
-			camel_block_file_touch_block(ki->blocks, last);
-			camel_block_file_unref_block(ki->blocks, last);
+			camel_lite_block_file_touch_block(ki->blocks, ki->root_block);
+			camel_lite_block_file_touch_block(ki->blocks, last);
+			camel_lite_block_file_unref_block(ki->blocks, last);
 			kblast = kbnext;
 			last = next;
 		}
@@ -772,11 +772,11 @@ camel_key_table_add(CamelKeyTable *ki, const char *key, camel_block_t data, unsi
 #endif
 
 
-	camel_block_file_touch_block(ki->blocks, last);
-	camel_block_file_unref_block(ki->blocks, last);
+	camel_lite_block_file_touch_block(ki->blocks, last);
+	camel_lite_block_file_unref_block(ki->blocks, last);
 
 #ifdef SYNC_UPDATES
-	camel_block_file_sync_block(ki->blocks, ki->root_block);
+	camel_lite_block_file_sync_block(ki->blocks, ki->root_block);
 #endif
 fail:
 	CAMEL_KEY_TABLE_UNLOCK(ki, lock);
@@ -785,10 +785,10 @@ fail:
 }
 
 void
-camel_key_table_set_data(CamelKeyTable *ki, camel_key_t keyid, camel_block_t data)
+camel_lite_key_table_set_data(CamelKeyTable *ki, camel_lite_key_t keyid, camel_lite_block_t data)
 {
 	CamelBlock *bl;
-	camel_block_t blockid;
+	camel_lite_block_t blockid;
 	int index;
 	CamelKeyBlock *kb;
 
@@ -798,7 +798,7 @@ camel_key_table_set_data(CamelKeyTable *ki, camel_key_t keyid, camel_block_t dat
 	blockid =  keyid & (~(CAMEL_BLOCK_SIZE-1));
 	index = keyid & (CAMEL_BLOCK_SIZE-1);
 
-	bl = camel_block_file_get_block(ki->blocks, blockid);
+	bl = camel_lite_block_file_get_block(ki->blocks, blockid);
 	if (bl == NULL)
 		return;
 	kb = (CamelKeyBlock *)&bl->data;
@@ -807,19 +807,19 @@ camel_key_table_set_data(CamelKeyTable *ki, camel_key_t keyid, camel_block_t dat
 
 	if (kb->u.keys[index].data != data) {
 		kb->u.keys[index].data = data;
-		camel_block_file_touch_block(ki->blocks, bl);
+		camel_lite_block_file_touch_block(ki->blocks, bl);
 	}
 
 	CAMEL_KEY_TABLE_UNLOCK(ki, lock);
 
-	camel_block_file_unref_block(ki->blocks, bl);
+	camel_lite_block_file_unref_block(ki->blocks, bl);
 }
 
 void
-camel_key_table_set_flags(CamelKeyTable *ki, camel_key_t keyid, unsigned int flags, unsigned int set)
+camel_lite_key_table_set_flags(CamelKeyTable *ki, camel_lite_key_t keyid, unsigned int flags, unsigned int set)
 {
 	CamelBlock *bl;
-	camel_block_t blockid;
+	camel_lite_block_t blockid;
 	int index;
 	CamelKeyBlock *kb;
 	unsigned int old;
@@ -830,7 +830,7 @@ camel_key_table_set_flags(CamelKeyTable *ki, camel_key_t keyid, unsigned int fla
 	blockid =  keyid & (~(CAMEL_BLOCK_SIZE-1));
 	index = keyid & (CAMEL_BLOCK_SIZE-1);
 
-	bl = camel_block_file_get_block(ki->blocks, blockid);
+	bl = camel_lite_block_file_get_block(ki->blocks, blockid);
 	if (bl == NULL)
 		return;
 	kb = (CamelKeyBlock *)&bl->data;
@@ -850,19 +850,19 @@ camel_key_table_set_flags(CamelKeyTable *ki, camel_key_t keyid, unsigned int fla
 	old = kb->u.keys[index].flags;
 	if ((old & set) != (flags & set)) {
 		kb->u.keys[index].flags = (old & (~set)) | (flags & set);
-		camel_block_file_touch_block(ki->blocks, bl);
+		camel_lite_block_file_touch_block(ki->blocks, bl);
 	}
 
 	CAMEL_KEY_TABLE_UNLOCK(ki, lock);
 
-	camel_block_file_unref_block(ki->blocks, bl);
+	camel_lite_block_file_unref_block(ki->blocks, bl);
 }
 
-camel_block_t
-camel_key_table_lookup(CamelKeyTable *ki, camel_key_t keyid, char **keyp, unsigned int *flags)
+camel_lite_block_t
+camel_lite_key_table_lookup(CamelKeyTable *ki, camel_lite_key_t keyid, char **keyp, unsigned int *flags)
 {
 	CamelBlock *bl;
-	camel_block_t blockid;
+	camel_lite_block_t blockid;
 	int index, len, off;
 	char *key;
 	CamelKeyBlock *kb;
@@ -877,7 +877,7 @@ camel_key_table_lookup(CamelKeyTable *ki, camel_key_t keyid, char **keyp, unsign
 	blockid =  keyid & (~(CAMEL_BLOCK_SIZE-1));
 	index = keyid & (CAMEL_BLOCK_SIZE-1);
 
-	bl = camel_block_file_get_block(ki->blocks, blockid);
+	bl = camel_lite_block_file_get_block(ki->blocks, blockid);
 	if (bl == NULL)
 		return 0;
 
@@ -912,18 +912,18 @@ camel_key_table_lookup(CamelKeyTable *ki, camel_key_t keyid, char **keyp, unsign
 
 	CAMEL_KEY_TABLE_UNLOCK(ki, lock);
 
-	camel_block_file_unref_block(ki->blocks, bl);
+	camel_lite_block_file_unref_block(ki->blocks, bl);
 
 	return blockid;
 }
 
 /* iterate through all keys */
-camel_key_t
-camel_key_table_next(CamelKeyTable *ki, camel_key_t next, char **keyp, unsigned int *flagsp, camel_block_t *datap)
+camel_lite_key_t
+camel_lite_key_table_next(CamelKeyTable *ki, camel_lite_key_t next, char **keyp, unsigned int *flagsp, camel_lite_block_t *datap)
 {
 	CamelBlock *bl;
 	CamelKeyBlock *kb;
-	camel_block_t blockid;
+	camel_lite_block_t blockid;
 	int index;
 
 	if (keyp)
@@ -948,7 +948,7 @@ camel_key_table_next(CamelKeyTable *ki, camel_key_t next, char **keyp, unsigned 
 		blockid =  next & (~(CAMEL_BLOCK_SIZE-1));
 		index = next & (CAMEL_BLOCK_SIZE-1);
 
-		bl = camel_block_file_get_block(ki->blocks, blockid);
+		bl = camel_lite_block_file_get_block(ki->blocks, blockid);
 		if (bl == NULL) {
 			CAMEL_KEY_TABLE_UNLOCK(ki, lock);
 			return 0;
@@ -960,7 +960,7 @@ camel_key_table_next(CamelKeyTable *ki, camel_key_t next, char **keyp, unsigned 
 		if (index >= kb->used) {
 			/* FIXME: check for loops */
 			next = kb->next;
-			camel_block_file_unref_block(ki->blocks, bl);
+			camel_lite_block_file_unref_block(ki->blocks, bl);
 			bl = NULL;
 		}
 	} while (bl == NULL);
@@ -974,7 +974,7 @@ camel_key_table_next(CamelKeyTable *ki, camel_key_t next, char **keyp, unsigned 
 		 /*|| kb->u.keys[index-1].offset < kb->u.keydata - (char *)&kb->u.keys[kb->used]))) {*/
 		 || kb->u.keys[index-1].offset < sizeof(kb->u.keys[0]) * kb->used)))) {
 		g_warning("Block %u invalid scanning keys", bl->id);
-		camel_block_file_unref_block(ki->blocks, bl);
+		camel_lite_block_file_unref_block(ki->blocks, bl);
 		CAMEL_KEY_TABLE_UNLOCK(ki, lock);
 		return 0;
 	}
@@ -1000,7 +1000,7 @@ camel_key_table_next(CamelKeyTable *ki, camel_key_t next, char **keyp, unsigned 
 
 	CAMEL_KEY_TABLE_UNLOCK(ki, lock);
 
-	camel_block_file_unref_block(ki->blocks, bl);
+	camel_lite_block_file_unref_block(ki->blocks, bl);
 
 	return next;
 }

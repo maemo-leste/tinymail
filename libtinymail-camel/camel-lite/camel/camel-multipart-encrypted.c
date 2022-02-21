@@ -39,9 +39,9 @@
 #include "camel-stream-fs.h"
 #include "camel-stream-mem.h"
 
-static void camel_multipart_encrypted_class_init (CamelMultipartEncryptedClass *klass);
-static void camel_multipart_encrypted_init (gpointer object, gpointer klass);
-static void camel_multipart_encrypted_finalize (CamelObject *object);
+static void camel_lite_multipart_encrypted_class_init (CamelMultipartEncryptedClass *klass);
+static void camel_lite_multipart_encrypted_init (gpointer object, gpointer klass);
+static void camel_lite_multipart_encrypted_finalize (CamelObject *object);
 
 static void set_mime_type_field (CamelDataWrapper *data_wrapper, CamelContentType *mime_type);
 
@@ -50,19 +50,19 @@ static CamelMultipartClass *parent_class = NULL;
 
 
 CamelType
-camel_multipart_encrypted_get_type (void)
+camel_lite_multipart_encrypted_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_multipart_get_type (),
-					    "CamelMultipartEncrypted",
+		type = camel_lite_type_register (camel_lite_multipart_get_type (),
+					    "CamelLiteMultipartEncrypted",
 					    sizeof (CamelMultipartEncrypted),
 					    sizeof (CamelMultipartEncryptedClass),
-					    (CamelObjectClassInitFunc) camel_multipart_encrypted_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_multipart_encrypted_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_multipart_encrypted_init,
-					    (CamelObjectFinalizeFunc) camel_multipart_encrypted_finalize);
+					    (CamelObjectInitFunc) camel_lite_multipart_encrypted_init,
+					    (CamelObjectFinalizeFunc) camel_lite_multipart_encrypted_finalize);
 	}
 
 	return type;
@@ -70,35 +70,35 @@ camel_multipart_encrypted_get_type (void)
 
 
 static void
-camel_multipart_encrypted_class_init (CamelMultipartEncryptedClass *klass)
+camel_lite_multipart_encrypted_class_init (CamelMultipartEncryptedClass *klass)
 {
-	CamelDataWrapperClass *camel_data_wrapper_class = CAMEL_DATA_WRAPPER_CLASS (klass);
+	CamelDataWrapperClass *camel_lite_data_wrapper_class = CAMEL_DATA_WRAPPER_CLASS (klass);
 
-	parent_class = (CamelMultipartClass *) camel_multipart_get_type ();
+	parent_class = (CamelMultipartClass *) camel_lite_multipart_get_type ();
 
 	/* virtual method overload */
-	camel_data_wrapper_class->set_mime_type_field = set_mime_type_field;
+	camel_lite_data_wrapper_class->set_mime_type_field = set_mime_type_field;
 }
 
 static void
-camel_multipart_encrypted_init (gpointer object, gpointer klass)
+camel_lite_multipart_encrypted_init (gpointer object, gpointer klass)
 {
 	CamelMultipartEncrypted *multipart = (CamelMultipartEncrypted *) object;
 
-	camel_data_wrapper_set_mime_type (CAMEL_DATA_WRAPPER (multipart), "multipart/encrypted");
+	camel_lite_data_wrapper_set_mime_type (CAMEL_DATA_WRAPPER (multipart), "multipart/encrypted");
 
 	multipart->decrypted = NULL;
 }
 
 static void
-camel_multipart_encrypted_finalize (CamelObject *object)
+camel_lite_multipart_encrypted_finalize (CamelObject *object)
 {
 	CamelMultipartEncrypted *mpe = (CamelMultipartEncrypted *) object;
 
 	g_free (mpe->protocol);
 
 	if (mpe->decrypted)
-		camel_object_unref (mpe->decrypted);
+		camel_lite_object_unref (mpe->decrypted);
 }
 
 /* we snoop the mime type to get the protocol */
@@ -110,7 +110,7 @@ set_mime_type_field (CamelDataWrapper *data_wrapper, CamelContentType *mime_type
 	if (mime_type) {
 		const char *protocol;
 
-		protocol = camel_content_type_param (mime_type, "protocol");
+		protocol = camel_lite_content_type_param (mime_type, "protocol");
 		g_free (mpe->protocol);
 		mpe->protocol = g_strdup (protocol);
 	}
@@ -120,7 +120,7 @@ set_mime_type_field (CamelDataWrapper *data_wrapper, CamelContentType *mime_type
 
 
 /**
- * camel_multipart_encrypted_new:
+ * camel_lite_multipart_encrypted_new:
  *
  * Create a new #CamelMultipartEncrypted object.
  *
@@ -130,11 +130,11 @@ set_mime_type_field (CamelDataWrapper *data_wrapper, CamelContentType *mime_type
  * Returns a new #CamelMultipartEncrypted object
  **/
 CamelMultipartEncrypted *
-camel_multipart_encrypted_new (void)
+camel_lite_multipart_encrypted_new (void)
 {
 	CamelMultipartEncrypted *multipart;
 
-	multipart = (CamelMultipartEncrypted *) camel_object_new (CAMEL_MULTIPART_ENCRYPTED_TYPE);
+	multipart = (CamelMultipartEncrypted *) camel_lite_object_new (CAMEL_MULTIPART_ENCRYPTED_TYPE);
 
 	return multipart;
 }

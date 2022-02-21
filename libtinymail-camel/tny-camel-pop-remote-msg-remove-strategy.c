@@ -98,8 +98,8 @@ tny_camel_pop_remote_msg_remove_strategy_perform_remove_default (TnyMsgRemoveStr
 		/* camel-pop3-folder.c:455 + 490 is also interesting code! */
 		expunged_path = g_strdup_printf ("%s/%s.expunged", pop3_store->storage_path, uid);
 		cfolder = _tny_camel_folder_get_folder (TNY_CAMEL_FOLDER (folder));
-		camel_folder_delete_message (cfolder, uid);
-		camel_object_unref (CAMEL_OBJECT (cfolder));
+		camel_lite_folder_delete_message (cfolder, uid);
+		camel_lite_object_unref (CAMEL_OBJECT (cfolder));
 		file = fopen (expunged_path, "w");
 		g_free (expunged_path);
 		if (file != NULL)

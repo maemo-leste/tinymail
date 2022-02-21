@@ -18,6 +18,7 @@
  */
 
 #include <tny-camel-html-to-text-stream.h>
+#include "tny-stream-camel.h"
 #include "tny-camel-stream-priv.h"
 
 
@@ -43,13 +44,13 @@ tny_camel_html_to_text_stream_new (TnyStream *html_stream)
 
 	wrap_html_stream = tny_stream_camel_new (html_stream);
 
-	mime_filter = camel_mime_filter_html_new ();
+	mime_filter = camel_lite_mime_filter_html_new ();
 
-	priv->stream = camel_stream_filter_new_with_stream (wrap_html_stream);
-	camel_stream_filter_add (priv->stream, mime_filter);
+	priv->stream = camel_lite_stream_filter_new_with_stream (wrap_html_stream);
+	camel_lite_stream_filter_add (priv->stream, mime_filter);
 
-	camel_object_unref (mime_filter);
-	camel_object_unref (wrap_html_stream);
+	camel_lite_object_unref (mime_filter);
+	camel_lite_object_unref (wrap_html_stream);
 
 	return TNY_STREAM (self);
 }

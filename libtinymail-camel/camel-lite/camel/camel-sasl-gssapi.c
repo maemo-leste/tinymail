@@ -60,7 +60,7 @@ extern gss_OID gss_nt_service_name;
 #include "camel-net-utils.h"
 #include "camel-sasl-gssapi.h"
 
-CamelServiceAuthType camel_sasl_gssapi_authtype = {
+CamelServiceAuthType camel_lite_sasl_gssapi_authtype = {
 	N_("GSSAPI"),
 
 	N_("This option will connect to the server using "
@@ -97,18 +97,18 @@ static CamelSaslClass *parent_class = NULL;
 
 
 static void
-camel_sasl_gssapi_class_init (CamelSaslGssapiClass *klass)
+camel_lite_sasl_gssapi_class_init (CamelSaslGssapiClass *klass)
 {
-	CamelSaslClass *camel_sasl_class = CAMEL_SASL_CLASS (klass);
+	CamelSaslClass *camel_lite_sasl_class = CAMEL_SASL_CLASS (klass);
 
-	parent_class = CAMEL_SASL_CLASS (camel_type_get_global_classfuncs (camel_sasl_get_type ()));
+	parent_class = CAMEL_SASL_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_sasl_get_type ()));
 
 	/* virtual method overload */
-	camel_sasl_class->challenge = gssapi_challenge;
+	camel_lite_sasl_class->challenge = gssapi_challenge;
 }
 
 static void
-camel_sasl_gssapi_init (gpointer object, gpointer klass)
+camel_lite_sasl_gssapi_init (gpointer object, gpointer klass)
 {
 	CamelSaslGssapi *gssapi = CAMEL_SASL_GSSAPI (object);
 
@@ -119,7 +119,7 @@ camel_sasl_gssapi_init (gpointer object, gpointer klass)
 }
 
 static void
-camel_sasl_gssapi_finalize (CamelObject *object)
+camel_lite_sasl_gssapi_finalize (CamelObject *object)
 {
 	CamelSaslGssapi *gssapi = CAMEL_SASL_GSSAPI (object);
 	guint32 status;
@@ -135,20 +135,20 @@ camel_sasl_gssapi_finalize (CamelObject *object)
 
 
 CamelType
-camel_sasl_gssapi_get_type (void)
+camel_lite_sasl_gssapi_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (
-			camel_sasl_get_type (),
-			"CamelSaslGssapi",
+		type = camel_lite_type_register (
+			camel_lite_sasl_get_type (),
+			"CamelLiteSaslGssapi",
 			sizeof (CamelSaslGssapi),
 			sizeof (CamelSaslGssapiClass),
-			(CamelObjectClassInitFunc) camel_sasl_gssapi_class_init,
+			(CamelObjectClassInitFunc) camel_lite_sasl_gssapi_class_init,
 			NULL,
-			(CamelObjectInitFunc) camel_sasl_gssapi_init,
-			(CamelObjectFinalizeFunc) camel_sasl_gssapi_finalize);
+			(CamelObjectInitFunc) camel_lite_sasl_gssapi_init,
+			(CamelObjectFinalizeFunc) camel_lite_sasl_gssapi_finalize);
 	}
 
 	return type;
@@ -205,7 +205,7 @@ gssapi_set_exception (OM_uint32 major, OM_uint32 minor, CamelException *ex)
 		str = _("Bad authentication response from server.");
 	}
 
-	camel_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE, str);
+	camel_lite_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE, str);
 }
 
 static GByteArray *
@@ -226,12 +226,12 @@ gssapi_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 	case GSSAPI_STATE_INIT:
 		memset(&hints, 0, sizeof(hints));
 		hints.ai_flags = AI_CANONNAME;
-		ai = camel_getaddrinfo(sasl->service->url->host?sasl->service->url->host:"localhost", NULL, &hints, ex);
+		ai = camel_lite_getaddrinfo(sasl->service->url->host?sasl->service->url->host:"localhost", NULL, &hints, ex);
 		if (ai == NULL)
 			return NULL;
 
 		str = g_strdup_printf("%s@%s", sasl->service_name, ai->ai_canonname);
-		camel_freeaddrinfo(ai);
+		camel_lite_freeaddrinfo(ai);
 
 		inbuf.value = str;
 		inbuf.length = strlen (str);
@@ -249,7 +249,7 @@ gssapi_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 		break;
 	case GSSAPI_STATE_CONTINUE_NEEDED:
 		if (token == NULL) {
-			camel_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					     _("Bad authentication response from server."));
 			return NULL;
 		}
@@ -285,7 +285,7 @@ gssapi_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 		break;
 	case GSSAPI_STATE_COMPLETE:
 		if (token == NULL) {
-			camel_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					     _("Bad authentication response from server."));
 			return NULL;
 		}
@@ -300,7 +300,7 @@ gssapi_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 		}
 
 		if (outbuf.length < 4) {
-			camel_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					     _("Bad authentication response from server."));
 #ifndef HAVE_HEIMDAL_KRB5
 			gss_release_buffer (&minor, &outbuf);
@@ -310,7 +310,7 @@ gssapi_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 
 		/* check that our desired security layer is supported */
 		if ((((unsigned char *) outbuf.value)[0] & DESIRED_SECURITY_LAYER) != DESIRED_SECURITY_LAYER) {
-			camel_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					     _("Unsupported security layer."));
 #ifndef HAVE_HEIMDAL_KRB5
 			gss_release_buffer (&minor, &outbuf);

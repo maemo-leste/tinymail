@@ -28,9 +28,9 @@
 #include <camel/camel-folder.h>
 #include <camel/camel-mime-message.h>
 
-#define CAMEL_DIGEST_FOLDER(obj)         CAMEL_CHECK_CAST (obj, camel_digest_folder_get_type (), CamelDigestFolder)
-#define CAMEL_DIGEST_FOLDER_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_digest_folder_get_type (), CamelDigestFolderClass)
-#define CAMEL_IS_DIGEST_FOLDER(obj)      CAMEL_CHECK_TYPE (obj, camel_digest_folder_get_type ())
+#define CAMEL_DIGEST_FOLDER(obj)         CAMEL_CHECK_CAST (obj, camel_lite_digest_folder_get_type (), CamelDigestFolder)
+#define CAMEL_DIGEST_FOLDER_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_digest_folder_get_type (), CamelDigestFolderClass)
+#define CAMEL_IS_DIGEST_FOLDER(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_digest_folder_get_type ())
 
 G_BEGIN_DECLS
 
@@ -47,9 +47,9 @@ struct _CamelDigestFolderClass {
 
 };
 
-CamelType    camel_digest_folder_get_type (void);
+CamelType    camel_lite_digest_folder_get_type (void);
 
-CamelFolder *camel_digest_folder_new      (CamelStore *parent_store, CamelMimeMessage *message);
+CamelFolder *camel_lite_digest_folder_new      (CamelStore *parent_store, CamelMimeMessage *message);
 
 G_END_DECLS
 

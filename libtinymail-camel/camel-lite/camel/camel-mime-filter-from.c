@@ -30,23 +30,23 @@
 
 #define d(x)
 
-static void camel_mime_filter_from_class_init (CamelMimeFilterFromClass *klass);
-static void camel_mime_filter_from_init       (CamelMimeFilterFrom *obj);
+static void camel_lite_mime_filter_from_class_init (CamelMimeFilterFromClass *klass);
+static void camel_lite_mime_filter_from_init       (CamelMimeFilterFrom *obj);
 
-static CamelMimeFilterClass *camel_mime_filter_from_parent;
+static CamelMimeFilterClass *camel_lite_mime_filter_from_parent;
 
 CamelType
-camel_mime_filter_from_get_type (void)
+camel_lite_mime_filter_from_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type (), "CamelMimeFilterFrom",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type (), "CamelLiteMimeFilterFrom",
 					    sizeof (CamelMimeFilterFrom),
 					    sizeof (CamelMimeFilterFromClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_from_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_from_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_mime_filter_from_init,
+					    (CamelObjectInitFunc) camel_lite_mime_filter_from_init,
 					    NULL);
 	}
 
@@ -97,7 +97,7 @@ filter(CamelMimeFilter *mf, char *in, size_t len, size_t prespace, char **out, s
 				midline = TRUE;
 				if (left < 5) {
 					if (inptr[0] == 'F') {
-						camel_mime_filter_backup(mf, inptr, left);
+						camel_lite_mime_filter_backup(mf, inptr, left);
 						midline = FALSE;
 						inend = inptr;
 						break;
@@ -125,7 +125,7 @@ filter(CamelMimeFilter *mf, char *in, size_t len, size_t prespace, char **out, s
 	f->midline = midline;
 
 	if (fromcount > 0) {
-		camel_mime_filter_set_size(mf, len + fromcount, FALSE);
+		camel_lite_mime_filter_set_size(mf, len + fromcount, FALSE);
 		node = head;
 		inptr = in;
 		outptr = mf->outbuf;
@@ -153,34 +153,34 @@ filter(CamelMimeFilter *mf, char *in, size_t len, size_t prespace, char **out, s
 }
 
 static void
-camel_mime_filter_from_class_init (CamelMimeFilterFromClass *klass)
+camel_lite_mime_filter_from_class_init (CamelMimeFilterFromClass *klass)
 {
 	CamelMimeFilterClass *filter_class = (CamelMimeFilterClass *) klass;
 
-	camel_mime_filter_from_parent = CAMEL_MIME_FILTER_CLASS (camel_type_get_global_classfuncs (camel_mime_filter_get_type ()));
+	camel_lite_mime_filter_from_parent = CAMEL_MIME_FILTER_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_mime_filter_get_type ()));
 
 	filter_class->filter = filter;
 	filter_class->complete = complete;
 }
 
 static void
-camel_mime_filter_from_init (CamelMimeFilterFrom *obj)
+camel_lite_mime_filter_from_init (CamelMimeFilterFrom *obj)
 {
 	;
 }
 
 
 /**
- * camel_mime_filter_from_new:
+ * camel_lite_mime_filter_from_new:
  *
  * Create a new #CamelMimeFilterFrom object.
  *
  * Returns a new #CamelMimeFilterFrom object
  **/
 CamelMimeFilterFrom *
-camel_mime_filter_from_new (void)
+camel_lite_mime_filter_from_new (void)
 {
-	CamelMimeFilterFrom *new = CAMEL_MIME_FILTER_FROM ( camel_object_new (camel_mime_filter_from_get_type ()));
+	CamelMimeFilterFrom *new = CAMEL_MIME_FILTER_FROM ( camel_lite_object_new (camel_lite_mime_filter_from_get_type ()));
 	return new;
 }
 
@@ -197,19 +197,19 @@ int main(int argc, char **argv)
 	g_tk_init(&argc, &argv);
 
 
-	f = camel_mime_filter_from_new();
+	f = camel_lite_mime_filter_from_new();
 
 	buffer = "This is a test\nFrom Someone\nTo someone. From Someone else, From\n From blah\nFromblah\nBye! \nFrom ";
 	len = strlen(buffer);
 	prespace = 0;
 
 	printf("input = '%.*s'\n", len, buffer);
-	camel_mime_filter_filter(f, buffer, len, prespace, &buffer, &len, &prespace);
+	camel_lite_mime_filter_filter(f, buffer, len, prespace, &buffer, &len, &prespace);
 	printf("output = '%.*s'\n", len, buffer);
 	buffer = "";
 	len = 0;
 	prespace = 0;
-	camel_mime_filter_complete(f, buffer, len, prespace, &buffer, &len, &prespace);
+	camel_lite_mime_filter_complete(f, buffer, len, prespace, &buffer, &len, &prespace);
 	printf("complete = '%.*s'\n", len, buffer);
 
 

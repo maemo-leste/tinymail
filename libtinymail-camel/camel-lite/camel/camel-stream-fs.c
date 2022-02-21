@@ -53,26 +53,26 @@ static off_t stream_seek (CamelSeekableStream *stream, off_t offset,
 			  CamelStreamSeekPolicy policy);
 
 static void
-camel_stream_fs_class_init (CamelStreamFsClass *camel_stream_fs_class)
+camel_lite_stream_fs_class_init (CamelStreamFsClass *camel_lite_stream_fs_class)
 {
-	CamelSeekableStreamClass *camel_seekable_stream_class =
-		CAMEL_SEEKABLE_STREAM_CLASS (camel_stream_fs_class);
-	CamelStreamClass *camel_stream_class =
-		CAMEL_STREAM_CLASS (camel_stream_fs_class);
+	CamelSeekableStreamClass *camel_lite_seekable_stream_class =
+		CAMEL_SEEKABLE_STREAM_CLASS (camel_lite_stream_fs_class);
+	CamelStreamClass *camel_lite_stream_class =
+		CAMEL_STREAM_CLASS (camel_lite_stream_fs_class);
 
-	parent_class = CAMEL_SEEKABLE_STREAM_CLASS (camel_type_get_global_classfuncs (camel_seekable_stream_get_type ()));
+	parent_class = CAMEL_SEEKABLE_STREAM_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_seekable_stream_get_type ()));
 
 	/* virtual method overload */
-	camel_stream_class->read = stream_read;
-	camel_stream_class->write = stream_write;
-	camel_stream_class->flush = stream_flush;
-	camel_stream_class->close = stream_close;
+	camel_lite_stream_class->read = stream_read;
+	camel_lite_stream_class->write = stream_write;
+	camel_lite_stream_class->flush = stream_flush;
+	camel_lite_stream_class->close = stream_close;
 
-	camel_seekable_stream_class->seek = stream_seek;
+	camel_lite_seekable_stream_class->seek = stream_seek;
 }
 
 static void
-camel_stream_fs_init (gpointer object, gpointer klass)
+camel_lite_stream_fs_init (gpointer object, gpointer klass)
 {
 	CamelStreamFs *stream = CAMEL_STREAM_FS (object);
 
@@ -81,7 +81,7 @@ camel_stream_fs_init (gpointer object, gpointer klass)
 }
 
 static void
-camel_stream_fs_finalize (CamelObject *object)
+camel_lite_stream_fs_finalize (CamelObject *object)
 {
 	CamelStreamFs *stream_fs = CAMEL_STREAM_FS (object);
 
@@ -91,25 +91,25 @@ camel_stream_fs_finalize (CamelObject *object)
 
 
 CamelType
-camel_stream_fs_get_type (void)
+camel_lite_stream_fs_get_type (void)
 {
-	static CamelType camel_stream_fs_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_stream_fs_type = CAMEL_INVALID_TYPE;
 
-	if (camel_stream_fs_type == CAMEL_INVALID_TYPE) {
-		camel_stream_fs_type = camel_type_register (camel_seekable_stream_get_type (), "CamelStreamFs",
+	if (camel_lite_stream_fs_type == CAMEL_INVALID_TYPE) {
+		camel_lite_stream_fs_type = camel_lite_type_register (camel_lite_seekable_stream_get_type (), "CamelLiteStreamFs",
 							    sizeof (CamelStreamFs),
 							    sizeof (CamelStreamFsClass),
-							    (CamelObjectClassInitFunc) camel_stream_fs_class_init,
+							    (CamelObjectClassInitFunc) camel_lite_stream_fs_class_init,
 							    NULL,
-							    (CamelObjectInitFunc) camel_stream_fs_init,
-							    (CamelObjectFinalizeFunc) camel_stream_fs_finalize);
+							    (CamelObjectInitFunc) camel_lite_stream_fs_init,
+							    (CamelObjectFinalizeFunc) camel_lite_stream_fs_finalize);
 	}
 
-	return camel_stream_fs_type;
+	return camel_lite_stream_fs_type;
 }
 
 /**
- * camel_stream_fs_new_with_fd:
+ * camel_lite_stream_fs_new_with_fd:
  * @fd: a file descriptor
  *
  * Creates a new fs stream using the given file descriptor @fd as the
@@ -119,7 +119,7 @@ camel_stream_fs_get_type (void)
  * Returns a new #CamelStreamFs
  **/
 CamelStream *
-camel_stream_fs_new_with_fd (int fd)
+camel_lite_stream_fs_new_with_fd (int fd)
 {
 	CamelStreamFs *stream_fs;
 	off_t offset;
@@ -127,7 +127,7 @@ camel_stream_fs_new_with_fd (int fd)
 	if (fd == -1)
 		return NULL;
 
-	stream_fs = CAMEL_STREAM_FS (camel_object_new (camel_stream_fs_get_type ()));
+	stream_fs = CAMEL_STREAM_FS (camel_lite_object_new (camel_lite_stream_fs_get_type ()));
 	stream_fs->fd = fd;
 	offset = lseek (fd, 0, SEEK_CUR);
 	if (offset == -1)
@@ -138,7 +138,7 @@ camel_stream_fs_new_with_fd (int fd)
 }
 
 /**
- * camel_stream_fs_new_with_fd_and_bounds:
+ * camel_lite_stream_fs_new_with_fd_and_bounds:
  * @fd: a file descriptor
  * @start: the first valid position in the file
  * @end: the first invalid position in the file, or #CAMEL_STREAM_UNBOUND
@@ -149,18 +149,18 @@ camel_stream_fs_new_with_fd (int fd)
  * Returns the bound stream
  **/
 CamelStream *
-camel_stream_fs_new_with_fd_and_bounds (int fd, off_t start, off_t end)
+camel_lite_stream_fs_new_with_fd_and_bounds (int fd, off_t start, off_t end)
 {
 	CamelStream *stream;
 
-	stream = camel_stream_fs_new_with_fd (fd);
-	camel_seekable_stream_set_bounds (CAMEL_SEEKABLE_STREAM (stream), start, end);
+	stream = camel_lite_stream_fs_new_with_fd (fd);
+	camel_lite_seekable_stream_set_bounds (CAMEL_SEEKABLE_STREAM (stream), start, end);
 
 	return stream;
 }
 
 /**
- * camel_stream_fs_new_with_name:
+ * camel_lite_stream_fs_new_with_name:
  * @name: a local filename
  * @flags: flags as in open(2)
  * @mode: a file mode
@@ -171,7 +171,7 @@ camel_stream_fs_new_with_fd_and_bounds (int fd, off_t start, off_t end)
  * Returns the new stream, or %NULL on error.
  **/
 CamelStream *
-camel_stream_fs_new_with_name (const char *name, int flags, mode_t mode)
+camel_lite_stream_fs_new_with_name (const char *name, int flags, mode_t mode)
 {
 	int fd;
 
@@ -180,11 +180,11 @@ camel_stream_fs_new_with_name (const char *name, int flags, mode_t mode)
 		return NULL;
 	}
 
-	return camel_stream_fs_new_with_fd (fd);
+	return camel_lite_stream_fs_new_with_fd (fd);
 }
 
 /**
- * camel_stream_fs_new_with_name_and_bounds:
+ * camel_lite_stream_fs_new_with_name_and_bounds:
  * @name: a local filename
  * @flags: flags as in open(2)
  * @mode: a file mode
@@ -196,16 +196,16 @@ camel_stream_fs_new_with_name (const char *name, int flags, mode_t mode)
  * Returns the stream, or %NULL on error.
  **/
 CamelStream *
-camel_stream_fs_new_with_name_and_bounds (const char *name, int flags,
+camel_lite_stream_fs_new_with_name_and_bounds (const char *name, int flags,
 					  mode_t mode, off_t start, off_t end)
 {
 	CamelStream *stream;
 
-	stream = camel_stream_fs_new_with_name (name, flags, mode);
+	stream = camel_lite_stream_fs_new_with_name (name, flags, mode);
 	if (stream == NULL)
 		return NULL;
 
-	camel_seekable_stream_set_bounds (CAMEL_SEEKABLE_STREAM (stream),
+	camel_lite_seekable_stream_set_bounds (CAMEL_SEEKABLE_STREAM (stream),
 					  start, end);
 
 	return stream;
@@ -222,7 +222,7 @@ stream_read (CamelStream *stream, char *buffer, size_t n)
 	if (seekable->bound_end != CAMEL_STREAM_UNBOUND)
 		n = MIN (seekable->bound_end - seekable->position, n);
 
-	if ((nread = camel_read (stream_fs->fd, buffer, n)) > 0)
+	if ((nread = camel_lite_read (stream_fs->fd, buffer, n)) > 0)
 		seekable->position += nread;
 	else if (nread == 0)
 		stream->eos = TRUE;
@@ -240,7 +240,7 @@ stream_write (CamelStream *stream, const char *buffer, size_t n)
 	if (seekable->bound_end != CAMEL_STREAM_UNBOUND)
 		n = MIN (seekable->bound_end - seekable->position, n);
 
-	if ((nwritten = camel_write (stream_fs->fd, buffer, n)) > 0)
+	if ((nwritten = camel_lite_write (stream_fs->fd, buffer, n)) > 0)
 		seekable->position += nwritten;
 
 	return nwritten;

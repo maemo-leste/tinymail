@@ -27,9 +27,9 @@
 #include <camel/camel-folder.h>
 #include <camel/camel-vee-folder.h>
 
-#define CAMEL_VTRASH_FOLDER(obj)         CAMEL_CHECK_CAST (obj, camel_vtrash_folder_get_type (), CamelVTrashFolder)
-#define CAMEL_VTRASH_FOLDER_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_vtrash_folder_get_type (), CamelVTrashFolderClass)
-#define CAMEL_IS_VTRASH_FOLDER(obj)      CAMEL_CHECK_TYPE (obj, camel_vtrash_folder_get_type ())
+#define CAMEL_VTRASH_FOLDER(obj)         CAMEL_CHECK_CAST (obj, camel_lite_vtrash_folder_get_type (), CamelVTrashFolder)
+#define CAMEL_VTRASH_FOLDER_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_vtrash_folder_get_type (), CamelVTrashFolderClass)
+#define CAMEL_IS_VTRASH_FOLDER(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_vtrash_folder_get_type ())
 
 G_BEGIN_DECLS
 
@@ -39,16 +39,16 @@ typedef struct _CamelVTrashFolderClass CamelVTrashFolderClass;
 #define CAMEL_VTRASH_NAME ".#evolution/Trash"
 #define CAMEL_VJUNK_NAME ".#evolution/Junk"
 
-typedef enum _camel_vtrash_folder_t {
+typedef enum _camel_lite_vtrash_folder_t {
 	CAMEL_VTRASH_FOLDER_TRASH,
 	CAMEL_VTRASH_FOLDER_JUNK,
 	CAMEL_VTRASH_FOLDER_LAST
-} camel_vtrash_folder_t;
+} camel_lite_vtrash_folder_t;
 
 struct _CamelVTrashFolder {
 	CamelVeeFolder parent;
 
-	enum _camel_vtrash_folder_t type;
+	enum _camel_lite_vtrash_folder_t type;
 	guint32 bit;
 };
 
@@ -57,9 +57,9 @@ struct _CamelVTrashFolderClass {
 
 };
 
-CamelType       camel_vtrash_folder_get_type    (void);
+CamelType       camel_lite_vtrash_folder_get_type    (void);
 
-CamelFolder    *camel_vtrash_folder_new		(CamelStore *parent_store, camel_vtrash_folder_t type);
+CamelFolder    *camel_lite_vtrash_folder_new		(CamelStore *parent_store, camel_lite_vtrash_folder_t type);
 
 G_END_DECLS
 

@@ -43,7 +43,7 @@
 #include "camel-service.h"
 #include "camel-string-utils.h"
 
-CamelServiceAuthType camel_sasl_kerberos4_authtype = {
+CamelServiceAuthType camel_lite_sasl_kerberos4_authtype = {
 	N_("Kerberos 4"),
 
 	N_("This option will connect to the server using "
@@ -75,18 +75,18 @@ struct _CamelSaslKerberos4Private {
 };
 
 static void
-camel_sasl_kerberos4_class_init (CamelSaslKerberos4Class *camel_sasl_kerberos4_class)
+camel_lite_sasl_kerberos4_class_init (CamelSaslKerberos4Class *camel_lite_sasl_kerberos4_class)
 {
-	CamelSaslClass *camel_sasl_class = CAMEL_SASL_CLASS (camel_sasl_kerberos4_class);
+	CamelSaslClass *camel_lite_sasl_class = CAMEL_SASL_CLASS (camel_lite_sasl_kerberos4_class);
 
-	parent_class = CAMEL_SASL_CLASS (camel_type_get_global_classfuncs (camel_sasl_get_type ()));
+	parent_class = CAMEL_SASL_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_sasl_get_type ()));
 
 	/* virtual method overload */
-	camel_sasl_class->challenge = krb4_challenge;
+	camel_lite_sasl_class->challenge = krb4_challenge;
 }
 
 static void
-camel_sasl_kerberos4_init (gpointer object, gpointer klass)
+camel_lite_sasl_kerberos4_init (gpointer object, gpointer klass)
 {
 	CamelSaslKerberos4 *sasl_krb4 = CAMEL_SASL_KERBEROS4 (object);
 
@@ -94,7 +94,7 @@ camel_sasl_kerberos4_init (gpointer object, gpointer klass)
 }
 
 static void
-camel_sasl_kerberos4_finalize (CamelObject *object)
+camel_lite_sasl_kerberos4_finalize (CamelObject *object)
 {
 	CamelSaslKerberos4 *sasl = CAMEL_SASL_KERBEROS4 (object);
 
@@ -106,19 +106,19 @@ camel_sasl_kerberos4_finalize (CamelObject *object)
 
 
 CamelType
-camel_sasl_kerberos4_get_type (void)
+camel_lite_sasl_kerberos4_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_sasl_get_type (),
-					    "CamelSaslKerberos4",
+		type = camel_lite_type_register (camel_lite_sasl_get_type (),
+					    "CamelLiteSaslKerberos4",
 					    sizeof (CamelSaslKerberos4),
 					    sizeof (CamelSaslKerberos4Class),
-					    (CamelObjectClassInitFunc) camel_sasl_kerberos4_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_sasl_kerberos4_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_sasl_kerberos4_init,
-					    (CamelObjectFinalizeFunc) camel_sasl_kerberos4_finalize);
+					    (CamelObjectInitFunc) camel_lite_sasl_kerberos4_init,
+					    (CamelObjectFinalizeFunc) camel_lite_sasl_kerberos4_finalize);
 	}
 
 	return type;
@@ -151,15 +151,15 @@ krb4_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 
 		memset(&hints, 0, sizeof(hints));
 		hints.ai_flags = AI_CANONNAME;
-		ai = camel_getaddrinfo(sasl->service->url->host?sasl->service->url->host:"localhost", NULL, &hints, ex);
+		ai = camel_lite_getaddrinfo(sasl->service->url->host?sasl->service->url->host:"localhost", NULL, &hints, ex);
 		if (ai == NULL)
 			goto lose;
 
 		/* Our response is an authenticator including that number. */
 		inst = g_strndup (ai->ai_canonname, strcspn (ai->ai_canonname, "."));
-		camel_strdown (inst);
+		camel_lite_strdown (inst);
 		realm = g_strdup (krb_realmofhost (ai->ai_canonname));
-		camel_freeaddrinfo(ai);
+		camel_lite_freeaddrinfo(ai);
 		status = krb_mk_req (&authenticator, sasl->service_name, inst, realm, priv->nonce_h);
 		if (status == KSUCCESS) {
 			status = krb_get_cred (sasl->service_name, inst, realm, &credentials);
@@ -170,7 +170,7 @@ krb4_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 		g_free (realm);
 
 		if (status != KSUCCESS) {
-			camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					      _("Could not get Kerberos ticket:\n%s"),
 					      krb_err_txt[status]);
 			goto lose;
@@ -226,8 +226,8 @@ krb4_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
  lose:
 	memset (&priv->session, 0, sizeof (priv->session));
 
-	if (!camel_exception_is_set (ex)) {
-		camel_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+	if (!camel_lite_exception_is_set (ex)) {
+		camel_lite_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 				     _("Bad authentication response from server."));
 	}
 	return NULL;

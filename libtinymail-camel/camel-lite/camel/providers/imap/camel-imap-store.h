@@ -63,16 +63,16 @@ struct _CamelImapMsg {
 	void (*free)(CamelImapStore *store, struct _CamelImapMsg *m);
 };
 
-CamelImapMsg *camel_imap_msg_new(void (*receive)(CamelImapStore *store, struct _CamelImapMsg *m),
+CamelImapMsg *camel_lite_imap_msg_new(void (*receive)(CamelImapStore *store, struct _CamelImapMsg *m),
 				 void (*free)(CamelImapStore *store, struct _CamelImapMsg *m),
 				 size_t size);
-void camel_imap_msg_queue(CamelImapStore *store, CamelImapMsg *msg);
+void camel_lite_imap_msg_queue(CamelImapStore *store, CamelImapMsg *msg);
 
 G_END_DECLS
 
 #endif
 
-#define CAMEL_IMAP_STORE_TYPE     (camel_imap_store_get_type ())
+#define CAMEL_IMAP_STORE_TYPE     (camel_lite_imap_store_get_type ())
 #define CAMEL_IMAP_STORE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_IMAP_STORE_TYPE, CamelImapStore))
 #define CAMEL_IMAP_STORE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_IMAP_STORE_TYPE, CamelImapStoreClass))
 #define CAMEL_IS_IMAP_STORE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_IMAP_STORE_TYPE))
@@ -196,31 +196,31 @@ typedef struct {
 
 
 /* Standard Camel function */
-CamelType camel_imap_store_get_type (void);
+CamelType camel_lite_imap_store_get_type (void);
 
 
-gboolean camel_imap_store_connected (CamelImapStore *store, CamelException *ex);
+gboolean camel_lite_imap_store_connected (CamelImapStore *store, CamelException *ex);
 
-ssize_t camel_imap_store_readline_nl (CamelImapStore *store, char **dest, CamelException *ex);
-ssize_t camel_imap_store_readline_nb (CamelImapStore *store, char **dest, CamelException *ex);
-ssize_t camel_imap_store_readline (CamelImapStore *store, char **dest, CamelException *ex);
+ssize_t camel_lite_imap_store_readline_nl (CamelImapStore *store, char **dest, CamelException *ex);
+ssize_t camel_lite_imap_store_readline_nb (CamelImapStore *store, char **dest, CamelException *ex);
+ssize_t camel_lite_imap_store_readline (CamelImapStore *store, char **dest, CamelException *ex);
 
-gboolean camel_imap_store_restore_stream_buffer (CamelImapStore *store);
+gboolean camel_lite_imap_store_restore_stream_buffer (CamelImapStore *store);
 
-void _camel_imap_store_stop_idle (CamelImapStore *store);
-void _camel_imap_store_stop_idle_connect_lock (CamelImapStore *store);
-void _camel_imap_store_start_idle (CamelImapStore *store);
-void _camel_imap_store_connect_unlock_start_idle (CamelImapStore *store);
-void _camel_imap_store_start_idle_if_unlocked (CamelImapStore *store);
-void _camel_imap_store_connect_unlock_no_start_idle (CamelImapStore *store);
-void camel_imap_recon (CamelImapStore *store, CamelException *mex, gboolean was_cancel);
+void _camel_lite_imap_store_stop_idle (CamelImapStore *store);
+void _camel_lite_imap_store_stop_idle_connect_lock (CamelImapStore *store);
+void _camel_lite_imap_store_start_idle (CamelImapStore *store);
+void _camel_lite_imap_store_connect_unlock_start_idle (CamelImapStore *store);
+void _camel_lite_imap_store_start_idle_if_unlocked (CamelImapStore *store);
+void _camel_lite_imap_store_connect_unlock_no_start_idle (CamelImapStore *store);
+void camel_lite_imap_recon (CamelImapStore *store, CamelException *mex, gboolean was_cancel);
 
-#define camel_imap_store_stop_idle_connect_lock(store) {idle_debug ("Thread %d StopIdle-ConnectLock(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_imap_store_stop_idle_connect_lock((store));}
-#define camel_imap_store_connect_unlock_start_idle(store) {idle_debug ("Thread %d ConnectUnlock-StartIdle(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_imap_store_connect_unlock_start_idle((store));}
-#define camel_imap_store_start_idle_if_unlocked(store) {idle_debug ("Thread %d StartIdle-IfUnlocked(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_imap_store_start_idle_if_unlocked((store));}
-#define camel_imap_store_connect_unlock_no_start_idle(store) {idle_debug ("Thread %d ConnectUnlock-NO-StartIdle(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_imap_store_connect_unlock_no_start_idle((store));}
-#define camel_imap_store_stop_idle(store) {idle_debug ("Thread %d StopIdle(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_imap_store_stop_idle((store));}
-#define camel_imap_store_start_idle(store) {idle_debug ("Thread %d StartIdle(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_imap_store_start_idle((store));}
+#define camel_lite_imap_store_stop_idle_connect_lock(store) {idle_debug ("Thread %d StopIdle-ConnectLock(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_lite_imap_store_stop_idle_connect_lock((store));}
+#define camel_lite_imap_store_connect_unlock_start_idle(store) {idle_debug ("Thread %d ConnectUnlock-StartIdle(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_lite_imap_store_connect_unlock_start_idle((store));}
+#define camel_lite_imap_store_start_idle_if_unlocked(store) {idle_debug ("Thread %d StartIdle-IfUnlocked(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_lite_imap_store_start_idle_if_unlocked((store));}
+#define camel_lite_imap_store_connect_unlock_no_start_idle(store) {idle_debug ("Thread %d ConnectUnlock-NO-StartIdle(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_lite_imap_store_connect_unlock_no_start_idle((store));}
+#define camel_lite_imap_store_stop_idle(store) {idle_debug ("Thread %d StopIdle(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_lite_imap_store_stop_idle((store));}
+#define camel_lite_imap_store_start_idle(store) {idle_debug ("Thread %d StartIdle(%x) %s:%d\n", (gint) g_thread_self (), (gint) store, __FUNCTION__, (gint) __LINE__);  _camel_lite_imap_store_start_idle((store));}
 
 G_END_DECLS
 

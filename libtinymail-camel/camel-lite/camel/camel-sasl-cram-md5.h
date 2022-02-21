@@ -25,7 +25,7 @@
 
 #include <camel/camel-sasl.h>
 
-#define CAMEL_SASL_CRAM_MD5_TYPE     (camel_sasl_cram_md5_get_type ())
+#define CAMEL_SASL_CRAM_MD5_TYPE     (camel_lite_sasl_cram_md5_get_type ())
 #define CAMEL_SASL_CRAM_MD5(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SASL_CRAM_MD5_TYPE, CamelSaslCramMd5))
 #define CAMEL_SASL_CRAM_MD5_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SASL_CRAM_MD5_TYPE, CamelSaslCramMd5Class))
 #define CAMEL_IS_SASL_CRAM_MD5(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SASL_CRAM_MD5_TYPE))
@@ -45,9 +45,9 @@ typedef struct _CamelSaslCramMd5Class {
 
 
 /* Standard Camel function */
-CamelType camel_sasl_cram_md5_get_type (void);
+CamelType camel_lite_sasl_cram_md5_get_type (void);
 
-extern CamelServiceAuthType camel_sasl_cram_md5_authtype;
+extern CamelServiceAuthType camel_lite_sasl_cram_md5_authtype;
 
 G_END_DECLS
 

@@ -41,9 +41,9 @@
 #define CAMEL_IMAP4_STORE_SUMMARY_VERSION_0 (0)
 #define CAMEL_IMAP4_STORE_SUMMARY_VERSION (0)
 
-static void camel_imap4_store_summary_class_init (CamelIMAP4StoreSummaryClass *klass);
-static void camel_imap4_store_summary_init (CamelIMAP4StoreSummary *obj);
-static void camel_imap4_store_summary_finalize (CamelObject *obj);
+static void camel_lite_imap4_store_summary_class_init (CamelIMAP4StoreSummaryClass *klass);
+static void camel_lite_imap4_store_summary_init (CamelIMAP4StoreSummary *obj);
+static void camel_lite_imap4_store_summary_finalize (CamelObject *obj);
 
 static int summary_header_load (CamelStoreSummary *s, FILE *in);
 static int summary_header_save (CamelStoreSummary *s, FILE *out);
@@ -57,19 +57,19 @@ static CamelStoreSummaryClass *parent_class = NULL;
 
 
 CamelType
-camel_imap4_store_summary_get_type (void)
+camel_lite_imap4_store_summary_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_store_summary_get_type (),
-					    "CamelIMAP4StoreSummary",
+		type = camel_lite_type_register (camel_lite_store_summary_get_type (),
+					    "CamelLiteIMAP4StoreSummary",
 					    sizeof (CamelIMAP4StoreSummary),
 					    sizeof (CamelIMAP4StoreSummaryClass),
-					    (CamelObjectClassInitFunc) camel_imap4_store_summary_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_imap4_store_summary_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_imap4_store_summary_init,
-					    (CamelObjectFinalizeFunc) camel_imap4_store_summary_finalize);
+					    (CamelObjectInitFunc) camel_lite_imap4_store_summary_init,
+					    (CamelObjectFinalizeFunc) camel_lite_imap4_store_summary_finalize);
 	}
 
 	return type;
@@ -77,11 +77,11 @@ camel_imap4_store_summary_get_type (void)
 
 
 static void
-camel_imap4_store_summary_class_init (CamelIMAP4StoreSummaryClass *klass)
+camel_lite_imap4_store_summary_class_init (CamelIMAP4StoreSummaryClass *klass)
 {
 	CamelStoreSummaryClass *ssklass = (CamelStoreSummaryClass *) klass;
 
-	parent_class = (CamelStoreSummaryClass *) camel_store_summary_get_type ();
+	parent_class = (CamelStoreSummaryClass *) camel_lite_store_summary_get_type ();
 
 	ssklass->summary_header_load = summary_header_load;
 	ssklass->summary_header_save = summary_header_save;
@@ -92,7 +92,7 @@ camel_imap4_store_summary_class_init (CamelIMAP4StoreSummaryClass *klass)
 }
 
 static void
-camel_imap4_store_summary_init (CamelIMAP4StoreSummary *s)
+camel_lite_imap4_store_summary_init (CamelIMAP4StoreSummary *s)
 {
 	((CamelStoreSummary *) s)->store_info_size = sizeof (CamelIMAP4StoreInfo);
 	s->version = CAMEL_IMAP4_STORE_SUMMARY_VERSION;
@@ -100,12 +100,12 @@ camel_imap4_store_summary_init (CamelIMAP4StoreSummary *s)
 }
 
 static void
-camel_imap4_store_summary_finalize (CamelObject *obj)
+camel_lite_imap4_store_summary_finalize (CamelObject *obj)
 {
 	CamelIMAP4StoreSummary *s = (CamelIMAP4StoreSummary *) obj;
 
 	if (s->namespaces)
-		camel_imap4_namespace_list_free (s->namespaces);
+		camel_lite_imap4_namespace_list_free (s->namespaces);
 }
 
 
@@ -134,17 +134,17 @@ load_namespaces (FILE *in)
 			break;
 		}
 
-		if (camel_file_util_decode_fixed_int32 (in, &n) == -1)
+		if (camel_lite_file_util_decode_fixed_int32 (in, &n) == -1)
 			goto exception;
 
 		for (i = 0; i < n; i++) {
 			guint32 sep;
 			char *path;
 
-			if (camel_file_util_decode_string (in, &path) == -1)
+			if (camel_lite_file_util_decode_string (in, &path) == -1)
 				goto exception;
 
-			if (camel_file_util_decode_uint32 (in, &sep) == -1) {
+			if (camel_lite_file_util_decode_uint32 (in, &sep) == -1) {
 				g_free (path);
 				goto exception;
 			}
@@ -161,7 +161,7 @@ load_namespaces (FILE *in)
 
  exception:
 
-	camel_imap4_namespace_list_free (nsl);
+	camel_lite_imap4_namespace_list_free (nsl);
 
 	return NULL;
 }
@@ -175,7 +175,7 @@ summary_header_load (CamelStoreSummary *s, FILE *in)
 	if (parent_class->summary_header_load (s, in) == -1)
 		return -1;
 
-	if (camel_file_util_decode_fixed_int32 (in, &version) == -1)
+	if (camel_lite_file_util_decode_fixed_int32 (in, &version) == -1)
 		return -1;
 
 	is->version = version;
@@ -185,7 +185,7 @@ summary_header_load (CamelStoreSummary *s, FILE *in)
 		return -1;
 	}
 
-	if (camel_file_util_decode_fixed_int32 (in, &capa) == -1)
+	if (camel_lite_file_util_decode_fixed_int32 (in, &capa) == -1)
 		return -1;
 
 	is->capa = capa;
@@ -218,15 +218,15 @@ save_namespaces (FILE *out, CamelIMAP4NamespaceList *nsl)
 		for (ns = cur, n = 0; ns; n++)
 			ns = ns->next;
 
-		if (camel_file_util_encode_fixed_int32 (out, n) == -1)
+		if (camel_lite_file_util_encode_fixed_int32 (out, n) == -1)
 			return -1;
 
 		ns = cur;
 		while (ns != NULL) {
-			if (camel_file_util_encode_string (out, ns->path) == -1)
+			if (camel_lite_file_util_encode_string (out, ns->path) == -1)
 				return -1;
 
-			if (camel_file_util_encode_uint32 (out, ns->sep) == -1)
+			if (camel_lite_file_util_encode_uint32 (out, ns->sep) == -1)
 				return -1;
 
 			ns = ns->next;
@@ -244,10 +244,10 @@ summary_header_save (CamelStoreSummary *s, FILE *out)
 	if (parent_class->summary_header_save (s, out) == -1)
 		return -1;
 
-	if (camel_file_util_encode_fixed_int32 (out, is->version) == -1)
+	if (camel_lite_file_util_encode_fixed_int32 (out, is->version) == -1)
 		return -1;
 
-	if (camel_file_util_encode_fixed_int32 (out, is->capa) == -1)
+	if (camel_lite_file_util_encode_fixed_int32 (out, is->capa) == -1)
 		return -1;
 
 	if (save_namespaces (out, is->namespaces) == -1)
@@ -276,42 +276,42 @@ store_info_free (CamelStoreSummary *s, CamelStoreInfo *info)
 
 
 /**
- * camel_imap4_store_summary_new:
+ * camel_lite_imap4_store_summary_new:
  *
  * Create a new CamelIMAP4StoreSummary object.
  *
  * Returns a new CamelIMAP4StoreSummary object.
  **/
 CamelIMAP4StoreSummary *
-camel_imap4_store_summary_new (void)
+camel_lite_imap4_store_summary_new (void)
 {
-	return (CamelIMAP4StoreSummary *) camel_object_new (camel_imap4_store_summary_get_type ());
+	return (CamelIMAP4StoreSummary *) camel_lite_object_new (camel_lite_imap4_store_summary_get_type ());
 }
 
 
 void
-camel_imap4_store_summary_set_capabilities (CamelIMAP4StoreSummary *s, guint32 capa)
+camel_lite_imap4_store_summary_set_capabilities (CamelIMAP4StoreSummary *s, guint32 capa)
 {
 	s->capa = capa;
 }
 
 
 void
-camel_imap4_store_summary_set_namespaces (CamelIMAP4StoreSummary *s, const CamelIMAP4NamespaceList *ns)
+camel_lite_imap4_store_summary_set_namespaces (CamelIMAP4StoreSummary *s, const CamelIMAP4NamespaceList *ns)
 {
 	if (s->namespaces)
-		camel_imap4_namespace_list_free (s->namespaces);
-	s->namespaces = camel_imap4_namespace_list_copy (ns);
+		camel_lite_imap4_namespace_list_free (s->namespaces);
+	s->namespaces = camel_lite_imap4_namespace_list_copy (ns);
 }
 
 
 void
-camel_imap4_store_summary_note_info (CamelIMAP4StoreSummary *s, CamelFolderInfo *fi)
+camel_lite_imap4_store_summary_note_info (CamelIMAP4StoreSummary *s, CamelFolderInfo *fi)
 {
 	CamelStoreSummary *ss = (CamelStoreSummary *) s;
 	CamelStoreInfo *si;
 
-	if ((si = camel_store_summary_path (ss, fi->full_name))) {
+	if ((si = camel_lite_store_summary_path (ss, fi->full_name))) {
 		if (fi->unread != -1) {
 			si->unread = fi->unread;
 			ss->flags |= CAMEL_STORE_SUMMARY_DIRTY;
@@ -322,29 +322,29 @@ camel_imap4_store_summary_note_info (CamelIMAP4StoreSummary *s, CamelFolderInfo 
 			ss->flags |= CAMEL_STORE_SUMMARY_DIRTY;
 		}
 
-		camel_store_summary_info_free (ss, si);
+		camel_lite_store_summary_info_free (ss, si);
 		return;
 	}
 
-	si = camel_store_summary_info_new (ss);
+	si = camel_lite_store_summary_info_new (ss);
 	si->path = g_strdup (fi->full_name);
 	si->uri = g_strdup (fi->uri);
 	si->flags = fi->flags;
 	si->unread = fi->unread;
 	si->total = fi->total;
 
-	camel_store_summary_add (ss, si);
+	camel_lite_store_summary_add (ss, si);
 
 	/* FIXME: should this be recursive? */
 }
 
 
 void
-camel_imap4_store_summary_unnote_info (CamelIMAP4StoreSummary *s, CamelFolderInfo *fi)
+camel_lite_imap4_store_summary_unnote_info (CamelIMAP4StoreSummary *s, CamelFolderInfo *fi)
 {
 	CamelStoreSummary *ss = (CamelStoreSummary *) s;
 
-	camel_store_summary_remove_path (ss, fi->full_name);
+	camel_lite_store_summary_remove_path (ss, fi->full_name);
 }
 
 
@@ -355,13 +355,13 @@ store_info_to_folder_info (CamelStoreSummary *s, CamelStoreInfo *si)
 	const char *name;
 
 	fi = g_malloc0 (sizeof (CamelFolderInfo));
-	fi->full_name = g_strdup (camel_store_info_path (s, si));
-	fi->uri = g_strdup (camel_store_info_uri (s, si));
+	fi->full_name = g_strdup (camel_lite_store_info_path (s, si));
+	fi->uri = g_strdup (camel_lite_store_info_uri (s, si));
 	fi->flags = si->flags;
 	fi->unread = si->unread;
 	fi->total = si->total;
 
-	name = camel_store_info_name (s, si);
+	name = camel_lite_store_info_name (s, si);
 	if (!g_ascii_strcasecmp (fi->full_name, "INBOX")) {
 		fi->flags |= CAMEL_FOLDER_SYSTEM | CAMEL_FOLDER_TYPE_INBOX;
 		fi->name = g_strdup (_("Inbox"));
@@ -373,7 +373,7 @@ store_info_to_folder_info (CamelStoreSummary *s, CamelStoreInfo *si)
 }
 
 CamelFolderInfo *
-camel_imap4_store_summary_get_folder_info (CamelIMAP4StoreSummary *s, const char *top, guint32 flags)
+camel_lite_imap4_store_summary_get_folder_info (CamelIMAP4StoreSummary *s, const char *top, guint32 flags)
 {
 	CamelStoreSummary *ss = (CamelStoreSummary *) s;
 	CamelFolderInfo *fi;
@@ -404,7 +404,7 @@ camel_imap4_store_summary_get_folder_info (CamelIMAP4StoreSummary *s, const char
 			g_ptr_array_add (folders, store_info_to_folder_info (ss, si));
 	}
 
-	fi = camel_folder_info_build (folders, top, '/', TRUE);
+	fi = camel_lite_folder_info_build (folders, top, '/', TRUE);
 	g_ptr_array_free (folders, TRUE);
 
 	return fi;

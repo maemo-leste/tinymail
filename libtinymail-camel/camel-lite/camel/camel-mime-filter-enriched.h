@@ -26,7 +26,7 @@
 
 #include <camel/camel-mime-filter.h>
 
-#define CAMEL_TYPE_MIME_FILTER_ENRICHED         (camel_mime_filter_enriched_get_type ())
+#define CAMEL_TYPE_MIME_FILTER_ENRICHED         (camel_lite_mime_filter_enriched_get_type ())
 #define CAMEL_MIME_FILTER_ENRICHED(obj)         (CAMEL_CHECK_CAST (obj, CAMEL_TYPE_MIME_FILTER_ENRICHED, CamelMimeFilterEnriched))
 #define CAMEL_MIME_FILTER_ENRICHED_CLASS(klass) (CAMEL_CHECK_CLASS_CAST (klass, CAMEL_TYPE_MIME_FILTER_ENRICHED, CamelMimeFilterEnrichedClass))
 #define CAMEL_IS_MIME_FILTER_ENRICHED(obj)      (CAMEL_CHECK_TYPE (obj, CAMEL_TYPE_MIME_FILTER_ENRICHED))
@@ -50,10 +50,10 @@ struct _CamelMimeFilterEnrichedClass {
 
 };
 
-CamelType        camel_mime_filter_enriched_get_type (void);
+CamelType        camel_lite_mime_filter_enriched_get_type (void);
 
-CamelMimeFilter *camel_mime_filter_enriched_new (guint32 flags);
-char *camel_enriched_to_html(const char *in, guint32 flags);
+CamelMimeFilter *camel_lite_mime_filter_enriched_new (guint32 flags);
+char *camel_lite_enriched_to_html(const char *in, guint32 flags);
 
 G_END_DECLS
 

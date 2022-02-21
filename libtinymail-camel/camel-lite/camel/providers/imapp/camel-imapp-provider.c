@@ -63,7 +63,7 @@ static CamelProvider imapp_provider = {
 	/* ... */
 };
 
-CamelServiceAuthType camel_imapp_password_authtype = {
+CamelServiceAuthType camel_lite_imapp_password_authtype = {
 	N_("Password"),
 
 	N_("This option will connect to the IMAP server using a "
@@ -73,30 +73,30 @@ CamelServiceAuthType camel_imapp_password_authtype = {
 	TRUE
 };
 
-void camel_imapp_module_init(void);
+void camel_lite_imapp_module_init(void);
 
 void
-camel_imapp_module_init(void)
+camel_lite_imapp_module_init(void)
 {
-	extern void camel_exception_setup(void);
+	extern void camel_lite_exception_setup(void);
 
-	imapp_provider.object_types[CAMEL_PROVIDER_STORE] = camel_imapp_store_get_type();
-	imapp_provider.url_hash = camel_url_hash;
-	imapp_provider.url_equal = camel_url_equal;
+	imapp_provider.object_types[CAMEL_PROVIDER_STORE] = camel_lite_imapp_store_get_type();
+	imapp_provider.url_hash = camel_lite_url_hash;
+	imapp_provider.url_equal = camel_lite_url_equal;
 
-	imapp_provider.authtypes = g_list_prepend(imapp_provider.authtypes, camel_sasl_authtype_list(FALSE));
-	imapp_provider.authtypes = g_list_prepend(imapp_provider.authtypes, &camel_imapp_password_authtype);
+	imapp_provider.authtypes = g_list_prepend(imapp_provider.authtypes, camel_lite_sasl_authtype_list(FALSE));
+	imapp_provider.authtypes = g_list_prepend(imapp_provider.authtypes, &camel_lite_imapp_password_authtype);
 	imapp_provider.translation_domain = GETTEXT_PACKAGE;
 
 	/* blah ... could just use it in object setup? */
 	/* TEMPORARY */
-	camel_exception_setup();
+	camel_lite_exception_setup();
 
-	camel_provider_register(&imapp_provider);
+	camel_lite_provider_register(&imapp_provider);
 }
 
 void
-camel_provider_module_init(void)
+camel_lite_provider_module_init(void)
 {
-	camel_imapp_module_init();
+	camel_lite_imapp_module_init();
 }

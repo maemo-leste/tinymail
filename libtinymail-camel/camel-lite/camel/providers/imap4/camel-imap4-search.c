@@ -36,9 +36,9 @@
 #include "camel-imap4-stream.h"
 #include "camel-imap4-utils.h"
 
-static void camel_imap4_search_class_init (CamelIMAP4SearchClass *klass);
-static void camel_imap4_search_init (CamelIMAP4Search *search, CamelIMAP4SearchClass *klass);
-static void camel_imap4_search_finalize (CamelObject *object);
+static void camel_lite_imap4_search_class_init (CamelIMAP4SearchClass *klass);
+static void camel_lite_imap4_search_init (CamelIMAP4Search *search, CamelIMAP4SearchClass *klass);
+static void camel_lite_imap4_search_finalize (CamelObject *object);
 
 static ESExpResult *imap4_body_contains (struct _ESExp *f, int argc, struct _ESExpResult **argv, CamelFolderSearch *search);
 
@@ -47,54 +47,54 @@ static CamelFolderSearchClass *parent_class = NULL;
 
 
 CamelType
-camel_imap4_search_get_type (void)
+camel_lite_imap4_search_get_type (void)
 {
 	static CamelType type = 0;
 
 	if (!type) {
-		type = camel_type_register (camel_folder_search_get_type (),
-					    "CamelIMAP4Search",
+		type = camel_lite_type_register (camel_lite_folder_search_get_type (),
+					    "CamelLiteIMAP4Search",
 					    sizeof (CamelIMAP4Search),
 					    sizeof (CamelIMAP4SearchClass),
-					    (CamelObjectClassInitFunc) camel_imap4_search_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_imap4_search_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_imap4_search_init,
-					    (CamelObjectFinalizeFunc) camel_imap4_search_finalize);
+					    (CamelObjectInitFunc) camel_lite_imap4_search_init,
+					    (CamelObjectFinalizeFunc) camel_lite_imap4_search_finalize);
 	}
 
 	return type;
 }
 
 static void
-camel_imap4_search_class_init (CamelIMAP4SearchClass *klass)
+camel_lite_imap4_search_class_init (CamelIMAP4SearchClass *klass)
 {
 	CamelFolderSearchClass *search_class = (CamelFolderSearchClass *) klass;
 
-	parent_class = (CamelFolderSearchClass *) camel_type_get_global_classfuncs (CAMEL_FOLDER_SEARCH_TYPE);
+	parent_class = (CamelFolderSearchClass *) camel_lite_type_get_global_classfuncs (CAMEL_FOLDER_SEARCH_TYPE);
 
 	search_class->body_contains = imap4_body_contains;
 }
 
 static void
-camel_imap4_search_init (CamelIMAP4Search *search, CamelIMAP4SearchClass *klass)
+camel_lite_imap4_search_init (CamelIMAP4Search *search, CamelIMAP4SearchClass *klass)
 {
 	search->engine = NULL;
 }
 
 static void
-camel_imap4_search_finalize (CamelObject *object)
+camel_lite_imap4_search_finalize (CamelObject *object)
 {
 	;
 }
 
 
 CamelFolderSearch *
-camel_imap4_search_new (CamelIMAP4Engine *engine, const char *cachedir)
+camel_lite_imap4_search_new (CamelIMAP4Engine *engine, const char *cachedir)
 {
 	CamelIMAP4Search *search;
 
-	search = (CamelIMAP4Search *) camel_object_new (camel_imap4_search_get_type ());
-	camel_folder_search_construct ((CamelFolderSearch *) search);
+	search = (CamelIMAP4Search *) camel_lite_object_new (camel_lite_imap4_search_get_type ());
+	camel_lite_folder_search_construct ((CamelFolderSearch *) search);
 	search->engine = engine;
 
 	return (CamelFolderSearch *) search;
@@ -102,7 +102,7 @@ camel_imap4_search_new (CamelIMAP4Engine *engine, const char *cachedir)
 
 
 static int
-untagged_search (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guint32 index, camel_imap4_token_t *token, CamelException *ex)
+untagged_search (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guint32 index, camel_lite_imap4_token_t *token, CamelException *ex)
 {
 	CamelFolderSummary *summary = ((CamelFolder *) engine->folder)->summary;
 	GPtrArray *matches = ic->user_data;
@@ -110,7 +110,7 @@ untagged_search (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guint32 index,
 	char uid[12];
 
 	while (1) {
-		if (camel_imap4_engine_next_token (engine, token, ex) == -1)
+		if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1)
 			return -1;
 
 		if (token->token == '\n')
@@ -120,9 +120,9 @@ untagged_search (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guint32 index,
 			goto unexpected;
 
 		sprintf (uid, "%lu", token->v.number);
-		if ((info = camel_folder_summary_uid (summary, uid))) {
-			g_ptr_array_add (matches, (char *) camel_message_info_uid (info));
-			camel_message_info_free (info);
+		if ((info = camel_lite_folder_summary_uid (summary, uid))) {
+			g_ptr_array_add (matches, (char *) camel_lite_message_info_uid (info));
+			camel_lite_message_info_free (info);
 		}
 	}
 
@@ -130,7 +130,7 @@ untagged_search (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guint32 index,
 
  unexpected:
 
-	camel_imap4_utils_set_unexpected_token_error (ex, engine, token);
+	camel_lite_imap4_utils_set_unexpected_token_error (ex, engine, token);
 
 	return -1;
 }
@@ -181,7 +181,7 @@ imap4_body_contains (struct _ESExp *f, int argc, struct _ESExpResult **argv, Cam
 			r->value.ptrarray->len = summary_set->len;
 			for (i = 0; i < summary_set->len; i++) {
 				info = g_ptr_array_index (summary_set, i);
-				r->value.ptrarray->pdata[i] = (char *) camel_message_info_uid (info);
+				r->value.ptrarray->pdata[i] = (char *) camel_lite_message_info_uid (info);
 			}
 		}
 
@@ -220,7 +220,7 @@ imap4_body_contains (struct _ESExp *f, int argc, struct _ESExpResult **argv, Cam
 			r->value.ptrarray->len = summary_set->len;
 			for (i = 0; i < summary_set->len; i++) {
 				info = g_ptr_array_index (summary_set, i);
-				r->value.ptrarray->pdata[i] = (char *) camel_message_info_uid (info);
+				r->value.ptrarray->pdata[i] = (char *) camel_lite_message_info_uid (info);
 			}
 		}
 
@@ -249,18 +249,18 @@ imap4_body_contains (struct _ESExp *f, int argc, struct _ESExpResult **argv, Cam
 	used = strlen (expr) + (5 * (strings->len - 2));
 
 	for (i = 0; i < infos->len; i += n) {
-		n = camel_imap4_get_uid_set (engine, search->folder->summary, infos, i, used, &set);
+		n = camel_lite_imap4_get_uid_set (engine, search->folder->summary, infos, i, used, &set);
 
-		ic = camel_imap4_engine_queue (engine, search->folder, expr, set, strings->pdata);
-		camel_imap4_command_register_untagged (ic, "SEARCH", untagged_search);
+		ic = camel_lite_imap4_engine_queue (engine, search->folder, expr, set, strings->pdata);
+		camel_lite_imap4_command_register_untagged (ic, "SEARCH", untagged_search);
 		ic->user_data = matches;
 		g_free (set);
 
-		while ((id = camel_imap4_engine_iterate (engine)) < ic->id && id != -1)
+		while ((id = camel_lite_imap4_engine_iterate (engine)) < ic->id && id != -1)
 			;
 
 		if (id == -1 || ic->status != CAMEL_IMAP4_COMMAND_COMPLETE) {
-			camel_imap4_command_unref (ic);
+			camel_lite_imap4_command_unref (ic);
 			goto done;
 		}
 
@@ -274,18 +274,18 @@ imap4_body_contains (struct _ESExp *f, int argc, struct _ESExpResult **argv, Cam
 
 				if (resp->code == CAMEL_IMAP4_RESP_CODE_BADCHARSET) {
 					engine->capa &= ~CAMEL_IMAP4_CAPABILITY_utf8_search;
-					camel_imap4_command_unref (ic);
+					camel_lite_imap4_command_unref (ic);
 					goto retry;
 				}
 			}
 		}
 
 		if (ic->result != CAMEL_IMAP4_RESULT_OK) {
-			camel_imap4_command_unref (ic);
+			camel_lite_imap4_command_unref (ic);
 			break;
 		}
 
-		camel_imap4_command_unref (ic);
+		camel_lite_imap4_command_unref (ic);
 	}
 
  done:
@@ -296,7 +296,7 @@ imap4_body_contains (struct _ESExp *f, int argc, struct _ESExpResult **argv, Cam
 	if (search->current) {
 		const char *uid;
 
-		uid = camel_message_info_uid (search->current);
+		uid = camel_lite_message_info_uid (search->current);
 		r = e_sexp_result_new (f, ESEXP_RES_BOOL);
 		r->value.bool = FALSE;
 		for (i = 0; i < matches->len; i++) {

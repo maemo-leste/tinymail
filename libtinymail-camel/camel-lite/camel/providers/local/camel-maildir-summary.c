@@ -50,7 +50,7 @@
 #define CAMEL_MAILDIR_SUMMARY_VERSION (0x2000)
 
 static CamelMessageInfo *message_info_load(CamelFolderSummary *s, gboolean *must_add);
-static CamelMessageInfo *message_info_new_from_header(CamelFolderSummary *, struct _camel_header_raw *);
+static CamelMessageInfo *message_info_new_from_header(CamelFolderSummary *, struct _camel_lite_header_raw *);
 static void message_info_free(CamelFolderSummary *, CamelMessageInfo *mi);
 
 static int maildir_summary_load(CamelLocalSummary *cls, int forceindex, CamelException *ex);
@@ -62,9 +62,9 @@ static char *maildir_summary_next_uid_string(CamelFolderSummary *s);
 static int maildir_summary_decode_x_evolution(CamelLocalSummary *cls, const char *xev, CamelLocalMessageInfo *mi);
 static char *maildir_summary_encode_x_evolution(CamelLocalSummary *cls, const CamelLocalMessageInfo *mi);
 
-static void camel_maildir_summary_class_init	(CamelMaildirSummaryClass *class);
-static void camel_maildir_summary_init	(CamelMaildirSummary *gspaper);
-static void camel_maildir_summary_finalise	(CamelObject *obj);
+static void camel_lite_maildir_summary_class_init	(CamelMaildirSummaryClass *class);
+static void camel_lite_maildir_summary_init	(CamelMaildirSummary *gspaper);
+static void camel_lite_maildir_summary_finalise	(CamelObject *obj);
 
 #define _PRIVATE(x) (((CamelMaildirSummary *)(x))->priv)
 
@@ -79,30 +79,30 @@ struct _CamelMaildirSummaryPrivate {
 static CamelLocalSummaryClass *parent_class;
 
 CamelType
-camel_maildir_summary_get_type (void)
+camel_lite_maildir_summary_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register(camel_local_summary_get_type (), "CamelMaildirSummary",
+		type = camel_lite_type_register(camel_lite_local_summary_get_type (), "CamelLiteMaildirSummary",
 					   sizeof(CamelMaildirSummary),
 					   sizeof(CamelMaildirSummaryClass),
-					   (CamelObjectClassInitFunc)camel_maildir_summary_class_init,
+					   (CamelObjectClassInitFunc)camel_lite_maildir_summary_class_init,
 					   NULL,
-					   (CamelObjectInitFunc)camel_maildir_summary_init,
-					   (CamelObjectFinalizeFunc)camel_maildir_summary_finalise);
+					   (CamelObjectInitFunc)camel_lite_maildir_summary_init,
+					   (CamelObjectFinalizeFunc)camel_lite_maildir_summary_finalise);
 	}
 
 	return type;
 }
 
 static void
-camel_maildir_summary_class_init (CamelMaildirSummaryClass *class)
+camel_lite_maildir_summary_class_init (CamelMaildirSummaryClass *class)
 {
 	CamelFolderSummaryClass *sklass = (CamelFolderSummaryClass *) class;
 	CamelLocalSummaryClass *lklass = (CamelLocalSummaryClass *)class;
 
-	parent_class = (CamelLocalSummaryClass *)camel_type_get_global_classfuncs(camel_local_summary_get_type ());
+	parent_class = (CamelLocalSummaryClass *)camel_lite_type_get_global_classfuncs(camel_lite_local_summary_get_type ());
 
 	/* override methods */
 	sklass->message_info_load = message_info_load;
@@ -119,7 +119,7 @@ camel_maildir_summary_class_init (CamelMaildirSummaryClass *class)
 }
 
 static void
-camel_maildir_summary_init (CamelMaildirSummary *o)
+camel_lite_maildir_summary_init (CamelMaildirSummary *o)
 {
 	struct _CamelFolderSummary *s = (CamelFolderSummary *) o;
 	char hostname[256];
@@ -143,7 +143,7 @@ camel_maildir_summary_init (CamelMaildirSummary *o)
 }
 
 static void
-camel_maildir_summary_finalise(CamelObject *obj)
+camel_lite_maildir_summary_finalise(CamelObject *obj)
 {
 	CamelMaildirSummary *o = (CamelMaildirSummary *)obj;
 
@@ -152,7 +152,7 @@ camel_maildir_summary_finalise(CamelObject *obj)
 }
 
 /**
- * camel_maildir_summary_new:
+ * camel_lite_maildir_summary_new:
  * @folder: parent folder.
  * @filename: Path to root of this maildir directory (containing new/tmp/cur directories).
  * @index: Index if one is reqiured.
@@ -162,14 +162,14 @@ camel_maildir_summary_finalise(CamelObject *obj)
  * Return value: A new #CamelMaildirSummary object.
  **/
 CamelMaildirSummary
-*camel_maildir_summary_new(struct _CamelFolder *folder, const char *filename, const char *maildirdir, CamelIndex *index)
+*camel_lite_maildir_summary_new(struct _CamelFolder *folder, const char *filename, const char *maildirdir, CamelIndex *index)
 {
-	CamelMaildirSummary *o = (CamelMaildirSummary *)camel_object_new(camel_maildir_summary_get_type ());
+	CamelMaildirSummary *o = (CamelMaildirSummary *)camel_lite_object_new(camel_lite_maildir_summary_get_type ());
 	CamelException ex = CAMEL_EXCEPTION_INITIALISER;
 
 	((CamelFolderSummary *)o)->folder = folder;
 
-	camel_local_summary_construct((CamelLocalSummary *)o, filename, maildirdir, index);
+	camel_lite_local_summary_construct((CamelLocalSummary *)o, filename, maildirdir, index);
 
 	maildir_summary_load ((CamelLocalSummary *)o, FALSE, &ex);
 	maildir_summary_check ((CamelLocalSummary *) o, NULL, &ex);
@@ -201,13 +201,13 @@ static struct {
 };
 
 /* convert the uid + flags into a unique:info maildir format */
-char *camel_maildir_summary_info_to_name(const CamelMaildirMessageInfo *info)
+char *camel_lite_maildir_summary_info_to_name(const CamelMaildirMessageInfo *info)
 {
 	const char *uid;
 	char *p, *buf;
 	int i;
 
-	uid = camel_message_info_uid (info);
+	uid = camel_lite_message_info_uid (info);
 	/* TNY CHANGE: This used to he ":2,", but VFAT does not allow those characters */
 	buf = g_alloca (strlen (uid) + strlen ("!2,") +  (sizeof (flagbits) / sizeof (flagbits[0])) + 1);
 	p = buf + sprintf (buf, "%s!2,", uid);
@@ -228,7 +228,7 @@ char *camel_maildir_summary_info_to_name(const CamelMaildirMessageInfo *info)
 }
 
 /* returns 0 if the info matches (or there was none), otherwise we changed it */
-int camel_maildir_summary_name_to_info(CamelMaildirMessageInfo *info, const char *name)
+int camel_lite_maildir_summary_name_to_info(CamelMaildirMessageInfo *info, const char *name)
 {
 	char *p, c;
 	guint32 set = 0;	/* what we set */
@@ -296,27 +296,27 @@ adapted_local_summary_add (CamelLocalSummary *cls, CamelMimeMessage *msg, const 
 
 	d(printf("Adding message to summary\n"));
 
-	mi = (CamelLocalMessageInfo *)camel_folder_summary_add_from_message((CamelFolderSummary *)cls, msg);
+	mi = (CamelLocalMessageInfo *)camel_lite_folder_summary_add_from_message((CamelFolderSummary *)cls, msg);
 	if (mi) {
 		d(printf("Added, uid = %s\n", mi->uid));
 		if (info) {
 #ifdef NON_TINYMAIL_FEATURES
 
-			const CamelTag *tag = camel_message_info_user_tags(info);
-			const CamelFlag *flag = camel_message_info_user_flags(info);
+			const CamelTag *tag = camel_lite_message_info_user_tags(info);
+			const CamelFlag *flag = camel_lite_message_info_user_flags(info);
 
 			while (flag) {
-				camel_message_info_set_user_flag((CamelMessageInfo *)mi, flag->name, TRUE);
+				camel_lite_message_info_set_user_flag((CamelMessageInfo *)mi, flag->name, TRUE);
 				flag = flag->next;
 			}
 
 			while (tag) {
-				camel_message_info_set_user_tag((CamelMessageInfo *)mi, tag->name, tag->value);
+				camel_lite_message_info_set_user_tag((CamelMessageInfo *)mi, tag->name, tag->value);
 				tag = tag->next;
 			}
 #endif
-			mi->info.flags = camel_message_info_flags(info);
-			/*mi->info.flags |= (camel_message_info_flags(info) & 0x1fff);*/
+			mi->info.flags = camel_lite_message_info_flags(info);
+			/*mi->info.flags |= (camel_lite_message_info_flags(info) & 0x1fff);*/
 			mi->info.size = ((CamelMessageInfoBase*)info)->size;
 		}
 
@@ -325,21 +325,21 @@ adapted_local_summary_add (CamelLocalSummary *cls, CamelMimeMessage *msg, const 
 		/* this is terribly slow, of course!
 
 		if (mi->info.size == 0) {
-			CamelStreamNull *sn = (CamelStreamNull *)camel_stream_null_new();
-			camel_data_wrapper_write_to_stream((CamelDataWrapper *)msg, (CamelStream *)sn);
+			CamelStreamNull *sn = (CamelStreamNull *)camel_lite_stream_null_new();
+			camel_lite_data_wrapper_write_to_stream((CamelDataWrapper *)msg, (CamelStream *)sn);
 			mi->info.size = (sn->written);
-			camel_object_unref((CamelObject *)sn);
+			camel_lite_object_unref((CamelObject *)sn);
 		} */
 
 		mi->info.flags &= ~(CAMEL_MESSAGE_FOLDER_NOXEV|CAMEL_MESSAGE_FOLDER_FLAGGED);
-		xev = camel_local_summary_encode_x_evolution(cls, mi);
-		camel_medium_set_header((CamelMedium *)msg, "X-Evolution", xev);
+		xev = camel_lite_local_summary_encode_x_evolution(cls, mi);
+		camel_lite_medium_set_header((CamelMedium *)msg, "X-Evolution", xev);
 		g_free(xev);
-		if (camel_message_info_uid(mi))
-			camel_folder_change_info_add_uid(ci, camel_message_info_uid(mi));
+		if (camel_lite_message_info_uid(mi))
+			camel_lite_folder_change_info_add_uid(ci, camel_lite_message_info_uid(mi));
 	} else {
 		d(printf("Failed!\n"));
-		camel_exception_set (ex, CAMEL_EXCEPTION_SYSTEM_MEMORY,
+		camel_lite_exception_set (ex, CAMEL_EXCEPTION_SYSTEM_MEMORY,
 				     _("Unable to add message to summary: unknown reason"));
 	}
 	return (CamelMessageInfo *)mi;
@@ -354,24 +354,24 @@ static CamelMessageInfo *maildir_summary_add(CamelLocalSummary *cls, CamelMimeMe
 	mi = (CamelMaildirMessageInfo *) adapted_local_summary_add  (cls, msg, info, changes, ex);
 
 	if (mi) {
-		if (camel_message_info_uid(mi))
+		if (camel_lite_message_info_uid(mi))
 		{
 			/* struct stat sbuf; */
 			CamelMessageInfoBase *mii = (CamelMessageInfoBase *)mi;
 			/* gchar *name = NULL; */
 
-			camel_maildir_info_set_filename(mi, camel_maildir_summary_info_to_name(mi));
-			d(printf("Setting filename to %s\n", camel_maildir_info_filename(mi)));
+			camel_lite_maildir_info_set_filename(mi, camel_lite_maildir_summary_info_to_name(mi));
+			d(printf("Setting filename to %s\n", camel_lite_maildir_info_filename(mi)));
 
 
 			if (mii->size == 0) {
-				CamelStreamNull *sn = (CamelStreamNull *)camel_stream_null_new();
-				camel_data_wrapper_write_to_stream((CamelDataWrapper *)msg, (CamelStream *)sn);
+				CamelStreamNull *sn = (CamelStreamNull *)camel_lite_stream_null_new();
+				camel_lite_data_wrapper_write_to_stream((CamelDataWrapper *)msg, (CamelStream *)sn);
 				mii->size = (sn->written);
-				camel_object_unref((CamelObject *)sn);
+				camel_lite_object_unref((CamelObject *)sn);
 			} 
 
-			/* name = g_strdup_printf("%s/cur/%s", cls->folder_path, camel_maildir_info_filename (mi));
+			/* name = g_strdup_printf("%s/cur/%s", cls->folder_path, camel_lite_maildir_info_filename (mi));
 			if (stat (name, &sbuf) == 0)
 				mii->size = sbuf.st_size;
 			g_free (name); */
@@ -381,7 +381,7 @@ static CamelMessageInfo *maildir_summary_add(CamelLocalSummary *cls, CamelMimeMe
 	return (CamelMessageInfo *)mi;
 }
 
-static CamelMessageInfo *message_info_new_from_header(CamelFolderSummary * s, struct _camel_header_raw *h)
+static CamelMessageInfo *message_info_new_from_header(CamelFolderSummary * s, struct _camel_lite_header_raw *h)
 {
 	CamelMessageInfo *mi, *info;
 	CamelMaildirSummary *mds = (CamelMaildirSummary *)s;
@@ -392,34 +392,34 @@ static CamelMessageInfo *message_info_new_from_header(CamelFolderSummary * s, st
 
 	/* with maildir we know the real received date, from the filename
 	   Bulls. We just use what we have in the header of the message!
-	mdi->info.info.date_received = strtoul(camel_message_info_uid(mi), NULL, 10);  */
+	mdi->info.info.date_received = strtoul(camel_lite_message_info_uid(mi), NULL, 10);  */
 
 	if (mi) {
 		CamelMaildirMessageInfo *mdi = (CamelMaildirMessageInfo *)mi;
 		const gchar *uid;
 
-		uid = camel_message_info_uid(mi);
+		uid = camel_lite_message_info_uid(mi);
 		if (uid == NULL || uid[0] == 0)
-			mdi->info.info.uid = camel_folder_summary_next_uid_string (s);
+			mdi->info.info.uid = camel_lite_folder_summary_next_uid_string (s);
 
 		/* handle 'duplicates' */
-		info = camel_folder_summary_uid(s, uid);
+		info = camel_lite_folder_summary_uid(s, uid);
 		if (info) {
 			d(printf("already seen uid '%s', just summarising instead\n", uid));
-			camel_message_info_free(mi);
+			camel_lite_message_info_free(mi);
 			mdi = (CamelMaildirMessageInfo *)(mi = info);
 		}
 
 
 		if (mds->priv->current_file) {
 			/* if setting from a file, grab the flags from it */
-			camel_maildir_info_set_filename(mi, g_strdup(mds->priv->current_file));
-			camel_maildir_summary_name_to_info(mdi, mds->priv->current_file);
+			camel_lite_maildir_info_set_filename(mi, g_strdup(mds->priv->current_file));
+			camel_lite_maildir_summary_name_to_info(mdi, mds->priv->current_file);
 
 		} else {
 			/* if creating a file, set its name from the flags we have */
-			camel_maildir_info_set_filename(mdi, camel_maildir_summary_info_to_name(mdi));
-			d(printf("Setting filename to %s\n", camel_maildir_info_filename(mi)));
+			camel_lite_maildir_info_set_filename(mdi, camel_lite_maildir_summary_info_to_name(mdi));
+			d(printf("Setting filename to %s\n", camel_lite_maildir_info_filename(mi)));
 		}
 	}
 
@@ -463,7 +463,7 @@ static char *maildir_summary_next_uid_string(CamelFolderSummary *s)
 		char *name = NULL, *uid = NULL;
 		struct stat st;
 		int retry = 0;
-		guint32 nextuid = camel_folder_summary_next_uid(s);
+		guint32 nextuid = camel_lite_folder_summary_next_uid(s);
 
 		/* we use time.pid_count.hostname */
 		do {
@@ -494,11 +494,11 @@ message_info_load(CamelFolderSummary *s, gboolean *must_add)
 	if (mi) {
 		char *name;
 
-		if (mds->priv->load_map && camel_message_info_uid(mi)
-		    && (name = g_hash_table_lookup(mds->priv->load_map, camel_message_info_uid(mi)))) {
-			d(printf("Setting filename of %s to %s\n", camel_message_info_uid(mi), name));
-			camel_maildir_info_set_filename(mi, g_strdup(name));
-			camel_maildir_summary_name_to_info((CamelMaildirMessageInfo *)mi, name);
+		if (mds->priv->load_map && camel_lite_message_info_uid(mi)
+		    && (name = g_hash_table_lookup(mds->priv->load_map, camel_lite_message_info_uid(mi)))) {
+			d(printf("Setting filename of %s to %s\n", camel_lite_message_info_uid(mi), name));
+			camel_lite_maildir_info_set_filename(mi, g_strdup(name));
+			camel_lite_maildir_summary_name_to_info((CamelMaildirMessageInfo *)mi, name);
 		}
 	}
 
@@ -521,7 +521,7 @@ static int maildir_summary_load(CamelLocalSummary *cls, int forceindex, CamelExc
 
 	dir = opendir(cur);
 	if (dir == NULL) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM_IO_READ,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM_IO_READ,
 			_("Cannot open maildir directory path: %s: %s"),
 			cls->folder_path, g_strerror (errno));
 		g_free(cur);
@@ -568,7 +568,7 @@ static int maildir_summary_load(CamelLocalSummary *cls, int forceindex, CamelExc
 }
 
 static int
-camel_maildir_summary_add (CamelLocalSummary *cls, const char *name, char *uid)
+camel_lite_maildir_summary_add (CamelLocalSummary *cls, const char *name, char *uid)
 {
 	CamelMaildirSummary *maildirs = (CamelMaildirSummary *)cls;
 	char *filename = g_strdup_printf("%s/cur/%s", cls->folder_path, name);
@@ -585,16 +585,16 @@ camel_maildir_summary_add (CamelLocalSummary *cls, const char *name, char *uid)
 		g_free(filename);
 		return -1;
 	}
-	mp = camel_mime_parser_new();
-	camel_mime_parser_scan_from(mp, FALSE);
-	camel_mime_parser_init_with_fd(mp, fd);
+	mp = camel_lite_mime_parser_new();
+	camel_lite_mime_parser_scan_from(mp, FALSE);
+	camel_lite_mime_parser_init_with_fd(mp, fd);
 	maildirs->priv->current_file = (char *)name;
-	info = camel_folder_summary_add_from_parser((CamelFolderSummary *)maildirs, mp, uid);
+	info = camel_lite_folder_summary_add_from_parser((CamelFolderSummary *)maildirs, mp, uid);
 
 	if (stat (filename, &sbuf) == 0)
 		((CamelMessageInfoBase *)info)->size = sbuf.st_size;
 
-	camel_object_unref((CamelObject *)mp);
+	camel_lite_object_unref((CamelObject *)mp);
 	maildirs->priv->current_file = NULL;
 	g_free(filename);
 	return 0;
@@ -616,18 +616,18 @@ maildir_summary_check(CamelLocalSummary *cls, CamelFolderChangeInfo *changes, Ca
 	new = g_strdup_printf("%s/new", cls->folder_path);
 	cur = g_strdup_printf("%s/cur", cls->folder_path);
 
-	camel_operation_start(NULL, _("Checking folder consistency"));
+	camel_lite_operation_start(NULL, _("Checking folder consistency"));
 
 	/* scan the directory, check for mail files not in the index, or index entries that
 	   no longer exist */
 	dir = opendir(cur);
 	if (dir == NULL) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM_IO_READ,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM_IO_READ,
 			_("Cannot open maildir directory path: %s: %s"),
 			cls->folder_path, g_strerror (errno));
 		g_free(cur);
 		g_free(new);
-		camel_operation_end(NULL);
+		camel_lite_operation_end(NULL);
 		return -1;
 	}
 
@@ -637,12 +637,12 @@ maildir_summary_check(CamelLocalSummary *cls, CamelFolderChangeInfo *changes, Ca
 		total++;
 	rewinddir(dir);
 
-	camel_folder_summary_prepare_hash ((CamelFolderSummary *)cls);
+	camel_lite_folder_summary_prepare_hash ((CamelFolderSummary *)cls);
 
 	while (d = readdir(dir)) {
 		gboolean mfree = FALSE;
 
-		camel_operation_progress(NULL, count, total);
+		camel_lite_operation_progress(NULL, count, total);
 		count++;
 
 		/* FIXME: also run stat to check for regular file */
@@ -666,18 +666,18 @@ maildir_summary_check(CamelLocalSummary *cls, CamelFolderChangeInfo *changes, Ca
 			uid = d->d_name;
 
 
-		info = camel_folder_summary_uid ((CamelFolderSummary *)cls, uid);
+		info = camel_lite_folder_summary_uid ((CamelFolderSummary *)cls, uid);
 		if (info == NULL) {
 			/* must be a message incorporated by another client, this is not a 'recent' uid */
-			if (camel_maildir_summary_add (cls, d->d_name, uid) == 0)
+			if (camel_lite_maildir_summary_add (cls, d->d_name, uid) == 0)
 				if (changes)
-					camel_folder_change_info_add_uid(changes, uid);
+					camel_lite_folder_change_info_add_uid(changes, uid);
 
 
 		} else {
 			// CamelMaildirMessageInfo *mdi = (CamelMaildirMessageInfo *) info;
 			// mdi->filename = g_strdup (d->d_name);
-			camel_message_info_free(info);
+			camel_lite_message_info_free(info);
 		}
 
 		if (mfree)
@@ -685,9 +685,9 @@ maildir_summary_check(CamelLocalSummary *cls, CamelFolderChangeInfo *changes, Ca
 	}
 	closedir(dir);
 
-	camel_operation_end(NULL);
+	camel_lite_operation_end(NULL);
 
-	camel_operation_start(NULL, _("Checking for new messages"));
+	camel_lite_operation_start(NULL, _("Checking for new messages"));
 
 	/* now, scan new for new messages, and copy them to cur, and so forth */
 	dir = opendir(new);
@@ -702,7 +702,7 @@ maildir_summary_check(CamelLocalSummary *cls, CamelFolderChangeInfo *changes, Ca
 			char *name, *newname, *destname, *destfilename;
 			char *src, *dest;
 
-			camel_operation_progress(NULL, count, total);
+			camel_lite_operation_progress(NULL, count, total);
 			count++;
 
 			name = d->d_name;
@@ -713,9 +713,9 @@ maildir_summary_check(CamelLocalSummary *cls, CamelFolderChangeInfo *changes, Ca
 				continue;
 
 			/* already in summary?  shouldn't happen, but just incase ... */
-			if ((info = camel_folder_summary_uid((CamelFolderSummary *)cls, name))) {
-				camel_message_info_free(info);
-				newname = destname = camel_folder_summary_next_uid_string(s);
+			if ((info = camel_lite_folder_summary_uid((CamelFolderSummary *)cls, name))) {
+				camel_lite_message_info_free(info);
+				newname = destname = camel_lite_folder_summary_next_uid_string(s);
 			} else {
 				newname = NULL;
 				destname = name;
@@ -729,10 +729,10 @@ maildir_summary_check(CamelLocalSummary *cls, CamelFolderChangeInfo *changes, Ca
 			/* FIXME: This should probably use link/unlink */
 
 			if (rename(src, dest) == 0) {
-				camel_maildir_summary_add (cls, destfilename, destname);
+				camel_lite_maildir_summary_add (cls, destfilename, destname);
 				if (changes) {
-					camel_folder_change_info_add_uid(changes, destname);
-					camel_folder_change_info_recent_uid(changes, destname);
+					camel_lite_folder_change_info_add_uid(changes, destname);
+					camel_lite_folder_change_info_recent_uid(changes, destname);
 				}
 			} else {
 				/* else?  we should probably care about failures, but wont */
@@ -746,16 +746,16 @@ maildir_summary_check(CamelLocalSummary *cls, CamelFolderChangeInfo *changes, Ca
 			g_free(dest);
 		}
 
-		camel_operation_end(NULL);
+		camel_lite_operation_end(NULL);
 		closedir(dir);
 	}
 
 	g_free(new);
 	g_free(cur);
 
-	camel_folder_summary_kill_hash ((CamelFolderSummary *)cls);
+	camel_lite_folder_summary_kill_hash ((CamelFolderSummary *)cls);
 
-	camel_folder_summary_save ((CamelFolderSummary *) cls, ex);
+	camel_lite_folder_summary_save ((CamelFolderSummary *) cls, ex);
 
 	return 0;
 }
@@ -774,41 +774,41 @@ maildir_summary_sync(CamelLocalSummary *cls, gboolean expunge, CamelFolderChange
 
 	d(printf("summary_sync(expunge=%s)\n", expunge?"true":"false"));
 
-	if (camel_local_summary_check(cls, changes, ex) == -1)
+	if (camel_lite_local_summary_check(cls, changes, ex) == -1)
 		return -1;
 
-	camel_operation_start(NULL, _("Storing folder"));
+	camel_lite_operation_start(NULL, _("Storing folder"));
 
-	count = camel_folder_summary_count((CamelFolderSummary *)cls);
+	count = camel_lite_folder_summary_count((CamelFolderSummary *)cls);
 	for (i=count-1;i>=0;i--) {
-		camel_operation_progress(NULL, (count-i), count);
+		camel_lite_operation_progress(NULL, (count-i), count);
 
-		info = camel_folder_summary_index((CamelFolderSummary *)cls, i);
+		info = camel_lite_folder_summary_index((CamelFolderSummary *)cls, i);
 		mdi = (CamelMaildirMessageInfo *)info;
 		if (mdi && (mdi->info.info.flags & CAMEL_MESSAGE_DELETED) && expunge) {
-			name = camel_maildir_get_filename (cls->folder_path, mdi, info->uid);
+			name = camel_lite_maildir_get_filename (cls->folder_path, mdi, info->uid);
 			d(printf("deleting %s\n", name));
 			if (unlink(name) == 0 || errno==ENOENT) {
 
 				/* FIXME: put this in folder_summary::remove()? */
 				if (cls->index)
-					camel_index_delete_name(cls->index, camel_message_info_uid(info));
+					camel_lite_index_delete_name(cls->index, camel_lite_message_info_uid(info));
 
-				camel_folder_change_info_remove_uid(changes, camel_message_info_uid(info));
+				camel_lite_folder_change_info_remove_uid(changes, camel_lite_message_info_uid(info));
 				((CamelMessageInfoBase*)info)->flags |= CAMEL_MESSAGE_EXPUNGED;
-				camel_folder_summary_remove((CamelFolderSummary *)cls, info);
+				camel_lite_folder_summary_remove((CamelFolderSummary *)cls, info);
 			}
 			g_free(name);
 		} else if (mdi && (mdi->info.info.flags & CAMEL_MESSAGE_FOLDER_FLAGGED)) {
-			char *newname = camel_maildir_summary_info_to_name(mdi);
+			char *newname = camel_lite_maildir_summary_info_to_name(mdi);
 			char *dest;
 
 			/* do we care about additional metainfo stored inside the message? */
 			/* probably should all go in the filename? */
 
 			/* have our flags/ i.e. name changed? */
-			if (newname && strcmp(newname, camel_maildir_info_filename (mdi))) {
-				name = g_strdup_printf("%s/cur/%s", cls->folder_path, camel_maildir_info_filename(mdi));
+			if (newname && strcmp(newname, camel_lite_maildir_info_filename (mdi))) {
+				name = g_strdup_printf("%s/cur/%s", cls->folder_path, camel_lite_maildir_info_filename(mdi));
 				dest = g_strdup_printf("%s/cur/%s", cls->folder_path, newname);
 				rename(name, dest);
 				if (stat(dest, &st) == -1) {
@@ -826,23 +826,23 @@ maildir_summary_sync(CamelLocalSummary *cls, gboolean expunge, CamelFolderChange
 			/* strip FOLDER_MESSAGE_FLAGED, etc */
 			mdi->info.info.flags &= 0x1fff;
 		}
-		camel_message_info_free(info);
+		camel_lite_message_info_free(info);
 	}
 
-	camel_operation_end(NULL);
+	camel_lite_operation_end(NULL);
 
 	return ((CamelLocalSummaryClass *)parent_class)->sync(cls, expunge, changes, ex);
 }
 
 
-char *camel_maildir_get_filename (const gchar *fpath, CamelMaildirMessageInfo *mdi, const gchar *uid)
+char *camel_lite_maildir_get_filename (const gchar *fpath, CamelMaildirMessageInfo *mdi, const gchar *uid)
 {
 	char *filen = mdi->filename;
 	gboolean nfree = FALSE;
 	char *name;
 
 	if (!filen || strlen (filen) == 0) {
-		filen = camel_maildir_summary_info_to_name (mdi);
+		filen = camel_lite_maildir_summary_info_to_name (mdi);
 		if (filen)
 			nfree = TRUE;
 	}

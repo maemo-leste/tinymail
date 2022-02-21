@@ -26,9 +26,9 @@
 #include <camel/camel-stream.h>
 #include <camel/camel-mime-filter.h>
 
-#define CAMEL_STREAM_FILTER(obj)         CAMEL_CHECK_CAST (obj, camel_stream_filter_get_type (), CamelStreamFilter)
-#define CAMEL_STREAM_FILTER_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_stream_filter_get_type (), CamelStreamFilterClass)
-#define CAMEL_IS_STREAM_FILTER(obj)      CAMEL_CHECK_TYPE (obj, camel_stream_filter_get_type ())
+#define CAMEL_STREAM_FILTER(obj)         CAMEL_CHECK_CAST (obj, camel_lite_stream_filter_get_type (), CamelStreamFilter)
+#define CAMEL_STREAM_FILTER_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_stream_filter_get_type (), CamelStreamFilterClass)
+#define CAMEL_IS_STREAM_FILTER(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_stream_filter_get_type ())
 
 G_BEGIN_DECLS
 
@@ -46,12 +46,12 @@ struct _CamelStreamFilterClass {
 	CamelStreamClass parent_class;
 };
 
-CamelType			camel_stream_filter_get_type	(void);
+CamelType			camel_lite_stream_filter_get_type	(void);
 
-CamelStreamFilter      *camel_stream_filter_new_with_stream	(CamelStream *stream);
+CamelStreamFilter      *camel_lite_stream_filter_new_with_stream	(CamelStream *stream);
 
-int camel_stream_filter_add	(CamelStreamFilter *stream, CamelMimeFilter *filter);
-void camel_stream_filter_remove	(CamelStreamFilter *stream, int id);
+int camel_lite_stream_filter_add	(CamelStreamFilter *stream, CamelMimeFilter *filter);
+void camel_lite_stream_filter_remove	(CamelStreamFilter *stream, int id);
 
 G_END_DECLS
 

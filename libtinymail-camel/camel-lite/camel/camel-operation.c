@@ -76,7 +76,7 @@ co_getcc(void)
 }
 
 /**
- * camel_operation_new:
+ * camel_lite_operation_new:
  * @status: Callback for receiving status messages.  This will always
  * be called with an internal lock held.
  * @status_data: User data.
@@ -90,7 +90,7 @@ co_getcc(void)
  * Return value: A new operation handle.
  **/
 CamelOperation *
-camel_operation_new (CamelOperationStatusFunc status, void *status_data)
+camel_lite_operation_new (CamelOperationStatusFunc status, void *status_data)
 {
 	CamelOperation *cc;
 
@@ -112,14 +112,14 @@ camel_operation_new (CamelOperationStatusFunc status, void *status_data)
 }
 
 /**
- * camel_operation_mute:
+ * camel_lite_operation_mute:
  * @cc:
  *
  * mutes a camel operation permanently.  from this point on you will never
  * receive operation updates, even if more are sent.
  **/
 void
-camel_operation_mute(CamelOperation *cc)
+camel_lite_operation_mute(CamelOperation *cc)
 {
 	LOCK();
 	cc->status = NULL;
@@ -128,29 +128,29 @@ camel_operation_mute(CamelOperation *cc)
 }
 
 /**
- * camel_operation_registered:
+ * camel_lite_operation_registered:
  *
  * Returns the registered operation, or %NULL if none registered.
  **/
 CamelOperation *
-camel_operation_registered (void)
+camel_lite_operation_registered (void)
 {
 	CamelOperation *cc = co_getcc();
 
 	if (cc)
-		camel_operation_ref(cc);
+		camel_lite_operation_ref(cc);
 
 	return cc;
 }
 
 /**
- * camel_operation_ref:
+ * camel_lite_operation_ref:
  * @cc: operation context
  *
  * Add a reference to the CamelOperation @cc.
  **/
 void
-camel_operation_ref (CamelOperation *cc)
+camel_lite_operation_ref (CamelOperation *cc)
 {
 	g_assert(cc->refcount > 0);
 
@@ -160,13 +160,13 @@ camel_operation_ref (CamelOperation *cc)
 }
 
 /**
- * camel_operation_unref:
+ * camel_lite_operation_unref:
  * @cc: operation context
  *
  * Unref and potentially free @cc.
  **/
 void
-camel_operation_unref (CamelOperation *cc)
+camel_lite_operation_unref (CamelOperation *cc)
 {
 	GSList *n;
 
@@ -185,7 +185,7 @@ camel_operation_unref (CamelOperation *cc)
 
 		n = cc->status_stack;
 		while (n) {
-			g_warning("Camel operation status stack non empty: %s", (char *)n->data);
+			g_warning("CamelLite operation status stack non empty: %s", (char *)n->data);
 			g_free(n->data);
 			n = n->next;
 		}
@@ -199,14 +199,14 @@ camel_operation_unref (CamelOperation *cc)
 }
 
 /**
- * camel_operation_cancel_block:
+ * camel_lite_operation_cancel_block:
  * @cc: operation context
  *
  * Block cancellation for this operation.  If @cc is NULL, then the
  * current thread is blocked.
  **/
 void
-camel_operation_cancel_block (CamelOperation *cc)
+camel_lite_operation_cancel_block (CamelOperation *cc)
 {
 	if (cc == NULL)
 		cc = co_getcc();
@@ -219,7 +219,7 @@ camel_operation_cancel_block (CamelOperation *cc)
 }
 
 /**
- * camel_operation_cancel_unblock:
+ * camel_lite_operation_cancel_unblock:
  * @cc: operation context
  *
  * Unblock cancellation, when the unblock count reaches the block
@@ -227,7 +227,7 @@ camel_operation_cancel_block (CamelOperation *cc)
  * the current thread is unblocked.
  **/
 void
-camel_operation_cancel_unblock (CamelOperation *cc)
+camel_lite_operation_cancel_unblock (CamelOperation *cc)
 {
 	if (cc == NULL)
 		cc = co_getcc();
@@ -240,14 +240,14 @@ camel_operation_cancel_unblock (CamelOperation *cc)
 }
 
 /**
- * camel_operation_cancel:
+ * camel_lite_operation_cancel:
  * @cc: operation context
  *
  * Cancel a given operation.  If @cc is NULL then all outstanding
  * operations are cancelled.
  **/
 void
-camel_operation_cancel (CamelOperation *cc)
+camel_lite_operation_cancel (CamelOperation *cc)
 {
 	CamelOperationMsg *msg;
 
@@ -277,7 +277,7 @@ camel_operation_cancel (CamelOperation *cc)
 }
 
 /**
- * camel_operation_uncancel:
+ * camel_lite_operation_uncancel:
  * @cc: operation context
  *
  * Uncancel a cancelled operation.  If @cc is NULL then the current
@@ -288,7 +288,7 @@ camel_operation_cancel (CamelOperation *cc)
  * processing.
  **/
 void
-camel_operation_uncancel(CamelOperation *cc)
+camel_lite_operation_uncancel(CamelOperation *cc)
 {
 	if (cc == NULL)
 		cc = co_getcc();
@@ -306,7 +306,7 @@ camel_operation_uncancel(CamelOperation *cc)
 }
 
 /**
- * camel_operation_register:
+ * camel_lite_operation_register:
  * @cc: operation context
  *
  * Register a thread or the main thread for cancellation through @cc.
@@ -320,7 +320,7 @@ camel_operation_uncancel(CamelOperation *cc)
  *
  **/
 CamelOperation *
-camel_operation_register (CamelOperation *cc)
+camel_lite_operation_register (CamelOperation *cc)
 {
 	CamelOperation *oldcc = co_getcc();
 
@@ -330,20 +330,20 @@ camel_operation_register (CamelOperation *cc)
 }
 
 /**
- * camel_operation_unregister:
+ * camel_lite_operation_unregister:
  * @cc: operation context
  *
  * Unregister the current thread for all cancellations.
  **/
 void
-camel_operation_unregister (CamelOperation *cc)
+camel_lite_operation_unregister (CamelOperation *cc)
 {
 	pthread_once(&operation_once, co_createspecific);
 	pthread_setspecific(operation_key, NULL);
 }
 
 /**
- * camel_operation_cancel_check:
+ * camel_lite_operation_cancel_check:
  * @cc: operation context
  *
  * Check if cancellation has been applied to @cc.  If @cc is NULL,
@@ -352,7 +352,7 @@ camel_operation_unregister (CamelOperation *cc)
  * Return value: TRUE if the operation has been cancelled.
  **/
 gboolean
-camel_operation_cancel_check (CamelOperation *cc)
+camel_lite_operation_cancel_check (CamelOperation *cc)
 {
 	CamelOperationMsg *msg;
 	int cancelled;
@@ -386,7 +386,7 @@ camel_operation_cancel_check (CamelOperation *cc)
 }
 
 /**
- * camel_operation_cancel_fd:
+ * camel_lite_operation_cancel_fd:
  * @cc: operation context
  *
  * Retrieve a file descriptor that can be waited on (select, or poll)
@@ -396,7 +396,7 @@ camel_operation_cancel_check (CamelOperation *cc)
  * (blocked, or has not been registered for this thread).
  **/
 int
-camel_operation_cancel_fd (CamelOperation *cc)
+camel_lite_operation_cancel_fd (CamelOperation *cc)
 {
 	if (cc == NULL)
 		cc = co_getcc();
@@ -416,7 +416,7 @@ camel_operation_cancel_fd (CamelOperation *cc)
 
 #ifdef HAVE_NSS
 /**
- * camel_operation_cancel_prfd:
+ * camel_lite_operation_cancel_prfd:
  * @cc: operation context
  *
  * Retrieve a file descriptor that can be waited on (select, or poll)
@@ -426,7 +426,7 @@ camel_operation_cancel_fd (CamelOperation *cc)
  * (blocked, or has not been registered for this thread).
  **/
 PRFileDesc *
-camel_operation_cancel_prfd (CamelOperation *cc)
+camel_lite_operation_cancel_prfd (CamelOperation *cc)
 {
 	if (cc == NULL)
 		cc = co_getcc();
@@ -446,7 +446,7 @@ camel_operation_cancel_prfd (CamelOperation *cc)
 #endif /* HAVE_NSS */
 
 /**
- * camel_operation_start:
+ * camel_lite_operation_start:
  * @cc: operation context
  * @what: action being performed (printf-style format string)
  * @Varargs: varargs
@@ -455,7 +455,7 @@ camel_operation_cancel_prfd (CamelOperation *cc)
  * similar end operations.
  **/
 void
-camel_operation_start (CamelOperation *cc, char *what, ...)
+camel_lite_operation_start (CamelOperation *cc, char *what, ...)
 {
 	va_list ap;
 	char *msg;
@@ -494,7 +494,7 @@ camel_operation_start (CamelOperation *cc, char *what, ...)
 }
 
 /**
- * camel_operation_start_transient:
+ * camel_lite_operation_start_transient:
  * @cc: operation context
  * @what: printf-style format string describing the action being performed
  * @Varargs: varargs
@@ -504,7 +504,7 @@ camel_operation_start (CamelOperation *cc, char *what, ...)
  * previous state when finished.
  **/
 void
-camel_operation_start_transient (CamelOperation *cc, char *what, ...)
+camel_lite_operation_start_transient (CamelOperation *cc, char *what, ...)
 {
 	va_list ap;
 	char *msg;
@@ -545,7 +545,7 @@ static unsigned int stamp(void)
 }
 
 /**
- * camel_operation_progress:
+ * camel_lite_operation_progress:
  * @cc: Operation to report to.
  * @sofar: Amount complete
  * @oftotal: Max amount (or, amount when completed)
@@ -554,10 +554,10 @@ static unsigned int stamp(void)
  * currently registered operation is used.  @
  *
  * If the total percentage is not know, then use
- * camel_operation_progress_count().
+ * camel_lite_operation_progress_count().
  **/
 void
-camel_operation_progress (CamelOperation *cc, int sofar, int oftotal)
+camel_lite_operation_progress (CamelOperation *cc, int sofar, int oftotal)
 {
 	unsigned int now;
 	struct _status_stack *s;
@@ -608,19 +608,19 @@ camel_operation_progress (CamelOperation *cc, int sofar, int oftotal)
 }
 
 /**
- * camel_operation_progress_count:
+ * camel_lite_operation_progress_count:
  * @cc: operation context
  * @sofar:
  *
  **/
 void
-camel_operation_progress_count (CamelOperation *cc, int sofar)
+camel_lite_operation_progress_count (CamelOperation *cc, int sofar)
 {
-	camel_operation_progress(cc, sofar, 100);
+	camel_lite_operation_progress(cc, sofar, 100);
 }
 
 /**
- * camel_operation_end:
+ * camel_lite_operation_end:
  * @cc: operation context
  * @what: Format string.
  * @Varargs: varargs
@@ -629,7 +629,7 @@ camel_operation_progress_count (CamelOperation *cc, int sofar)
  * registered operation is notified.
  **/
 void
-camel_operation_end (CamelOperation *cc)
+camel_lite_operation_end (CamelOperation *cc)
 {
 	struct _status_stack *s, *p;
 	unsigned int now;

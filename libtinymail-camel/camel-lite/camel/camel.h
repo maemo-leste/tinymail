@@ -141,8 +141,8 @@
 
 G_BEGIN_DECLS
 
-int camel_init (const char *certdb_dir, gboolean nss_init);
-void camel_shutdown (void);
+int camel_lite_init (const char *certdb_dir, gboolean nss_init);
+void camel_lite_shutdown (void);
 
 G_END_DECLS
 

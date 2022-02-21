@@ -37,7 +37,7 @@ G_BEGIN_DECLS
 
 struct _CamelIMAP4Engine;
 struct _CamelIMAP4Folder;
-struct _camel_imap4_token_t;
+struct _camel_lite_imap4_token_t;
 
 typedef struct _CamelIMAP4Command CamelIMAP4Command;
 typedef struct _CamelIMAP4Literal CamelIMAP4Literal;
@@ -50,7 +50,7 @@ typedef int (* CamelIMAP4PlusCallback) (struct _CamelIMAP4Engine *engine,
 typedef int (* CamelIMAP4UntaggedCallback) (struct _CamelIMAP4Engine *engine,
 					    CamelIMAP4Command *ic,
 					    guint32 index,
-					    struct _camel_imap4_token_t *token,
+					    struct _camel_lite_imap4_token_t *token,
 					    CamelException *ex);
 
 enum {
@@ -121,20 +121,20 @@ struct _CamelIMAP4Command {
 	void *user_data;
 };
 
-CamelIMAP4Command *camel_imap4_command_new (struct _CamelIMAP4Engine *engine, struct _CamelIMAP4Folder *folder,
+CamelIMAP4Command *camel_lite_imap4_command_new (struct _CamelIMAP4Engine *engine, struct _CamelIMAP4Folder *folder,
 					    const char *format, ...);
-CamelIMAP4Command *camel_imap4_command_newv (struct _CamelIMAP4Engine *engine, struct _CamelIMAP4Folder *folder,
+CamelIMAP4Command *camel_lite_imap4_command_newv (struct _CamelIMAP4Engine *engine, struct _CamelIMAP4Folder *folder,
 					     const char *format, va_list args);
 
-void camel_imap4_command_register_untagged (CamelIMAP4Command *ic, const char *atom, CamelIMAP4UntaggedCallback untagged);
+void camel_lite_imap4_command_register_untagged (CamelIMAP4Command *ic, const char *atom, CamelIMAP4UntaggedCallback untagged);
 
-void camel_imap4_command_ref (CamelIMAP4Command *ic);
-void camel_imap4_command_unref (CamelIMAP4Command *ic);
+void camel_lite_imap4_command_ref (CamelIMAP4Command *ic);
+void camel_lite_imap4_command_unref (CamelIMAP4Command *ic);
 
 /* returns 1 when complete, 0 if there is more to do, or -1 on error */
-int camel_imap4_command_step (CamelIMAP4Command *ic);
+int camel_lite_imap4_command_step (CamelIMAP4Command *ic);
 
-void camel_imap4_command_reset (CamelIMAP4Command *ic);
+void camel_lite_imap4_command_reset (CamelIMAP4Command *ic);
 
 G_END_DECLS
 

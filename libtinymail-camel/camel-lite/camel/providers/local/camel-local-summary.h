@@ -26,9 +26,9 @@
 #include <camel/camel-exception.h>
 #include <camel/camel-index.h>
 
-#define CAMEL_LOCAL_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_local_summary_get_type (), CamelLocalSummary)
-#define CAMEL_LOCAL_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_local_summary_get_type (), CamelLocalSummaryClass)
-#define CAMEL_IS_LOCAL_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_local_summary_get_type ())
+#define CAMEL_LOCAL_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_lite_local_summary_get_type (), CamelLocalSummary)
+#define CAMEL_LOCAL_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_local_summary_get_type (), CamelLocalSummaryClass)
+#define CAMEL_IS_LOCAL_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_local_summary_get_type ())
 
 G_BEGIN_DECLS
 
@@ -72,27 +72,27 @@ struct _CamelLocalSummaryClass {
 	int (*decode_x_evolution)(CamelLocalSummary *cls, const char *xev, CamelLocalMessageInfo *info);
 };
 
-CamelType	camel_local_summary_get_type	(void);
-void	camel_local_summary_construct	(CamelLocalSummary *new, const char *filename, const char *local_name, CamelIndex *index);
+CamelType	camel_lite_local_summary_get_type	(void);
+void	camel_lite_local_summary_construct	(CamelLocalSummary *new, const char *filename, const char *local_name, CamelIndex *index);
 
 /* load/check the summary */
-int camel_local_summary_load(CamelLocalSummary *cls, int forceindex, CamelException *ex);
+int camel_lite_local_summary_load(CamelLocalSummary *cls, int forceindex, CamelException *ex);
 /* check for new/removed messages */
-int camel_local_summary_check(CamelLocalSummary *cls, CamelFolderChangeInfo *, CamelException *ex);
+int camel_lite_local_summary_check(CamelLocalSummary *cls, CamelFolderChangeInfo *, CamelException *ex);
 /* perform a folder sync or expunge, if needed */
-int camel_local_summary_sync(CamelLocalSummary *cls, gboolean expunge, CamelFolderChangeInfo *, CamelException *ex);
+int camel_lite_local_summary_sync(CamelLocalSummary *cls, gboolean expunge, CamelFolderChangeInfo *, CamelException *ex);
 /* add a new message to the summary */
-CamelMessageInfo *camel_local_summary_add(CamelLocalSummary *cls, CamelMimeMessage *msg, const CamelMessageInfo *info, CamelFolderChangeInfo *, CamelException *ex);
+CamelMessageInfo *camel_lite_local_summary_add(CamelLocalSummary *cls, CamelMimeMessage *msg, const CamelMessageInfo *info, CamelFolderChangeInfo *, CamelException *ex);
 
 /* force the next check to be a full check/rebuild */
-void camel_local_summary_check_force(CamelLocalSummary *cls);
+void camel_lite_local_summary_check_force(CamelLocalSummary *cls);
 
 /* generate an X-Evolution header line */
-char *camel_local_summary_encode_x_evolution(CamelLocalSummary *cls, const CamelLocalMessageInfo *info);
-int camel_local_summary_decode_x_evolution(CamelLocalSummary *cls, const char *xev, CamelLocalMessageInfo *info);
+char *camel_lite_local_summary_encode_x_evolution(CamelLocalSummary *cls, const CamelLocalMessageInfo *info);
+int camel_lite_local_summary_decode_x_evolution(CamelLocalSummary *cls, const char *xev, CamelLocalMessageInfo *info);
 
 /* utility functions - write headers to a file with optional X-Evolution header and/or status header */
-int camel_local_summary_write_headers(int fd, struct _camel_header_raw *header, const char *xevline, const char *status, const char *xstatus);
+int camel_lite_local_summary_write_headers(int fd, struct _camel_lite_header_raw *header, const char *xevline, const char *status, const char *xstatus);
 
 G_END_DECLS
 

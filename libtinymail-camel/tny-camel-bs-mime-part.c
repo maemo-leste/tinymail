@@ -82,51 +82,51 @@ decode_to_stream (CamelStream *from_stream, CamelStream *stream, const gchar *en
 	CamelTransferEncoding etype;
 
 	if (encoding) 
-		etype = camel_transfer_encoding_from_string (encoding);
+		etype = camel_lite_transfer_encoding_from_string (encoding);
 	else 
 		etype = CAMEL_TRANSFER_ENCODING_DEFAULT;
 
-	fstream = (CamelStream *) camel_stream_filter_new_with_stream (stream);
+	fstream = (CamelStream *) camel_lite_stream_filter_new_with_stream (stream);
 
 	switch (etype) {
 	case CAMEL_TRANSFER_ENCODING_BASE64:
-		filter = (CamelMimeFilter *) camel_mime_filter_basic_new_type (CAMEL_MIME_FILTER_BASIC_BASE64_DEC);
-		camel_stream_filter_add (CAMEL_STREAM_FILTER (fstream), filter);
-		camel_object_unref (filter);
+		filter = (CamelMimeFilter *) camel_lite_mime_filter_basic_new_type (CAMEL_MIME_FILTER_BASIC_BASE64_DEC);
+		camel_lite_stream_filter_add (CAMEL_STREAM_FILTER (fstream), filter);
+		camel_lite_object_unref (filter);
 		break;
 	case CAMEL_TRANSFER_ENCODING_QUOTEDPRINTABLE:
-		filter = (CamelMimeFilter *) camel_mime_filter_basic_new_type (CAMEL_MIME_FILTER_BASIC_QP_DEC);
-		camel_stream_filter_add (CAMEL_STREAM_FILTER (fstream), filter);
-		camel_object_unref (filter);
+		filter = (CamelMimeFilter *) camel_lite_mime_filter_basic_new_type (CAMEL_MIME_FILTER_BASIC_QP_DEC);
+		camel_lite_stream_filter_add (CAMEL_STREAM_FILTER (fstream), filter);
+		camel_lite_object_unref (filter);
 		break;
 	case CAMEL_TRANSFER_ENCODING_UUENCODE:
-		filter = (CamelMimeFilter *) camel_mime_filter_basic_new_type (CAMEL_MIME_FILTER_BASIC_UU_DEC);
-		camel_stream_filter_add (CAMEL_STREAM_FILTER (fstream), filter);
-		camel_object_unref (filter);
+		filter = (CamelMimeFilter *) camel_lite_mime_filter_basic_new_type (CAMEL_MIME_FILTER_BASIC_UU_DEC);
+		camel_lite_stream_filter_add (CAMEL_STREAM_FILTER (fstream), filter);
+		camel_lite_object_unref (filter);
 		break;
 	default:
 		break;
 	}
 
 	if (text) {
-		filter = camel_mime_filter_crlf_new (CAMEL_MIME_FILTER_CRLF_DECODE,
+		filter = camel_lite_mime_filter_crlf_new (CAMEL_MIME_FILTER_CRLF_DECODE,
 						     CAMEL_MIME_FILTER_CRLF_MODE_CRLF_ONLY);
-		camel_stream_filter_add (CAMEL_STREAM_FILTER (fstream), filter);
-		camel_object_unref (filter);
+		camel_lite_stream_filter_add (CAMEL_STREAM_FILTER (fstream), filter);
+		camel_lite_object_unref (filter);
 	}
 
-	camel_stream_reset (fstream);
-	camel_stream_reset (from_stream);
-	ret = camel_stream_write_to_stream (from_stream, fstream);
+	camel_lite_stream_reset (fstream);
+	camel_lite_stream_reset (from_stream);
+	ret = camel_lite_stream_write_to_stream (from_stream, fstream);
 
-	camel_stream_flush (fstream);
-	camel_object_unref (fstream);
+	camel_lite_stream_flush (fstream);
+	camel_lite_object_unref (fstream);
 
 	return ret;
 }
 
 static gssize
-bs_camel_stream_format_text (CamelStream *from_stream, CamelStream *stream, const gchar *charset, const gchar *encoding)
+bs_camel_lite_stream_format_text (CamelStream *from_stream, CamelStream *stream, const gchar *charset, const gchar *encoding)
 {
 	CamelStreamFilter *filter_stream;
 	CamelMimeFilterCharset *filter;
@@ -141,34 +141,34 @@ bs_camel_stream_format_text (CamelStream *from_stream, CamelStream *stream, cons
 		* out windows-cp125#, do some simple sanity checking
 		* before we move on... */
 
-		null = camel_stream_null_new();
-		filter_stream = camel_stream_filter_new_with_stream(null);
-		camel_object_unref(null);
+		null = camel_lite_stream_null_new();
+		filter_stream = camel_lite_stream_filter_new_with_stream(null);
+		camel_lite_object_unref(null);
 
-		windows = (CamelMimeFilterWindows *)camel_mime_filter_windows_new(charset);
-		camel_stream_filter_add (filter_stream, (CamelMimeFilter *)windows);
+		windows = (CamelMimeFilterWindows *)camel_lite_mime_filter_windows_new(charset);
+		camel_lite_stream_filter_add (filter_stream, (CamelMimeFilter *)windows);
 
 		decode_to_stream (from_stream, (CamelStream *)filter_stream, encoding, TRUE);
-		camel_stream_flush ((CamelStream *)filter_stream);
-		camel_stream_reset (from_stream);
-		camel_object_unref (filter_stream);
+		camel_lite_stream_flush ((CamelStream *)filter_stream);
+		camel_lite_stream_reset (from_stream);
+		camel_lite_object_unref (filter_stream);
 
-		charset = camel_mime_filter_windows_real_charset (windows);
+		charset = camel_lite_mime_filter_windows_real_charset (windows);
 	}
 
-	filter_stream = camel_stream_filter_new_with_stream (stream);
+	filter_stream = camel_lite_stream_filter_new_with_stream (stream);
 
-	if ((filter = camel_mime_filter_charset_new_convert (charset, "UTF-8"))) {
-		camel_stream_filter_add (filter_stream, (CamelMimeFilter *) filter);
-		camel_object_unref (filter);
+	if ((filter = camel_lite_mime_filter_charset_new_convert (charset, "UTF-8"))) {
+		camel_lite_stream_filter_add (filter_stream, (CamelMimeFilter *) filter);
+		camel_lite_object_unref (filter);
 	}
 
 	bytes_written = (gssize) decode_to_stream (from_stream, (CamelStream *)filter_stream, encoding, TRUE);
-	camel_stream_flush ((CamelStream *)filter_stream);
-	camel_object_unref (filter_stream);
+	camel_lite_stream_flush ((CamelStream *)filter_stream);
+	camel_lite_object_unref (filter_stream);
 
 	if (windows)
-		camel_object_unref(windows);
+		camel_lite_object_unref(windows);
 
 	return bytes_written;
 }
@@ -180,8 +180,8 @@ decode_from_stream_to (TnyMimePart *self, TnyStream *from_stream, TnyStream *str
 	TnyCamelBsMimePartPriv *priv = TNY_CAMEL_BS_MIME_PART_GET_PRIVATE (self);
 
 	if (decode_text &&
-	    camel_strcase_equal (priv->bodystructure->content.type, "TEXT") &&
-	    camel_strcase_equal (priv->bodystructure->content.subtype, "PLAIN")) 
+	    camel_lite_strcase_equal (priv->bodystructure->content.type, "TEXT") &&
+	    camel_lite_strcase_equal (priv->bodystructure->content.subtype, "PLAIN")) 
 	{
 		gchar *encoding = NULL;
 		gchar *charset = (gchar *) mimeparam_get_value_for (priv->bodystructure->content.params, "CHARSET");
@@ -194,10 +194,10 @@ decode_from_stream_to (TnyMimePart *self, TnyStream *from_stream, TnyStream *str
 		if (!charset)
 			charset = "UTF-8";
 
-		bytes_written = (gssize) bs_camel_stream_format_text (cfrom_stream, cto_stream, charset, encoding);
+		bytes_written = (gssize) bs_camel_lite_stream_format_text (cfrom_stream, cto_stream, charset, encoding);
 
-		camel_object_unref (cfrom_stream);
-		camel_object_unref (cto_stream);
+		camel_lite_object_unref (cfrom_stream);
+		camel_lite_object_unref (cto_stream);
 	} else {
 		if (binary)
 			bytes_written = tny_stream_write_to_stream (from_stream, stream);
@@ -208,8 +208,8 @@ decode_from_stream_to (TnyMimePart *self, TnyStream *from_stream, TnyStream *str
 
 			bytes_written = (gssize) decode_to_stream (cfrom_stream, cto_stream, encoding, FALSE);
 
-			camel_object_unref (cfrom_stream);
-			camel_object_unref (cto_stream);
+			camel_lite_object_unref (cfrom_stream);
+			camel_lite_object_unref (cto_stream);
 		}
 	}
 	return bytes_written;
@@ -224,7 +224,7 @@ fetch_part (TnyMimePart *self, TnyStream *stream, gboolean decode_text)
 	TnyStream *from_stream;
 	gssize return_value = 0;
 
-	binary = !camel_strcase_equal (priv->bodystructure->content.type, "TEXT");
+	binary = !camel_lite_strcase_equal (priv->bodystructure->content.type, "TEXT");
 	from_stream = tny_camel_bs_msg_receive_strategy_start_receiving_part (
 		priv->strat, priv->folder, TNY_CAMEL_BS_MIME_PART (self), &binary, &err);
 
@@ -333,7 +333,7 @@ tny_camel_bs_mime_part_get_header_pairs_default (TnyMimePart *self, TnyList *lis
 	} else {
 		part_uid = g_strdup (priv->uid);
 	}
-	gchar *pos_filename = camel_folder_get_cache_filename (cfolder, 
+	gchar *pos_filename = camel_lite_folder_get_cache_filename (cfolder, 
 							       part_uid, "HEADER", &state);
 	g_free (part_uid);
  
@@ -341,16 +341,16 @@ tny_camel_bs_mime_part_get_header_pairs_default (TnyMimePart *self, TnyList *lis
 		int fd = open (pos_filename, O_RDONLY);
 		if (fd != -1) {
 			CamelMimeParser *mp;
-			struct _camel_header_raw *headers;
+			struct _camel_lite_header_raw *headers;
 			char *buf;
 			size_t len;
 			int err;
 
-			mp = camel_mime_parser_new ();
-			camel_mime_parser_init_with_fd (mp, fd);
+			mp = camel_lite_mime_parser_new ();
+			camel_lite_mime_parser_init_with_fd (mp, fd);
 
-			camel_mime_parser_step (mp, &buf, &len);
-			headers = camel_mime_parser_headers_raw (mp);
+			camel_lite_mime_parser_step (mp, &buf, &len);
+			headers = camel_lite_mime_parser_headers_raw (mp);
 
 			while (headers) {
 				TnyPair *pair;
@@ -360,14 +360,14 @@ tny_camel_bs_mime_part_get_header_pairs_default (TnyMimePart *self, TnyList *lis
 				headers = headers->next;
 			}
 
-			err = camel_mime_parser_errno (mp);
+			err = camel_lite_mime_parser_errno (mp);
 			
 			if (err != 0) {
-				camel_object_unref (mp);
+				camel_lite_object_unref (mp);
 				mp = NULL;
 			}
 			
-			camel_mime_parser_drop_step (mp);
+			camel_lite_mime_parser_drop_step (mp);
                        
 			close (fd);
 		}
@@ -496,20 +496,20 @@ tny_camel_bs_mime_part_is_attachment_default (TnyMimePart *self)
 	 * not actually have this header, as not all E-mail clients add it) */
 
 	if (contdisp) {
-		if (camel_strstrcase (contdisp, "attachment"))
+		if (camel_lite_strstrcase (contdisp, "attachment"))
 			return TRUE;
-		if (camel_strstrcase (contdisp, "inline") && mimeparam_get_value_for (priv->bodystructure->disposition.params, "FILENAME") == NULL)
+		if (camel_lite_strstrcase (contdisp, "inline") && mimeparam_get_value_for (priv->bodystructure->disposition.params, "FILENAME") == NULL)
 			return FALSE;
 	}
 
-	return !((camel_strcase_equal (priv->bodystructure->content.type, "application") && 
-		 camel_strcase_equal (priv->bodystructure->content.subtype, "x-pkcs7-mime")) ||
-		(camel_strcase_equal (priv->bodystructure->content.type, "application") && 
- 		camel_strcase_equal (priv->bodystructure->content.subtype, "x-pkcs7-mime")) ||
-		(camel_strcase_equal (priv->bodystructure->content.type, "application") && 
- 		camel_strcase_equal (priv->bodystructure->content.subtype, "x-inlinepgp-signed")) ||
-		(camel_strcase_equal (priv->bodystructure->content.type, "application") && 
- 		camel_strcase_equal (priv->bodystructure->content.subtype, "x-inlinepgp-encrypted")) ||
+	return !((camel_lite_strcase_equal (priv->bodystructure->content.type, "application") && 
+		 camel_lite_strcase_equal (priv->bodystructure->content.subtype, "x-pkcs7-mime")) ||
+		(camel_lite_strcase_equal (priv->bodystructure->content.type, "application") && 
+ 		camel_lite_strcase_equal (priv->bodystructure->content.subtype, "x-pkcs7-mime")) ||
+		(camel_lite_strcase_equal (priv->bodystructure->content.type, "application") && 
+ 		camel_lite_strcase_equal (priv->bodystructure->content.subtype, "x-inlinepgp-signed")) ||
+		(camel_lite_strcase_equal (priv->bodystructure->content.type, "application") && 
+ 		camel_lite_strcase_equal (priv->bodystructure->content.subtype, "x-inlinepgp-encrypted")) ||
 		(mimeparam_get_value_for (priv->bodystructure->disposition.params, "FILENAME") == NULL));
 
 }
@@ -657,36 +657,36 @@ decode_async_thread (gpointer user_data)
 	 * restore this lock (A) */
 	/* g_static_rec_mutex_lock (priv->folder_lock); */
 
-	cancel = camel_operation_new (decode_async_status, info);
+	cancel = camel_lite_operation_new (decode_async_status, info);
 
 	if (priv->folder && TNY_IS_CAMEL_FOLDER (priv->folder)) {
 		TnyCamelFolderPriv *fpriv = TNY_CAMEL_FOLDER_GET_PRIVATE (priv->folder);
 		if (fpriv->account && TNY_IS_CAMEL_ACCOUNT (fpriv->account)) {
 			TnyCamelAccountPriv *apriv = TNY_CAMEL_ACCOUNT_GET_PRIVATE (fpriv->account);
-			camel_operation_ref (cancel);
+			camel_lite_operation_ref (cancel);
 			apriv->getmsg_cancel = cancel;
 		}
 	}
 
-	camel_operation_register (cancel);
-	camel_operation_start (cancel, (char *) "Getting message part");
+	camel_lite_operation_register (cancel);
+	camel_lite_operation_start (cancel, (char *) "Getting message part");
 
-	info->binary = !camel_strcase_equal (priv->bodystructure->content.type, "TEXT");
+	info->binary = !camel_lite_strcase_equal (priv->bodystructure->content.type, "TEXT");
 	info->from_stream = tny_camel_bs_msg_receive_strategy_start_receiving_part (
 		priv->strat, priv->folder, TNY_CAMEL_BS_MIME_PART (info->self), 
 		&info->binary, &info->err);
 
-	info->cancelled = camel_operation_cancel_check (cancel);
+	info->cancelled = camel_lite_operation_cancel_check (cancel);
 
 	if (info->err != NULL) {
-		if (camel_strstrcase (info->err->message, "cancel") != NULL)
+		if (camel_lite_strstrcase (info->err->message, "cancel") != NULL)
 			info->cancelled = TRUE;
 	}
 
-	camel_operation_unregister (cancel);
-	camel_operation_end (cancel);
+	camel_lite_operation_unregister (cancel);
+	camel_lite_operation_end (cancel);
 	if (CAMEL_IS_OBJECT (cancel))
-		camel_operation_unref (cancel);
+		camel_lite_operation_unref (cancel);
 
 
 	if (priv->folder && TNY_IS_CAMEL_FOLDER (priv->folder)) {
@@ -694,7 +694,7 @@ decode_async_thread (gpointer user_data)
 		if (fpriv->account && TNY_IS_CAMEL_ACCOUNT (fpriv->account)) {
 			TnyCamelAccountPriv *apriv = TNY_CAMEL_ACCOUNT_GET_PRIVATE (fpriv->account);
 			apriv->getmsg_cancel = NULL;
-			camel_operation_unref (cancel);
+			camel_lite_operation_unref (cancel);
 		}
 	}
 
@@ -862,7 +862,7 @@ tny_camel_bs_mime_part_is_purged_default (TnyMimePart *self)
 	TnyCamelBsMimePartPriv *priv = TNY_CAMEL_BS_MIME_PART_GET_PRIVATE (self);
 	CamelFolderPartState state;
 	CamelFolder *cfolder = _tny_camel_folder_get_camel_folder (TNY_CAMEL_FOLDER (priv->folder));
-	gchar *pos_filename = camel_folder_get_cache_filename (cfolder, 
+	gchar *pos_filename = camel_lite_folder_get_cache_filename (cfolder, 
 		priv->uid, priv->bodystructure->part_spec, &state);
 	gboolean retval = FALSE;
 
@@ -897,11 +897,11 @@ tny_camel_bs_mime_part_content_type_is_default (TnyMimePart *self, const gchar *
 	/* pocus ! */
 
 	if (!strcmp (str2, "*")) {
-		if (camel_strcase_equal (priv->bodystructure->content.type, str1))
+		if (camel_lite_strcase_equal (priv->bodystructure->content.type, str1))
 				retval = TRUE;
 	} else {
-		if (camel_strcase_equal (priv->bodystructure->content.type, str1) &&
-			camel_strcase_equal (priv->bodystructure->content.subtype, str2))
+		if (camel_lite_strcase_equal (priv->bodystructure->content.type, str1) &&
+			camel_lite_strcase_equal (priv->bodystructure->content.subtype, str2))
 				retval = TRUE;
 	}
 
@@ -943,7 +943,7 @@ tny_camel_bs_mime_part_get_filename_default (TnyMimePart *self)
 			while (isspace ((unsigned) *raw_value))
 				raw_value++;
 
-			priv->cached_filename = camel_header_decode_string (raw_value, charset);
+			priv->cached_filename = camel_lite_header_decode_string (raw_value, charset);
 		}
 		g_mutex_unlock (priv->part_lock);
 	}
@@ -1075,7 +1075,7 @@ tny_camel_bs_mime_part_set_purged_default (TnyMimePart *self)
 	TnyCamelBsMimePartPriv *priv = TNY_CAMEL_BS_MIME_PART_GET_PRIVATE (self);
 	CamelFolderPartState state;
 	CamelFolder *cfolder = _tny_camel_folder_get_camel_folder (TNY_CAMEL_FOLDER (priv->folder));
-	gchar *pos_filename = camel_folder_get_cache_filename (cfolder, 
+	gchar *pos_filename = camel_lite_folder_get_cache_filename (cfolder, 
 		priv->uid, priv->bodystructure->part_spec, &state);
 
 	if (pos_filename) {
@@ -1134,7 +1134,7 @@ tny_camel_bs_mime_part_is_fetched (TnyCamelBsMimePart *part)
 	TnyCamelBsMimePartPriv *priv = TNY_CAMEL_BS_MIME_PART_GET_PRIVATE (part);
 	CamelFolderPartState state;
 	CamelFolder *cfolder = _tny_camel_folder_get_camel_folder (TNY_CAMEL_FOLDER (priv->folder));
-	gchar *pos_filename = camel_folder_get_cache_filename (cfolder, 
+	gchar *pos_filename = camel_lite_folder_get_cache_filename (cfolder, 
 		priv->uid, priv->bodystructure->part_spec, &state);
 
 	if (pos_filename) {
@@ -1346,7 +1346,7 @@ tny_camel_bs_mime_part_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

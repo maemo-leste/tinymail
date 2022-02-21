@@ -29,7 +29,7 @@
 #include <camel/camel-offline-folder.h>
 #include <camel/camel-offline-journal.h>
 
-#define CAMEL_TYPE_IMAP4_FOLDER            (camel_imap4_folder_get_type ())
+#define CAMEL_TYPE_IMAP4_FOLDER            (camel_lite_imap4_folder_get_type ())
 #define CAMEL_IMAP4_FOLDER(obj)            (CAMEL_CHECK_CAST ((obj), CAMEL_TYPE_IMAP4_FOLDER, CamelIMAP4Folder))
 #define CAMEL_IMAP4_FOLDER_CLASS(klass)    (CAMEL_CHECK_CLASS_CAST ((klass), CAMEL_TYPE_IMAP4_FOLDER, CamelIMAP4FolderClass))
 #define CAMEL_IS_IMAP4_FOLDER(obj)         (CAMEL_CHECK_TYPE ((obj), CAMEL_TYPE_IMAP4_FOLDER))
@@ -73,11 +73,11 @@ struct _CamelIMAP4FolderClass {
 };
 
 
-CamelType camel_imap4_folder_get_type (void);
+CamelType camel_lite_imap4_folder_get_type (void);
 
-CamelFolder *camel_imap4_folder_new (CamelStore *store, const char *full_name, CamelException *ex);
+CamelFolder *camel_lite_imap4_folder_new (CamelStore *store, const char *full_name, CamelException *ex);
 
-const char *camel_imap4_folder_utf7_name (CamelIMAP4Folder *folder);
+const char *camel_lite_imap4_folder_utf7_name (CamelIMAP4Folder *folder);
 
 G_END_DECLS
 

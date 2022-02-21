@@ -33,11 +33,11 @@
 
 #define d(x)
 
-static void camel_mime_filter_html_class_init (CamelMimeFilterHTMLClass *klass);
-static void camel_mime_filter_html_init       (CamelObject *o);
-static void camel_mime_filter_html_finalize   (CamelObject *o);
+static void camel_lite_mime_filter_html_class_init (CamelMimeFilterHTMLClass *klass);
+static void camel_lite_mime_filter_html_init       (CamelObject *o);
+static void camel_lite_mime_filter_html_finalize   (CamelObject *o);
 
-static CamelMimeFilterClass *camel_mime_filter_html_parent;
+static CamelMimeFilterClass *camel_lite_mime_filter_html_parent;
 
 struct _CamelMimeFilterHTMLPrivate {
 	CamelHTMLParser *ctxt;
@@ -74,60 +74,60 @@ static struct {
 
 
 CamelType
-camel_mime_filter_html_get_type (void)
+camel_lite_mime_filter_html_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type (), "CamelMimeFilterHTML",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type (), "CamelLiteMimeFilterHTML",
 					    sizeof (CamelMimeFilterHTML),
 					    sizeof (CamelMimeFilterHTMLClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_html_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_html_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_mime_filter_html_init,
-					    (CamelObjectFinalizeFunc) camel_mime_filter_html_finalize);
+					    (CamelObjectInitFunc) camel_lite_mime_filter_html_init,
+					    (CamelObjectFinalizeFunc) camel_lite_mime_filter_html_finalize);
 	}
 
 	return type;
 }
 
 static void
-camel_mime_filter_html_finalize(CamelObject *o)
+camel_lite_mime_filter_html_finalize(CamelObject *o)
 {
 	CamelMimeFilterHTML *f = (CamelMimeFilterHTML *)o;
 
-	camel_object_unref((CamelObject *)f->priv->ctxt);
+	camel_lite_object_unref((CamelObject *)f->priv->ctxt);
 	g_free(f->priv);
 }
 
 static void
-camel_mime_filter_html_init       (CamelObject *o)
+camel_lite_mime_filter_html_init       (CamelObject *o)
 {
 	CamelMimeFilterHTML *f = (CamelMimeFilterHTML *)o;
 
 	f->priv = g_malloc0(sizeof(*f->priv));
-	f->priv->ctxt = camel_html_parser_new();
+	f->priv->ctxt = camel_lite_html_parser_new();
 }
 
 static void
 run(CamelMimeFilter *mf, char *in, size_t inlen, size_t prespace, char **out, size_t *outlenptr, size_t *outprespace, int last)
 {
 	CamelMimeFilterHTML *f = (CamelMimeFilterHTML *) mf;
-	camel_html_parser_t state;
+	camel_lite_html_parser_t state;
 	char *outp;
 
 	d(printf("converting html:\n%.*s\n", (int)inlen, in));
 
 	/* We should generally shrink the data, but this'll do */
-	camel_mime_filter_set_size (mf, inlen * 2 + 256, FALSE);
+	camel_lite_mime_filter_set_size (mf, inlen * 2 + 256, FALSE);
 	outp = mf->outbuf;
 
-	camel_html_parser_set_data (f->priv->ctxt, in, inlen, last);
+	camel_lite_html_parser_set_data (f->priv->ctxt, in, inlen, last);
 	do {
 		const char *data;
 		int len;
 
-		state = camel_html_parser_step(f->priv->ctxt, &data, &len);
+		state = camel_lite_html_parser_step(f->priv->ctxt, &data, &len);
 
 		switch(state) {
 		case CAMEL_HTML_PARSER_DATA:
@@ -168,16 +168,16 @@ reset(CamelMimeFilter *mf)
 {
 	CamelMimeFilterHTML *f = (CamelMimeFilterHTML *)mf;
 
-	camel_object_unref((CamelObject *)f->priv->ctxt);
-	f->priv->ctxt = camel_html_parser_new();
+	camel_lite_object_unref((CamelObject *)f->priv->ctxt);
+	f->priv->ctxt = camel_lite_html_parser_new();
 }
 
 static void
-camel_mime_filter_html_class_init (CamelMimeFilterHTMLClass *klass)
+camel_lite_mime_filter_html_class_init (CamelMimeFilterHTMLClass *klass)
 {
 	CamelMimeFilterClass *filter_class = (CamelMimeFilterClass *) klass;
 
-	camel_mime_filter_html_parent = CAMEL_MIME_FILTER_CLASS (camel_type_get_global_classfuncs (camel_mime_filter_get_type ()));
+	camel_lite_mime_filter_html_parent = CAMEL_MIME_FILTER_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_mime_filter_get_type ()));
 
 	filter_class->reset = reset;
 	filter_class->filter = filter;
@@ -186,15 +186,15 @@ camel_mime_filter_html_class_init (CamelMimeFilterHTMLClass *klass)
 
 
 /**
- * camel_mime_filter_html_new:
+ * camel_lite_mime_filter_html_new:
  *
  * Create a new #CamelMimeFilterHTML object.
  *
  * Returns a new #CamelMimeFilterHTML object
  **/
 CamelMimeFilterHTML *
-camel_mime_filter_html_new (void)
+camel_lite_mime_filter_html_new (void)
 {
-	CamelMimeFilterHTML *new = CAMEL_MIME_FILTER_HTML ( camel_object_new (camel_mime_filter_html_get_type ()));
+	CamelMimeFilterHTML *new = CAMEL_MIME_FILTER_HTML ( camel_lite_object_new (camel_lite_mime_filter_html_get_type ()));
 	return new;
 }

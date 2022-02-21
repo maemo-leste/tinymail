@@ -29,7 +29,7 @@
 
 #include "camel-transport.h"
 
-#define CAMEL_SENDMAIL_TRANSPORT_TYPE     (camel_sendmail_transport_get_type ())
+#define CAMEL_SENDMAIL_TRANSPORT_TYPE     (camel_lite_sendmail_transport_get_type ())
 #define CAMEL_SENDMAIL_TRANSPORT(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SENDMAIL_TRANSPORT_TYPE, CamelSendmailTransport))
 #define CAMEL_SENDMAIL_TRANSPORT_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SENDMAIL_TRANSPORT_TYPE, CamelSendmailTransportClass))
 #define CAMEL_IS_SENDMAIL_TRANSPORT(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SENDMAIL_TRANSPORT_TYPE))
@@ -49,7 +49,7 @@ typedef struct {
 
 
 /* Standard Camel function */
-CamelType camel_sendmail_transport_get_type (void);
+CamelType camel_lite_sendmail_transport_get_type (void);
 
 G_END_DECLS
 

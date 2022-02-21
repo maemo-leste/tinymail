@@ -51,64 +51,64 @@ static struct {
 	unsigned int mask;
 	urlpattern_t pattern;
 } patterns[] = {
-	{ CONVERT_WEB_URLS, { "file://",   "",        camel_url_file_start,     camel_url_file_end     } },
-	{ CONVERT_WEB_URLS, { "ftp://",    "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "sftp://",   "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "http://",   "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "https://",  "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "news://",   "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "nntp://",   "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "telnet://", "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "webcal://", "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "mailto:",   "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "callto:",   "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "h323:",     "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "sip:",      "",        camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "www.",      "http://", camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_WEB_URLS, { "ftp.",      "ftp://",  camel_url_web_start,      camel_url_web_end      } },
-	{ CONVERT_ADDRSPEC, { "@",         "mailto:", camel_url_addrspec_start, camel_url_addrspec_end } },
+	{ CONVERT_WEB_URLS, { "file://",   "",        camel_lite_url_file_start,     camel_lite_url_file_end     } },
+	{ CONVERT_WEB_URLS, { "ftp://",    "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "sftp://",   "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "http://",   "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "https://",  "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "news://",   "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "nntp://",   "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "telnet://", "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "webcal://", "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "mailto:",   "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "callto:",   "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "h323:",     "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "sip:",      "",        camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "www.",      "http://", camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_WEB_URLS, { "ftp.",      "ftp://",  camel_lite_url_web_start,      camel_lite_url_web_end      } },
+	{ CONVERT_ADDRSPEC, { "@",         "mailto:", camel_lite_url_addrspec_start, camel_lite_url_addrspec_end } },
 };
 
 #define NUM_URL_PATTERNS (sizeof (patterns) / sizeof (patterns[0]))
 
-static void camel_mime_filter_tohtml_class_init (CamelMimeFilterToHTMLClass *klass);
-static void camel_mime_filter_tohtml_init       (CamelMimeFilterToHTML *filter);
-static void camel_mime_filter_tohtml_finalize   (CamelObject *obj);
+static void camel_lite_mime_filter_tohtml_class_init (CamelMimeFilterToHTMLClass *klass);
+static void camel_lite_mime_filter_tohtml_init       (CamelMimeFilterToHTML *filter);
+static void camel_lite_mime_filter_tohtml_finalize   (CamelObject *obj);
 
-static CamelMimeFilterClass *camel_mime_filter_tohtml_parent;
+static CamelMimeFilterClass *camel_lite_mime_filter_tohtml_parent;
 
 
 CamelType
-camel_mime_filter_tohtml_get_type (void)
+camel_lite_mime_filter_tohtml_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type (),
-					    "CamelMimeFilterToHTML",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type (),
+					    "CamelLiteMimeFilterToHTML",
 					    sizeof (CamelMimeFilterToHTML),
 					    sizeof (CamelMimeFilterToHTMLClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_tohtml_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_tohtml_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_mime_filter_tohtml_init,
-					    (CamelObjectFinalizeFunc) camel_mime_filter_tohtml_finalize);
+					    (CamelObjectInitFunc) camel_lite_mime_filter_tohtml_init,
+					    (CamelObjectFinalizeFunc) camel_lite_mime_filter_tohtml_finalize);
 	}
 
 	return type;
 }
 
 static void
-camel_mime_filter_tohtml_finalize (CamelObject *obj)
+camel_lite_mime_filter_tohtml_finalize (CamelObject *obj)
 {
 	CamelMimeFilterToHTML *filter = (CamelMimeFilterToHTML *) obj;
 
-	camel_url_scanner_free (filter->scanner);
+	camel_lite_url_scanner_free (filter->scanner);
 }
 
 static void
-camel_mime_filter_tohtml_init (CamelMimeFilterToHTML *filter)
+camel_lite_mime_filter_tohtml_init (CamelMimeFilterToHTML *filter)
 {
-	filter->scanner = camel_url_scanner_new ();
+	filter->scanner = camel_lite_url_scanner_new ();
 
 	filter->flags = 0;
 	filter->colour = 0;
@@ -127,7 +127,7 @@ check_size (CamelMimeFilter *filter, char *outptr, char **outend, size_t len)
 
 	offset = outptr - filter->outbuf;
 
-	camel_mime_filter_set_size (filter, filter->outsize + len, TRUE);
+	camel_lite_mime_filter_set_size (filter, filter->outsize + len, TRUE);
 
 	*outend = filter->outbuf + filter->outsize;
 
@@ -173,7 +173,7 @@ writeln (CamelMimeFilter *filter, const unsigned char *in, const unsigned char *
 
 		outptr = check_size (filter, outptr, outend, 16);
 
-		u = camel_utf8_getc_limit (&inptr, inend);
+		u = camel_lite_utf8_getc_limit (&inptr, inend);
 		switch (u) {
 		case 0xffff:
 			g_warning("Truncated utf8 buffer");
@@ -259,7 +259,7 @@ html_convert (CamelMimeFilter *filter, char *in, size_t inlen, size_t prespace,
 		return;
 	}
 
-	camel_mime_filter_set_size (filter, inlen * 2 + 6, FALSE);
+	camel_lite_mime_filter_set_size (filter, inlen * 2 + 6, FALSE);
 
 	inptr = in;
 	inend = in + inlen;
@@ -309,7 +309,7 @@ html_convert (CamelMimeFilter *filter, char *in, size_t inlen, size_t prespace,
 			len = inptr - start;
 
 			do {
-				if (camel_url_scanner_scan (html->scanner, start, len, &match)) {
+				if (camel_lite_url_scanner_scan (html->scanner, start, len, &match)) {
 					/* write out anything before the first regex match */
 					outptr = writeln (filter, (const unsigned char *)start, (const unsigned char *)start + match.um_so,
 							  outptr, &outend);
@@ -377,7 +377,7 @@ html_convert (CamelMimeFilter *filter, char *in, size_t inlen, size_t prespace,
 		}
 	} else if (start < inend) {
 		/* backup */
-		camel_mime_filter_backup (filter, start, (unsigned) (inend - start));
+		camel_lite_mime_filter_backup (filter, start, (unsigned) (inend - start));
 	}
 
 	*out = filter->outbuf;
@@ -409,11 +409,11 @@ filter_reset (CamelMimeFilter *filter)
 }
 
 static void
-camel_mime_filter_tohtml_class_init (CamelMimeFilterToHTMLClass *klass)
+camel_lite_mime_filter_tohtml_class_init (CamelMimeFilterToHTMLClass *klass)
 {
 	CamelMimeFilterClass *filter_class = (CamelMimeFilterClass *) klass;
 
-	camel_mime_filter_tohtml_parent = CAMEL_MIME_FILTER_CLASS (camel_type_get_global_classfuncs (camel_mime_filter_get_type ()));
+	camel_lite_mime_filter_tohtml_parent = CAMEL_MIME_FILTER_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_mime_filter_get_type ()));
 
 	filter_class->reset = filter_reset;
 	filter_class->filter = filter_filter;
@@ -422,7 +422,7 @@ camel_mime_filter_tohtml_class_init (CamelMimeFilterToHTMLClass *klass)
 
 
 /**
- * camel_mime_filter_tohtml_new:
+ * camel_lite_mime_filter_tohtml_new:
  * @flags: bitwise flags defining the behaviour
  * @colour: colour to use when highlighting quoted text
  *
@@ -432,19 +432,19 @@ camel_mime_filter_tohtml_class_init (CamelMimeFilterToHTMLClass *klass)
  * Returns a new #CamelMimeFilterToHTML object
  **/
 CamelMimeFilter *
-camel_mime_filter_tohtml_new (guint32 flags, guint32 colour)
+camel_lite_mime_filter_tohtml_new (guint32 flags, guint32 colour)
 {
 	CamelMimeFilterToHTML *new;
 	int i;
 
-	new = CAMEL_MIME_FILTER_TOHTML (camel_object_new (camel_mime_filter_tohtml_get_type ()));
+	new = CAMEL_MIME_FILTER_TOHTML (camel_lite_object_new (camel_lite_mime_filter_tohtml_get_type ()));
 
 	new->flags = flags;
 	new->colour = colour;
 
 	for (i = 0; i < NUM_URL_PATTERNS; i++) {
 		if (patterns[i].mask & flags)
-			camel_url_scanner_add (new->scanner, &patterns[i].pattern);
+			camel_lite_url_scanner_add (new->scanner, &patterns[i].pattern);
 	}
 
 	return CAMEL_MIME_FILTER (new);
@@ -452,7 +452,7 @@ camel_mime_filter_tohtml_new (guint32 flags, guint32 colour)
 
 
 /**
- * camel_text_to_html:
+ * camel_lite_text_to_html:
  * @in: input text
  * @flags: bitwise flags defining the html conversion behaviour
  * @colour: colour to use when syntax highlighting
@@ -463,7 +463,7 @@ camel_mime_filter_tohtml_new (guint32 flags, guint32 colour)
  * of @in
  **/
 char *
-camel_text_to_html (const char *in, guint32 flags, guint32 colour)
+camel_lite_text_to_html (const char *in, guint32 flags, guint32 colour)
 {
 	CamelMimeFilter *filter;
 	size_t outlen, outpre;
@@ -471,14 +471,14 @@ camel_text_to_html (const char *in, guint32 flags, guint32 colour)
 
 	g_return_val_if_fail (in != NULL, NULL);
 
-	filter = camel_mime_filter_tohtml_new (flags, colour);
+	filter = camel_lite_mime_filter_tohtml_new (flags, colour);
 
-	camel_mime_filter_complete (filter, (char *) in, strlen (in), 0,
+	camel_lite_mime_filter_complete (filter, (char *) in, strlen (in), 0,
 				    &outbuf, &outlen, &outpre);
 
 	outbuf = g_strndup (outbuf, outlen);
 
-	camel_object_unref (filter);
+	camel_lite_object_unref (filter);
 
 	return outbuf;
 }

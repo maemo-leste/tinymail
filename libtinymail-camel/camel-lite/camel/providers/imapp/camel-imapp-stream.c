@@ -59,18 +59,18 @@ stream_fill(CamelIMAPPStream *is)
 		memcpy(is->buf, is->ptr, left);
 		is->end = is->buf + left;
 		is->ptr = is->buf;
-		left = camel_stream_read(is->source, is->end, CAMEL_IMAPP_STREAM_SIZE - (is->end - is->buf));
+		left = camel_lite_stream_read(is->source, is->end, CAMEL_IMAPP_STREAM_SIZE - (is->end - is->buf));
 		if (left > 0) {
 			is->end += left;
-			io(printf("camel_imapp_read: buffer is '%.*s'\n", is->end - is->ptr, is->ptr));
+			io(printf("camel_lite_imapp_read: buffer is '%.*s'\n", is->end - is->ptr, is->ptr));
 			return is->end - is->ptr;
 		} else {
-			io(printf("camel_imapp_read: -1\n"));
+			io(printf("camel_lite_imapp_read: -1\n"));
 			return -1;
 		}
 	}
 
-	printf("camel_imapp_read: -1\n");
+	printf("camel_lite_imapp_read: -1\n");
 
 	return -1;
 }
@@ -92,7 +92,7 @@ stream_read(CamelStream *stream, char *buffer, size_t n)
 		is->ptr += max;
 	} else {
 		max = MIN(is->literal, n);
-		max = camel_stream_read(is->source, buffer, max);
+		max = camel_lite_stream_read(is->source, buffer, max);
 		if (max <= 0)
 			return max;
 	}
@@ -107,7 +107,7 @@ stream_write(CamelStream *stream, const char *buffer, size_t n)
 {
 	CamelIMAPPStream *is = (CamelIMAPPStream *)stream;
 
-	return camel_stream_write(is->source, buffer, n);
+	return camel_lite_stream_write(is->source, buffer, n);
 }
 
 static int
@@ -140,23 +140,23 @@ stream_reset(CamelStream *stream)
 }
 
 static void
-camel_imapp_stream_class_init (CamelStreamClass *camel_imapp_stream_class)
+camel_lite_imapp_stream_class_init (CamelStreamClass *camel_lite_imapp_stream_class)
 {
-	CamelStreamClass *camel_stream_class = (CamelStreamClass *)camel_imapp_stream_class;
+	CamelStreamClass *camel_lite_stream_class = (CamelStreamClass *)camel_lite_imapp_stream_class;
 
-	parent_class = camel_type_get_global_classfuncs( CAMEL_OBJECT_TYPE );
+	parent_class = camel_lite_type_get_global_classfuncs( CAMEL_OBJECT_TYPE );
 
 	/* virtual method definition */
-	camel_stream_class->read = stream_read;
-	camel_stream_class->write = stream_write;
-	camel_stream_class->close = stream_close;
-	camel_stream_class->flush = stream_flush;
-	camel_stream_class->eos = stream_eos;
-	camel_stream_class->reset = stream_reset;
+	camel_lite_stream_class->read = stream_read;
+	camel_lite_stream_class->write = stream_write;
+	camel_lite_stream_class->close = stream_close;
+	camel_lite_stream_class->flush = stream_flush;
+	camel_lite_stream_class->eos = stream_eos;
+	camel_lite_stream_class->reset = stream_reset;
 }
 
 static void
-camel_imapp_stream_init(CamelIMAPPStream *is, CamelIMAPPStreamClass *isclass)
+camel_lite_imapp_stream_init(CamelIMAPPStream *is, CamelIMAPPStreamClass *isclass)
 {
 	/* +1 is room for appending a 0 if we need to for a token */
 	is->ptr = is->end = is->buf = g_malloc(CAMEL_IMAPP_STREAM_SIZE+1);
@@ -165,35 +165,35 @@ camel_imapp_stream_init(CamelIMAPPStream *is, CamelIMAPPStreamClass *isclass)
 }
 
 static void
-camel_imapp_stream_finalise(CamelIMAPPStream *is)
+camel_lite_imapp_stream_finalise(CamelIMAPPStream *is)
 {
 	g_free(is->buf);
 	if (is->source)
-		camel_object_unref((CamelObject *)is->source);
+		camel_lite_object_unref((CamelObject *)is->source);
 }
 
 CamelType
-camel_imapp_stream_get_type (void)
+camel_lite_imapp_stream_get_type (void)
 {
-	static CamelType camel_imapp_stream_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_imapp_stream_type = CAMEL_INVALID_TYPE;
 
-	if (camel_imapp_stream_type == CAMEL_INVALID_TYPE) {
+	if (camel_lite_imapp_stream_type == CAMEL_INVALID_TYPE) {
 		setup_table();
-		camel_imapp_stream_type = camel_type_register( camel_stream_get_type(),
-							    "CamelIMAPPStream",
+		camel_lite_imapp_stream_type = camel_lite_type_register( camel_lite_stream_get_type(),
+							    "CamelLiteIMAPPStream",
 							    sizeof( CamelIMAPPStream ),
 							    sizeof( CamelIMAPPStreamClass ),
-							    (CamelObjectClassInitFunc) camel_imapp_stream_class_init,
+							    (CamelObjectClassInitFunc) camel_lite_imapp_stream_class_init,
 							    NULL,
-							    (CamelObjectInitFunc) camel_imapp_stream_init,
-							    (CamelObjectFinalizeFunc) camel_imapp_stream_finalise );
+							    (CamelObjectInitFunc) camel_lite_imapp_stream_init,
+							    (CamelObjectFinalizeFunc) camel_lite_imapp_stream_finalise );
 	}
 
-	return camel_imapp_stream_type;
+	return camel_lite_imapp_stream_type;
 }
 
 /**
- * camel_imapp_stream_new:
+ * camel_lite_imapp_stream_new:
  *
  * Returns a NULL stream.  A null stream is always at eof, and
  * always returns success for all reads and writes.
@@ -201,12 +201,12 @@ camel_imapp_stream_get_type (void)
  * Return value: the stream
  **/
 CamelStream *
-camel_imapp_stream_new(CamelStream *source)
+camel_lite_imapp_stream_new(CamelStream *source)
 {
 	CamelIMAPPStream *is;
 
-	is = (CamelIMAPPStream *)camel_object_new(camel_imapp_stream_get_type ());
-	camel_object_ref((CamelObject *)source);
+	is = (CamelIMAPPStream *)camel_lite_object_new(camel_lite_imapp_stream_get_type ());
+	camel_lite_object_ref((CamelObject *)source);
 	is->source = source;
 
 	return (CamelStream *)is;
@@ -310,12 +310,12 @@ skip_ws(CamelIMAPPStream *is, unsigned char *pp, unsigned char *pe)
 /* FIXME: these should probably handle it themselves,
    and get rid of the token interface? */
 int
-camel_imapp_stream_atom(CamelIMAPPStream *is, unsigned char **data, unsigned int *lenp)
+camel_lite_imapp_stream_atom(CamelIMAPPStream *is, unsigned char **data, unsigned int *lenp)
 {
 	unsigned char *p, c;
 
 	/* this is only 'approximate' atom */
-	switch(camel_imapp_stream_token(is, data, lenp)) {
+	switch(camel_lite_imapp_stream_token(is, data, lenp)) {
 	case IMAP_TOK_TOKEN:
 		p = *data;
 		while ((c = *p))
@@ -325,7 +325,7 @@ camel_imapp_stream_atom(CamelIMAPPStream *is, unsigned char **data, unsigned int
 	case IMAP_TOK_ERROR:
 		return IMAP_TOK_ERROR;
 	default:
-		camel_exception_throw(1, "expecting atom");
+		camel_lite_exception_throw(1, "expecting atom");
 		printf("expecting atom!\n");
 		return IMAP_TOK_PROTOCOL;
 	}
@@ -333,12 +333,12 @@ camel_imapp_stream_atom(CamelIMAPPStream *is, unsigned char **data, unsigned int
 
 /* gets an atom, a quoted_string, or a literal */
 int
-camel_imapp_stream_astring(CamelIMAPPStream *is, unsigned char **data)
+camel_lite_imapp_stream_astring(CamelIMAPPStream *is, unsigned char **data)
 {
 	unsigned char *p, *start;
 	unsigned int len, inlen;
 
-	switch(camel_imapp_stream_token(is, data, &len)) {
+	switch(camel_lite_imapp_stream_token(is, data, &len)) {
 	case IMAP_TOK_TOKEN:
 	case IMAP_TOK_INT:
 	case IMAP_TOK_STRING:
@@ -346,14 +346,14 @@ camel_imapp_stream_astring(CamelIMAPPStream *is, unsigned char **data)
 	case IMAP_TOK_LITERAL:
 		/* FIXME: just grow buffer */
 		if (len >= CAMEL_IMAPP_STREAM_TOKEN) {
-			camel_exception_throw(1, "astring: literal too long");
+			camel_lite_exception_throw(1, "astring: literal too long");
 			printf("astring too long\n");
 			return IMAP_TOK_PROTOCOL;
 		}
 		p = is->tokenptr;
-		camel_imapp_stream_set_literal(is, len);
+		camel_lite_imapp_stream_set_literal(is, len);
 		do {
-			len = camel_imapp_stream_getl(is, &start, &inlen);
+			len = camel_lite_imapp_stream_getl(is, &start, &inlen);
 			if (len < 0)
 				return len;
 			memcpy(p, start, inlen);
@@ -365,7 +365,7 @@ camel_imapp_stream_astring(CamelIMAPPStream *is, unsigned char **data)
 		/* wont get unless no exception hanlder*/
 		return IMAP_TOK_ERROR;
 	default:
-		camel_exception_throw(1, "expecting astring");
+		camel_lite_exception_throw(1, "expecting astring");
 		printf("expecting astring!\n");
 		return IMAP_TOK_PROTOCOL;
 	}
@@ -373,24 +373,24 @@ camel_imapp_stream_astring(CamelIMAPPStream *is, unsigned char **data)
 
 /* check for NIL or (small) quoted_string or literal */
 int
-camel_imapp_stream_nstring(CamelIMAPPStream *is, unsigned char **data)
+camel_lite_imapp_stream_nstring(CamelIMAPPStream *is, unsigned char **data)
 {
 	unsigned char *p, *start;
 	unsigned int len, inlen;
 
-	switch(camel_imapp_stream_token(is, data, &len)) {
+	switch(camel_lite_imapp_stream_token(is, data, &len)) {
 	case IMAP_TOK_STRING:
 		return 0;
 	case IMAP_TOK_LITERAL:
 		/* FIXME: just grow buffer */
 		if (len >= CAMEL_IMAPP_STREAM_TOKEN) {
-			camel_exception_throw(1, "nstring: literal too long");
+			camel_lite_exception_throw(1, "nstring: literal too long");
 			return IMAP_TOK_PROTOCOL;
 		}
 		p = is->tokenptr;
-		camel_imapp_stream_set_literal(is, len);
+		camel_lite_imapp_stream_set_literal(is, len);
 		do {
-			len = camel_imapp_stream_getl(is, &start, &inlen);
+			len = camel_lite_imapp_stream_getl(is, &start, &inlen);
 			if (len < 0)
 				return len;
 			memcpy(p, start, inlen);
@@ -405,7 +405,7 @@ camel_imapp_stream_nstring(CamelIMAPPStream *is, unsigned char **data)
 			return 0;
 		}
 	default:
-		camel_exception_throw(1, "expecting nstring");
+		camel_lite_exception_throw(1, "expecting nstring");
 		return IMAP_TOK_PROTOCOL;
 	case IMAP_TOK_ERROR:
 		/* we'll never get this unless there are no exception  handlers anyway */
@@ -416,7 +416,7 @@ camel_imapp_stream_nstring(CamelIMAPPStream *is, unsigned char **data)
 
 /* parse an nstring as a stream */
 int
-camel_imapp_stream_nstring_stream(CamelIMAPPStream *is, CamelStream **stream)
+camel_lite_imapp_stream_nstring_stream(CamelIMAPPStream *is, CamelStream **stream)
 /* throws IO,PARSE exception */
 {
 	unsigned char *token;
@@ -427,18 +427,18 @@ camel_imapp_stream_nstring_stream(CamelIMAPPStream *is, CamelStream **stream)
 	*stream = NULL;
 
 	CAMEL_TRY {
-		switch(camel_imapp_stream_token(is, &token, &len)) {
+		switch(camel_lite_imapp_stream_token(is, &token, &len)) {
 		case IMAP_TOK_STRING:
-			mem = camel_stream_mem_new_with_buffer(token, len);
+			mem = camel_lite_stream_mem_new_with_buffer(token, len);
 			*stream = mem;
 			break;
 		case IMAP_TOK_LITERAL:
 			/* if len is big, we could automatically use a file backing */
-			camel_imapp_stream_set_literal(is, len);
-			mem = camel_stream_mem_new();
-			if (camel_stream_write_to_stream((CamelStream *)is, mem) == -1)
-				camel_exception_throw(1, "nstring: io error: %s", strerror(errno));
-			camel_stream_reset(mem);
+			camel_lite_imapp_stream_set_literal(is, len);
+			mem = camel_lite_stream_mem_new();
+			if (camel_lite_stream_write_to_stream((CamelStream *)is, mem) == -1)
+				camel_lite_exception_throw(1, "nstring: io error: %s", strerror(errno));
+			camel_lite_stream_reset(mem);
 			*stream = mem;
 			break;
 		case IMAP_TOK_TOKEN:
@@ -448,12 +448,12 @@ camel_imapp_stream_nstring_stream(CamelIMAPPStream *is, CamelStream **stream)
 			}
 		default:
 			ret = -1;
-			camel_exception_throw(1, "nstring: token not string");
+			camel_lite_exception_throw(1, "nstring: token not string");
 		}
 	} CAMEL_CATCH(ex) {
 		if (mem)
-			camel_object_unref((CamelObject *)mem);
-		camel_exception_throw_ex(ex);
+			camel_lite_object_unref((CamelObject *)mem);
+		camel_lite_exception_throw_ex(ex);
 	} CAMEL_DONE;
 
 	/* never reaches here anyway */
@@ -461,13 +461,13 @@ camel_imapp_stream_nstring_stream(CamelIMAPPStream *is, CamelStream **stream)
 }
 
 guint32
-camel_imapp_stream_number(CamelIMAPPStream *is)
+camel_lite_imapp_stream_number(CamelIMAPPStream *is)
 {
 	unsigned char *token;
 	unsigned int len;
 
-	if (camel_imapp_stream_token(is, &token, &len) != IMAP_TOK_INT) {
-		camel_exception_throw(1, "expecting number");
+	if (camel_lite_imapp_stream_token(is, &token, &len) != IMAP_TOK_INT) {
+		camel_lite_exception_throw(1, "expecting number");
 		return 0;
 	}
 
@@ -475,7 +475,7 @@ camel_imapp_stream_number(CamelIMAPPStream *is)
 }
 
 int
-camel_imapp_stream_text(CamelIMAPPStream *is, unsigned char **text)
+camel_lite_imapp_stream_text(CamelIMAPPStream *is, unsigned char **text)
 {
 	GByteArray *build = g_byte_array_new();
 	unsigned char *token;
@@ -497,16 +497,16 @@ camel_imapp_stream_text(CamelIMAPPStream *is, unsigned char **text)
 		}
 
 		do {
-			tok = camel_imapp_stream_gets(is, &token, &len);
+			tok = camel_lite_imapp_stream_gets(is, &token, &len);
 			if (tok < 0)
-				camel_exception_throw(1, "io error: %s", strerror(errno));
+				camel_lite_exception_throw(1, "io error: %s", strerror(errno));
 			if (len)
 				g_byte_array_append(build, token, len);
 		} while (tok > 0);
 	} CAMEL_CATCH(ex) {
 		*text = NULL;
 		g_byte_array_free(build, TRUE);
-		camel_exception_throw_ex(ex);
+		camel_lite_exception_throw_ex(ex);
 	} CAMEL_DONE;
 
 	g_byte_array_append(build, "", 1);
@@ -517,9 +517,9 @@ camel_imapp_stream_text(CamelIMAPPStream *is, unsigned char **text)
 }
 
 /* Get one token from the imap stream */
-camel_imapp_token_t
+camel_lite_imapp_token_t
 /* throws IO,PARSE exception */
-camel_imapp_stream_token(CamelIMAPPStream *is, unsigned char **data, unsigned int *len)
+camel_lite_imapp_stream_token(CamelIMAPPStream *is, unsigned char **data, unsigned int *len)
 {
 	register unsigned char c, *p, *o, *oe;
 	unsigned char *e;
@@ -675,7 +675,7 @@ camel_imapp_stream_token(CamelIMAPPStream *is, unsigned char **data, unsigned in
 	/* Had an i/o erorr */
 io_error:
 	printf("Got io error\n");
-	camel_exception_throw(1, "io error");
+	camel_lite_exception_throw(1, "io error");
 	return IMAP_TOK_ERROR;
 
 	/* Protocol error, skip until next lf? */
@@ -687,12 +687,12 @@ protocol_error:
 	else
 		is->ptr = p;
 
-	camel_exception_throw(1, "protocol error");
+	camel_lite_exception_throw(1, "protocol error");
 	return IMAP_TOK_PROTOCOL;
 }
 
 void
-camel_imapp_stream_ungettoken(CamelIMAPPStream *is, camel_imapp_token_t tok, unsigned char *token, unsigned int len)
+camel_lite_imapp_stream_ungettoken(CamelIMAPPStream *is, camel_lite_imapp_token_t tok, unsigned char *token, unsigned int len)
 {
 	/*printf("ungettoken: '%c' '%s'\n", tok, token);*/
 	is->unget_tok = tok;
@@ -702,7 +702,7 @@ camel_imapp_stream_ungettoken(CamelIMAPPStream *is, camel_imapp_token_t tok, uns
 }
 
 /* returns -1 on error, 0 if last lot of data, >0 if more remaining */
-int camel_imapp_stream_gets(CamelIMAPPStream *is, unsigned char **start, unsigned int *len)
+int camel_lite_imapp_stream_gets(CamelIMAPPStream *is, unsigned char **start, unsigned int *len)
 {
 	int max;
 	unsigned char *end;
@@ -727,13 +727,13 @@ int camel_imapp_stream_gets(CamelIMAPPStream *is, unsigned char **start, unsigne
 	return end == NULL?1:0;
 }
 
-void camel_imapp_stream_set_literal(CamelIMAPPStream *is, unsigned int literal)
+void camel_lite_imapp_stream_set_literal(CamelIMAPPStream *is, unsigned int literal)
 {
 	is->literal = literal;
 }
 
 /* returns -1 on erorr, 0 if last data, >0 if more data left */
-int camel_imapp_stream_getl(CamelIMAPPStream *is, unsigned char **start, unsigned int *len)
+int camel_lite_imapp_stream_getl(CamelIMAPPStream *is, unsigned char **start, unsigned int *len)
 {
 	int max;
 

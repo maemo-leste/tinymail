@@ -25,9 +25,9 @@
 #include <libedataserver/e-msgport.h>
 #include "camel-pop3-stream.h"
 
-#define CAMEL_POP3_ENGINE(obj)         CAMEL_CHECK_CAST (obj, camel_pop3_engine_get_type (), CamelPOP3Engine)
-#define CAMEL_POP3_ENGINE_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_pop3_engine_get_type (), CamelPOP3EngineClass)
-#define CAMEL_IS_POP3_ENGINE(obj)      CAMEL_CHECK_TYPE (obj, camel_pop3_engine_get_type ())
+#define CAMEL_POP3_ENGINE(obj)         CAMEL_CHECK_CAST (obj, camel_lite_pop3_engine_get_type (), CamelPOP3Engine)
+#define CAMEL_POP3_ENGINE_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_pop3_engine_get_type (), CamelPOP3EngineClass)
+#define CAMEL_IS_POP3_ENGINE(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_pop3_engine_get_type ())
 
 G_BEGIN_DECLS
 
@@ -41,7 +41,7 @@ typedef enum {
 	CAMEL_POP3_ENGINE_AUTH,
 	CAMEL_POP3_ENGINE_TRANSACTION,
 	CAMEL_POP3_ENGINE_UPDATE
-} camel_pop3_engine_t;
+} camel_lite_pop3_engine_t;
 
 /* state of a command */
 typedef enum {
@@ -52,7 +52,7 @@ typedef enum {
 	CAMEL_POP3_COMMAND_OK,	/* plain ok response */
 	CAMEL_POP3_COMMAND_DATA, /* processing command response */
 	CAMEL_POP3_COMMAND_ERR	/* error response */
-} camel_pop3_command_t;
+} camel_lite_pop3_command_t;
 
 /* flags for command types */
 enum {
@@ -83,7 +83,7 @@ struct _CamelPOP3Command {
 	struct _CamelPOP3Command *prev;
 
 	guint32 flags;
-	camel_pop3_command_t state;
+	camel_lite_pop3_command_t state;
 
 	CamelPOP3CommandFunc func;
 	void *func_data;
@@ -97,7 +97,7 @@ struct _CamelPOP3Engine {
 
 	guint32 flags;
 
-	camel_pop3_engine_t state;
+	camel_lite_pop3_engine_t state;
 
 	GList *auth;		/* authtypes supported */
 
@@ -127,17 +127,17 @@ struct _CamelPOP3EngineClass {
 	CamelObjectClass parent_class;
 };
 
-CamelType		  camel_pop3_engine_get_type	(void);
+CamelType		  camel_lite_pop3_engine_get_type	(void);
 
-CamelPOP3Engine  *camel_pop3_engine_new		(CamelStream *source, guint32 flags);
+CamelPOP3Engine  *camel_lite_pop3_engine_new		(CamelStream *source, guint32 flags);
 
-void              camel_pop3_engine_reget_capabilities (CamelPOP3Engine *engine);
+void              camel_lite_pop3_engine_reget_capabilities (CamelPOP3Engine *engine);
 
-void              camel_pop3_engine_command_free(CamelPOP3Engine *pe, CamelPOP3Command *pc);
+void              camel_lite_pop3_engine_command_free(CamelPOP3Engine *pe, CamelPOP3Command *pc);
 
-int 		  camel_pop3_engine_iterate	(CamelPOP3Engine *pe, CamelPOP3Command *pc);
+int 		  camel_lite_pop3_engine_iterate	(CamelPOP3Engine *pe, CamelPOP3Command *pc);
 
-CamelPOP3Command *camel_pop3_engine_command_new	(CamelPOP3Engine *pe, guint32 flags, CamelPOP3CommandFunc func, void *data, const char *fmt, ...);
+CamelPOP3Command *camel_lite_pop3_engine_command_new	(CamelPOP3Engine *pe, guint32 flags, CamelPOP3CommandFunc func, void *data, const char *fmt, ...);
 
 G_END_DECLS
 

@@ -10,7 +10,7 @@ G_BEGIN_DECLS
    can be done more accurately? */
 
 /* list of strings we know about that can be *quickly* tokenised */
-typedef enum _camel_imapp_id_t {
+typedef enum _camel_lite_imapp_id_t {
 	IMAP_UNKNOWN = 0,
 	IMAP_ALERT,
 	IMAP_BYE,
@@ -35,10 +35,10 @@ typedef enum _camel_imapp_id_t {
 	IMAP_BODYSTRUCTURE,
 	IMAP_BODY,
 	IMAP_UID,
-} camel_imapp_id_t;
+} camel_lite_imapp_id_t;
 
 /* str MUST be in upper case, tokenised using gperf function */
-camel_imapp_id_t imap_tokenise(register const char *str, register unsigned int len);
+camel_lite_imapp_id_t imap_tokenise(register const char *str, register unsigned int len);
 
 /* this flag should be part of imapfoldersummary */
 enum {
@@ -50,10 +50,10 @@ void imap_parse_flags(CamelIMAPPStream *stream, guint32 *flagsp) /* IO,PARSE */;
 void imap_write_flags(CamelStream *stream, guint32 flags) /* IO */;
 
 /* ********************************************************************** */
-void imap_parse_param_list(CamelIMAPPStream *is, struct _camel_header_param **plist) /* IO,PARSE */;
+void imap_parse_param_list(CamelIMAPPStream *is, struct _camel_lite_header_param **plist) /* IO,PARSE */;
 struct _CamelContentDisposition *imap_parse_ext_optional(CamelIMAPPStream *is) /* IO,PARSE */;
 struct _CamelMessageContentInfo *imap_parse_body_fields(CamelIMAPPStream *is) /* IO,PARSE */;
-struct _camel_header_address *imap_parse_address_list(CamelIMAPPStream *is) /* IO,PARSE */;
+struct _camel_lite_header_address *imap_parse_address_list(CamelIMAPPStream *is) /* IO,PARSE */;
 struct _CamelMessageInfo *imap_parse_envelope(CamelIMAPPStream *is) /* IO, PARSE */;
 struct _CamelMessageContentInfo *imap_parse_body(CamelIMAPPStream *is) /* IO,PARSE */;
 char *imap_parse_section(CamelIMAPPStream *is) /* IO,PARSE */;
@@ -96,8 +96,8 @@ void imap_dump_fetch(struct _fetch_info *finfo);
 /* ********************************************************************** */
 
 struct _status_info {
-	camel_imapp_id_t result; /* ok/no/bad/preauth only */
-	camel_imapp_id_t condition; /* read-only/read-write/alert/parse/trycreate/newname/permanentflags/uidvalidity/unseen */
+	camel_lite_imapp_id_t result; /* ok/no/bad/preauth only */
+	camel_lite_imapp_id_t condition; /* read-only/read-write/alert/parse/trycreate/newname/permanentflags/uidvalidity/unseen */
 
 	union {
 		struct {

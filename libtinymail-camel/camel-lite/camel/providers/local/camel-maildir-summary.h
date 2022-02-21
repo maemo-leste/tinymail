@@ -26,9 +26,9 @@
 #include <camel/camel-exception.h>
 #include <camel/camel-index.h>
 
-#define CAMEL_MAILDIR_SUMMARY(obj)	CAMEL_CHECK_CAST (obj, camel_maildir_summary_get_type (), CamelMaildirSummary)
-#define CAMEL_MAILDIR_SUMMARY_CLASS(klass)	CAMEL_CHECK_CLASS_CAST (klass, camel_maildir_summary_get_type (), CamelMaildirSummaryClass)
-#define CAMEL_IS_MAILDIR_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_maildir_summary_get_type ())
+#define CAMEL_MAILDIR_SUMMARY(obj)	CAMEL_CHECK_CAST (obj, camel_lite_maildir_summary_get_type (), CamelMaildirSummary)
+#define CAMEL_MAILDIR_SUMMARY_CLASS(klass)	CAMEL_CHECK_CLASS_CAST (klass, camel_lite_maildir_summary_get_type (), CamelMaildirSummaryClass)
+#define CAMEL_IS_MAILDIR_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_maildir_summary_get_type ())
 
 G_BEGIN_DECLS
 
@@ -63,18 +63,18 @@ struct _CamelMaildirSummaryClass {
 	/* signals */
 };
 
-CamelType	 camel_maildir_summary_get_type	(void);
-CamelMaildirSummary	*camel_maildir_summary_new	(struct _CamelFolder *folder, const char *filename, const char *maildirdir, CamelIndex *index);
+CamelType	 camel_lite_maildir_summary_get_type	(void);
+CamelMaildirSummary	*camel_lite_maildir_summary_new	(struct _CamelFolder *folder, const char *filename, const char *maildirdir, CamelIndex *index);
 
 /* convert some info->flags to/from the messageinfo */
-char *camel_maildir_summary_info_to_name(const CamelMaildirMessageInfo *info);
-int camel_maildir_summary_name_to_info(CamelMaildirMessageInfo *info, const char *name);
+char *camel_lite_maildir_summary_info_to_name(const CamelMaildirMessageInfo *info);
+int camel_lite_maildir_summary_name_to_info(CamelMaildirMessageInfo *info, const char *name);
 
 /* TODO: could proably use get_string stuff */
-#define camel_maildir_info_filename(x) (((CamelMaildirMessageInfo *)x)->filename?((CamelMaildirMessageInfo *)x)->filename:"")
-#define camel_maildir_info_set_filename(x, s) (g_free(((CamelMaildirMessageInfo *)x)->filename),((CamelMaildirMessageInfo *)x)->filename = s)
+#define camel_lite_maildir_info_filename(x) (((CamelMaildirMessageInfo *)x)->filename?((CamelMaildirMessageInfo *)x)->filename:"")
+#define camel_lite_maildir_info_set_filename(x, s) (g_free(((CamelMaildirMessageInfo *)x)->filename),((CamelMaildirMessageInfo *)x)->filename = s)
 
-char *camel_maildir_get_filename (const gchar *fpath, CamelMaildirMessageInfo *mdi, const gchar *uid);
+char *camel_lite_maildir_get_filename (const gchar *fpath, CamelMaildirMessageInfo *mdi, const gchar *uid);
 
 G_END_DECLS
 

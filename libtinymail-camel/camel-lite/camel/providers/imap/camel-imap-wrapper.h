@@ -26,7 +26,7 @@
 #include <camel/camel-data-wrapper.h>
 #include "camel-imap-types.h"
 
-#define CAMEL_IMAP_WRAPPER_TYPE     (camel_imap_wrapper_get_type ())
+#define CAMEL_IMAP_WRAPPER_TYPE     (camel_lite_imap_wrapper_get_type ())
 #define CAMEL_IMAP_WRAPPER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_IMAP_WRAPPER_TYPE, CamelImapWrapper))
 #define CAMEL_IMAP_WRAPPER_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_IMAP_WRAPPER_TYPE, CamelImapWrapperClass))
 #define CAMEL_IS_IMAP_WRAPPER(o)    (CAMEL_CHECK_TYPE((o), CAMEL_IMAP_WRAPPER_TYPE))
@@ -49,10 +49,10 @@ typedef struct {
 } CamelImapWrapperClass;
 
 /* Standard Camel function */
-CamelType camel_imap_wrapper_get_type (void);
+CamelType camel_lite_imap_wrapper_get_type (void);
 
 /* Constructor */
-CamelDataWrapper *camel_imap_wrapper_new (CamelImapFolder *imap_folder,
+CamelDataWrapper *camel_lite_imap_wrapper_new (CamelImapFolder *imap_folder,
 					  CamelContentType *type,
 					  CamelTransferEncoding encoding,
 					  const char *uid,

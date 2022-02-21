@@ -26,9 +26,9 @@
 #include <camel/camel-folder-summary.h>
 #include <camel/camel-exception.h>
 
-#define CAMEL_VEE_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_vee_summary_get_type (), CamelVeeSummary)
-#define CAMEL_VEE_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_vee_summary_get_type (), CamelVeeSummaryClass)
-#define CAMEL_IS_VEE_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_vee_summary_get_type ())
+#define CAMEL_VEE_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_lite_vee_summary_get_type (), CamelVeeSummary)
+#define CAMEL_VEE_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_vee_summary_get_type (), CamelVeeSummaryClass)
+#define CAMEL_IS_VEE_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_vee_summary_get_type ())
 
 G_BEGIN_DECLS
 
@@ -55,10 +55,10 @@ struct _CamelVeeSummaryClass {
 
 };
 
-CamelType               camel_vee_summary_get_type     (void);
-CamelFolderSummary *camel_vee_summary_new(struct _CamelFolder *parent);
+CamelType               camel_lite_vee_summary_get_type     (void);
+CamelFolderSummary *camel_lite_vee_summary_new(struct _CamelFolder *parent);
 
-CamelVeeMessageInfo * camel_vee_summary_add(CamelVeeSummary *s, CamelMessageInfo *info, const char hash[8]);
+CamelVeeMessageInfo * camel_lite_vee_summary_add(CamelVeeSummary *s, CamelMessageInfo *info, const char hash[8]);
 
 G_END_DECLS
 

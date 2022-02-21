@@ -40,7 +40,7 @@
 
 #include <camel/camel-stream.h>
 
-#define CAMEL_TCP_STREAM_TYPE     (camel_tcp_stream_get_type ())
+#define CAMEL_TCP_STREAM_TYPE     (camel_lite_tcp_stream_get_type ())
 #define CAMEL_TCP_STREAM(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_TCP_STREAM_TYPE, CamelTcpStream))
 #define CAMEL_TCP_STREAM_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_TCP_STREAM_TYPE, CamelTcpStreamClass))
 #define CAMEL_IS_TCP_STREAM(o)    (CAMEL_CHECK_TYPE((o), CAMEL_TCP_STREAM_TYPE))
@@ -113,21 +113,21 @@ typedef struct {
 } CamelTcpStreamClass;
 
 /* Standard Camel function */
-CamelType camel_tcp_stream_get_type (void);
+CamelType camel_lite_tcp_stream_get_type (void);
 
 /* public methods */
-int         camel_tcp_stream_connect    (CamelTcpStream *stream, struct addrinfo *host);
-int         camel_tcp_stream_getsockopt (CamelTcpStream *stream, CamelSockOptData *data);
-int         camel_tcp_stream_setsockopt (CamelTcpStream *stream, const CamelSockOptData *data);
+int         camel_lite_tcp_stream_connect    (CamelTcpStream *stream, struct addrinfo *host);
+int         camel_lite_tcp_stream_getsockopt (CamelTcpStream *stream, CamelSockOptData *data);
+int         camel_lite_tcp_stream_setsockopt (CamelTcpStream *stream, const CamelSockOptData *data);
 
-struct sockaddr *camel_tcp_stream_get_local_address  (CamelTcpStream *stream, socklen_t *len);
-struct sockaddr *camel_tcp_stream_get_remote_address (CamelTcpStream *stream, socklen_t *len);
+struct sockaddr *camel_lite_tcp_stream_get_local_address  (CamelTcpStream *stream, socklen_t *len);
+struct sockaddr *camel_lite_tcp_stream_get_remote_address (CamelTcpStream *stream, socklen_t *len);
 
-int         camel_tcp_stream_read_nb    (CamelTcpStream *stream, char *buffer, size_t n);
+int         camel_lite_tcp_stream_read_nb    (CamelTcpStream *stream, char *buffer, size_t n);
 
-int         camel_tcp_stream_gettimeout (CamelTcpStream *stream);
+int         camel_lite_tcp_stream_gettimeout (CamelTcpStream *stream);
 
-void        camel_tcp_stream_enable_compress (CamelTcpStream *stream);
+void        camel_lite_tcp_stream_enable_compress (CamelTcpStream *stream);
 
 G_END_DECLS
 

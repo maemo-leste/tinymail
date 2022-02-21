@@ -33,10 +33,10 @@ static char * internet_format		(CamelAddress *);
 static int    internet_cat		(CamelAddress *dest, const CamelAddress *source);
 static void   internet_remove		(CamelAddress *, int index);
 
-static void camel_internet_address_class_init (CamelInternetAddressClass *klass);
-static void camel_internet_address_init       (CamelInternetAddress *obj);
+static void camel_lite_internet_address_class_init (CamelInternetAddressClass *klass);
+static void camel_lite_internet_address_init       (CamelInternetAddress *obj);
 
-static CamelAddressClass *camel_internet_address_parent;
+static CamelAddressClass *camel_lite_internet_address_parent;
 
 struct _address {
 	char *name;
@@ -44,11 +44,11 @@ struct _address {
 };
 
 static void
-camel_internet_address_class_init(CamelInternetAddressClass *klass)
+camel_lite_internet_address_class_init(CamelInternetAddressClass *klass)
 {
 	CamelAddressClass *address = (CamelAddressClass *) klass;
 
-	camel_internet_address_parent = CAMEL_ADDRESS_CLASS(camel_type_get_global_classfuncs(camel_address_get_type()));
+	camel_lite_internet_address_parent = CAMEL_ADDRESS_CLASS(camel_lite_type_get_global_classfuncs(camel_lite_address_get_type()));
 
 	address->decode = internet_decode;
 	address->encode = internet_encode;
@@ -59,22 +59,22 @@ camel_internet_address_class_init(CamelInternetAddressClass *klass)
 }
 
 static void
-camel_internet_address_init(CamelInternetAddress *obj)
+camel_lite_internet_address_init(CamelInternetAddress *obj)
 {
 }
 
 CamelType
-camel_internet_address_get_type(void)
+camel_lite_internet_address_get_type(void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register(camel_address_get_type(), "CamelInternetAddress",
+		type = camel_lite_type_register(camel_lite_address_get_type(), "CamelLiteInternetAddress",
 					   sizeof (CamelInternetAddress),
 					   sizeof (CamelInternetAddressClass),
-					   (CamelObjectClassInitFunc) camel_internet_address_class_init,
+					   (CamelObjectClassInitFunc) camel_lite_internet_address_class_init,
 					   NULL,
-					   (CamelObjectInitFunc) camel_internet_address_init,
+					   (CamelObjectInitFunc) camel_lite_internet_address_init,
 					   NULL);
 	}
 
@@ -84,28 +84,28 @@ camel_internet_address_get_type(void)
 static int
 internet_decode	(CamelAddress *a, const char *raw)
 {
-	struct _camel_header_address *ha, *n;
+	struct _camel_lite_header_address *ha, *n;
 	int count = a->addresses->len;
 
 	/* Should probably use its own decoder or something */
-	ha = camel_header_address_decode(raw, NULL);
+	ha = camel_lite_header_address_decode(raw, NULL);
 	if (ha) {
 		n = ha;
 		while (n) {
 			if (n->type == CAMEL_HEADER_ADDRESS_NAME) {
-				camel_internet_address_add((CamelInternetAddress *)a, n->name, n->v.addr);
+				camel_lite_internet_address_add((CamelInternetAddress *)a, n->name, n->v.addr);
 			} else if (n->type == CAMEL_HEADER_ADDRESS_GROUP) {
-				struct _camel_header_address *g = n->v.members;
+				struct _camel_lite_header_address *g = n->v.members;
 				while (g) {
 					if (g->type == CAMEL_HEADER_ADDRESS_NAME)
-						camel_internet_address_add((CamelInternetAddress *)a, g->name, g->v.addr);
+						camel_lite_internet_address_add((CamelInternetAddress *)a, g->name, g->v.addr);
 					/* otherwise, it's an error, infact */
 					g = g->next;
 				}
 			}
 			n = n->next;
 		}
-		camel_header_address_list_clear(&ha);
+		camel_lite_header_address_list_clear(&ha);
 	}
 
 	return a->addresses->len - count;
@@ -131,7 +131,7 @@ internet_encode	(CamelAddress *a)
 		if (i != 0)
 			g_string_append(out, ", ");
 
-		enc = camel_internet_address_encode_address(&len, addr->name, addr->address);
+		enc = camel_lite_internet_address_encode_address(&len, addr->name, addr->address);
 		g_string_append(out, enc);
 		g_free(enc);
 	}
@@ -195,7 +195,7 @@ internet_unformat(CamelAddress *a, const char *raw)
 			addr = g_strstrip(addr);
 			if (addr[0]) {
 				d(printf("found address: '%s' <%s>\n", name, addr));
-				camel_internet_address_add((CamelInternetAddress *)a, name, addr);
+				camel_lite_internet_address_add((CamelInternetAddress *)a, name, addr);
 			}
 			name = NULL;
 			addr = p;
@@ -227,7 +227,7 @@ internet_format	(CamelAddress *a)
 		if (i != 0)
 			g_string_append(out, ", ");
 
-		enc = camel_internet_address_format_address(addr->name, addr->address);
+		enc = camel_lite_internet_address_format_address(addr->name, addr->address);
 		g_string_append(out, enc);
 		g_free(enc);
 	}
@@ -247,7 +247,7 @@ internet_cat (CamelAddress *dest, const CamelAddress *source)
 
 	for (i=0;i<source->addresses->len;i++) {
 		struct _address *addr = g_ptr_array_index(source->addresses, i);
-		camel_internet_address_add((CamelInternetAddress *)dest, addr->name, addr->address);
+		camel_lite_internet_address_add((CamelInternetAddress *)dest, addr->name, addr->address);
 	}
 
 	return i;
@@ -270,22 +270,22 @@ internet_remove	(CamelAddress *a, int index)
 
 
 /**
- * camel_internet_address_new:
+ * camel_lite_internet_address_new:
  *
  * Create a new #CamelInternetAddress object.
  *
  * Returns a new #CamelInternetAddress object
  **/
 CamelInternetAddress *
-camel_internet_address_new (void)
+camel_lite_internet_address_new (void)
 {
-	CamelInternetAddress *new = CAMEL_INTERNET_ADDRESS(camel_object_new(camel_internet_address_get_type()));
+	CamelInternetAddress *new = CAMEL_INTERNET_ADDRESS(camel_lite_object_new(camel_lite_internet_address_get_type()));
 	return new;
 }
 
 
 /**
- * camel_internet_address_add:
+ * camel_lite_internet_address_add:
  * @addr: a #CamelInternetAddress object
  * @name: name associated with the new address
  * @address: routing address associated with the new address
@@ -295,7 +295,7 @@ camel_internet_address_new (void)
  * Returns the index of added entry
  **/
 int
-camel_internet_address_add (CamelInternetAddress *addr, const char *name, const char *address)
+camel_lite_internet_address_add (CamelInternetAddress *addr, const char *name, const char *address)
 {
 	struct _address *new;
 	int index;
@@ -313,7 +313,7 @@ camel_internet_address_add (CamelInternetAddress *addr, const char *name, const 
 
 
 /**
- * camel_internet_address_get:
+ * camel_lite_internet_address_get:
  * @addr: a #CamelInternetAddress object
  * @index: address's array index
  * @namep: holder for the returned name, or %NULL, if not required.
@@ -324,7 +324,7 @@ camel_internet_address_add (CamelInternetAddress *addr, const char *name, const 
  * Returns %TRUE if such an address exists, or %FALSE otherwise
  **/
 gboolean
-camel_internet_address_get (const CamelInternetAddress *addr, int index, const char **namep, const char **addressp)
+camel_lite_internet_address_get (const CamelInternetAddress *addr, int index, const char **namep, const char **addressp)
 {
 	struct _address *a;
 
@@ -343,7 +343,7 @@ camel_internet_address_get (const CamelInternetAddress *addr, int index, const c
 
 
 /**
- * camel_internet_address_find_name:
+ * camel_lite_internet_address_find_name:
  * @addr: a #CamelInternetAddress object
  * @name: name to lookup
  * @addressp: holder for address part, or %NULL, if not required.
@@ -354,7 +354,7 @@ camel_internet_address_get (const CamelInternetAddress *addr, int index, const c
  * match was found
  **/
 int
-camel_internet_address_find_name(CamelInternetAddress *addr, const char *name, const char **addressp)
+camel_lite_internet_address_find_name(CamelInternetAddress *addr, const char *name, const char **addressp)
 {
 	struct _address *a;
 	int i, len;
@@ -375,7 +375,7 @@ camel_internet_address_find_name(CamelInternetAddress *addr, const char *name, c
 
 
 /**
- * camel_internet_address_find_address:
+ * camel_lite_internet_address_find_address:
  * @addr: a #CamelInternetAddress object
  * @address: address to lookup
  * @namep: holder for the matching name, or %NULL, if not required.
@@ -385,7 +385,7 @@ camel_internet_address_find_name(CamelInternetAddress *addr, const char *name, c
  * Returns the index of the address, or %-1 if not found
  **/
 int
-camel_internet_address_find_address(CamelInternetAddress *addr, const char *address, const char **namep)
+camel_lite_internet_address_find_address(CamelInternetAddress *addr, const char *address, const char **namep)
 {
 	struct _address *a;
 	int i, len;
@@ -420,7 +420,7 @@ cia_encode_addrspec(GString *out, const char *addr)
 		/* strictly by rfc, we should split local parts on dots.
 		   however i think 2822 changes this, and not many clients grok it, so
 		   just quote the whole local part if need be */
-		if (!(camel_mime_is_atom(c) || c=='.')) {
+		if (!(camel_lite_mime_is_atom(c) || c=='.')) {
 			g_string_append_c(out, '"');
 
 			p = addr;
@@ -443,7 +443,7 @@ append:
 
 
 /**
- * camel_internet_address_encode_address:
+ * camel_lite_internet_address_encode_address:
  * @len: the length of the line the address is being appended to
  * @name: the unencoded real name associated with the address
  * @addr: the routing address
@@ -457,9 +457,9 @@ append:
  * Returns the encoded address
  **/
 char *
-camel_internet_address_encode_address(int *inlen, const char *real, const char *addr)
+camel_lite_internet_address_encode_address(int *inlen, const char *real, const char *addr)
 {
-	char *name = camel_header_encode_phrase ((const unsigned char *) real);
+	char *name = camel_lite_header_encode_phrase ((const unsigned char *) real);
 	char *ret = NULL;
 	int len = 0;
 	GString *out = g_string_new("");
@@ -471,7 +471,7 @@ camel_internet_address_encode_address(int *inlen, const char *real, const char *
 
 	if (name && name[0]) {
 		if (inlen != NULL && (strlen(name) + len) > CAMEL_FOLD_SIZE) {
-			char *folded = camel_header_address_fold(name, len);
+			char *folded = camel_lite_header_address_fold(name, len);
 			char *last;
 			g_string_append(out, folded);
 			g_free(folded);
@@ -519,7 +519,7 @@ camel_internet_address_encode_address(int *inlen, const char *real, const char *
 
 
 /**
- * camel_internet_address_format_address:
+ * camel_lite_internet_address_format_address:
  * @name: a name, quotes may be stripped from it
  * @addr: an rfc822 routing address
  *
@@ -528,7 +528,7 @@ camel_internet_address_encode_address(int *inlen, const char *real, const char *
  * Returns a nicely formatted string containing the rfc822 address
  **/
 char *
-camel_internet_address_format_address(const char *name, const char *addr)
+camel_lite_internet_address_format_address(const char *name, const char *addr)
 {
 	char *ret = NULL;
 

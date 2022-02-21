@@ -28,8 +28,8 @@
 
 G_BEGIN_DECLS
 
-typedef guint32 camel_block_t;	/* block offset, absolute, bottom BLOCK_SIZE_BITS always 0 */
-typedef guint32 camel_key_t;	/* this is a bitfield of (block offset:BLOCK_SIZE_BITS) */
+typedef guint32 camel_lite_block_t;	/* block offset, absolute, bottom BLOCK_SIZE_BITS always 0 */
+typedef guint32 camel_lite_key_t;	/* this is a bitfield of (block offset:BLOCK_SIZE_BITS) */
 
 typedef struct _CamelBlockRoot CamelBlockRoot;
 typedef struct _CamelBlock CamelBlock;
@@ -49,8 +49,8 @@ struct _CamelBlockRoot {
 
 	guint32 flags;		/* flags for file */
 	guint32 block_size;	/* block size of this file */
-	camel_block_t free;	/* free block list */
-	camel_block_t last;	/* pointer to end of blocks */
+	camel_lite_block_t free;	/* free block list */
+	camel_lite_block_t last;	/* pointer to end of blocks */
 
 	/* subclasses tack on, but no more than CAMEL_BLOCK_SIZE! */
 };
@@ -60,7 +60,7 @@ struct _CamelBlock {
 	struct _CamelBlock *next;
 	struct _CamelBlock *prev;
 
-	camel_block_t id;
+	camel_lite_block_t id;
 	guint32 flags;
 	guint32 refcount;
 	guint32 align00;
@@ -97,21 +97,21 @@ struct _CamelBlockFileClass {
 	int (*init_root)(CamelBlockFile *);
 };
 
-CamelType camel_block_file_get_type(void);
+CamelType camel_lite_block_file_get_type(void);
 
-CamelBlockFile *camel_block_file_new(const char *path, int flags, const char version[8], size_t block_size);
-int camel_block_file_rename(CamelBlockFile *bs, const char *path);
-int camel_block_file_delete(CamelBlockFile *kf);
+CamelBlockFile *camel_lite_block_file_new(const char *path, int flags, const char version[8], size_t block_size);
+int camel_lite_block_file_rename(CamelBlockFile *bs, const char *path);
+int camel_lite_block_file_delete(CamelBlockFile *kf);
 
-CamelBlock *camel_block_file_new_block(CamelBlockFile *bs);
-int camel_block_file_free_block(CamelBlockFile *bs, camel_block_t id);
-CamelBlock *camel_block_file_get_block(CamelBlockFile *bs, camel_block_t id);
-void camel_block_file_detach_block(CamelBlockFile *bs, CamelBlock *bl);
-void camel_block_file_attach_block(CamelBlockFile *bs, CamelBlock *bl);
-void camel_block_file_touch_block(CamelBlockFile *bs, CamelBlock *bl);
-void camel_block_file_unref_block(CamelBlockFile *bs, CamelBlock *bl);
-int camel_block_file_sync_block(CamelBlockFile *bs, CamelBlock *bl);
-int camel_block_file_sync(CamelBlockFile *bs);
+CamelBlock *camel_lite_block_file_new_block(CamelBlockFile *bs);
+int camel_lite_block_file_free_block(CamelBlockFile *bs, camel_lite_block_t id);
+CamelBlock *camel_lite_block_file_get_block(CamelBlockFile *bs, camel_lite_block_t id);
+void camel_lite_block_file_detach_block(CamelBlockFile *bs, CamelBlock *bl);
+void camel_lite_block_file_attach_block(CamelBlockFile *bs, CamelBlock *bl);
+void camel_lite_block_file_touch_block(CamelBlockFile *bs, CamelBlock *bl);
+void camel_lite_block_file_unref_block(CamelBlockFile *bs, CamelBlock *bl);
+int camel_lite_block_file_sync_block(CamelBlockFile *bs, CamelBlock *bl);
+int camel_lite_block_file_sync(CamelBlockFile *bs);
 
 /* ********************************************************************** */
 
@@ -133,14 +133,14 @@ struct _CamelKeyFileClass {
 	CamelObjectClass parent;
 };
 
-CamelType      camel_key_file_get_type(void);
+CamelType      camel_lite_key_file_get_type(void);
 
-CamelKeyFile * camel_key_file_new(const char *path, int flags, const char version[8]);
-int	       camel_key_file_rename(CamelKeyFile *kf, const char *path);
-int	       camel_key_file_delete(CamelKeyFile *kf);
+CamelKeyFile * camel_lite_key_file_new(const char *path, int flags, const char version[8]);
+int	       camel_lite_key_file_rename(CamelKeyFile *kf, const char *path);
+int	       camel_lite_key_file_delete(CamelKeyFile *kf);
 
-int            camel_key_file_write(CamelKeyFile *kf, camel_block_t *parent, size_t len, camel_key_t *records);
-int            camel_key_file_read(CamelKeyFile *kf, camel_block_t *start, size_t *len, camel_key_t **records);
+int            camel_lite_key_file_write(CamelKeyFile *kf, camel_lite_block_t *parent, size_t len, camel_lite_key_t *records);
+int            camel_lite_key_file_read(CamelKeyFile *kf, camel_lite_block_t *start, size_t *len, camel_lite_key_t **records);
 
 G_END_DECLS
 

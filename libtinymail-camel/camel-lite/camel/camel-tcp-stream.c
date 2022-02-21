@@ -52,42 +52,42 @@ tcp_enable_compress (CamelTcpStream *stream)
 
 
 static void
-camel_tcp_stream_class_init (CamelTcpStreamClass *camel_tcp_stream_class)
+camel_lite_tcp_stream_class_init (CamelTcpStreamClass *camel_lite_tcp_stream_class)
 {
-	/*CamelStreamClass *camel_stream_class = CAMEL_STREAM_CLASS (camel_tcp_stream_class);*/
+	/*CamelStreamClass *camel_lite_stream_class = CAMEL_STREAM_CLASS (camel_lite_tcp_stream_class);*/
 
-	parent_class = CAMEL_STREAM_CLASS (camel_type_get_global_classfuncs (CAMEL_STREAM_TYPE));
+	parent_class = CAMEL_STREAM_CLASS (camel_lite_type_get_global_classfuncs (CAMEL_STREAM_TYPE));
 
 	/* tcp stream methods */
-	camel_tcp_stream_class->enable_compress     = tcp_enable_compress;
-	camel_tcp_stream_class->gettimeout         = tcp_gettimeout;
-	camel_tcp_stream_class->read_nb            = tcp_read_nb;
-	camel_tcp_stream_class->connect            = tcp_connect;
-	camel_tcp_stream_class->getsockopt         = tcp_getsockopt;
-	camel_tcp_stream_class->setsockopt         = tcp_setsockopt;
-	camel_tcp_stream_class->get_local_address  = tcp_get_local_address;
-	camel_tcp_stream_class->get_remote_address = tcp_get_remote_address;
+	camel_lite_tcp_stream_class->enable_compress     = tcp_enable_compress;
+	camel_lite_tcp_stream_class->gettimeout         = tcp_gettimeout;
+	camel_lite_tcp_stream_class->read_nb            = tcp_read_nb;
+	camel_lite_tcp_stream_class->connect            = tcp_connect;
+	camel_lite_tcp_stream_class->getsockopt         = tcp_getsockopt;
+	camel_lite_tcp_stream_class->setsockopt         = tcp_setsockopt;
+	camel_lite_tcp_stream_class->get_local_address  = tcp_get_local_address;
+	camel_lite_tcp_stream_class->get_remote_address = tcp_get_remote_address;
 }
 
 static void
-camel_tcp_stream_init (void *o)
+camel_lite_tcp_stream_init (void *o)
 {
 	;
 }
 
 CamelType
-camel_tcp_stream_get_type (void)
+camel_lite_tcp_stream_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (CAMEL_STREAM_TYPE,
-					    "CamelTcpStream",
+		type = camel_lite_type_register (CAMEL_STREAM_TYPE,
+					    "CamelLiteTcpStream",
 					    sizeof (CamelTcpStream),
 					    sizeof (CamelTcpStreamClass),
-					    (CamelObjectClassInitFunc) camel_tcp_stream_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_tcp_stream_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_tcp_stream_init,
+					    (CamelObjectInitFunc) camel_lite_tcp_stream_init,
 					    NULL);
 	}
 
@@ -97,19 +97,19 @@ camel_tcp_stream_get_type (void)
 static ssize_t
 tcp_read_nb (CamelTcpStream *stream, char *buffer, size_t n)
 {
-	w(g_warning ("CamelTcpStream::read_nb called on default implementation"));
+	w(g_warning ("CamelLiteTcpStream::read_nb called on default implementation"));
 	return -1;
 }
 
 static int
 tcp_connect (CamelTcpStream *stream, struct addrinfo *host)
 {
-	w(g_warning ("CamelTcpStream::connect called on default implementation"));
+	w(g_warning ("CamelLiteTcpStream::connect called on default implementation"));
 	return -1;
 }
 
 /**
- * camel_tcp_stream_connect:
+ * camel_lite_tcp_stream_connect:
  * @stream: a #CamelTcpStream object
  * @host: a linked list of addrinfo structures to try to connect, in
  * the order of most likely to least likely to work.
@@ -119,7 +119,7 @@ tcp_connect (CamelTcpStream *stream, struct addrinfo *host)
  * Returns %0 on success or %-1 on fail
  **/
 int
-camel_tcp_stream_connect (CamelTcpStream *stream, struct addrinfo *host)
+camel_lite_tcp_stream_connect (CamelTcpStream *stream, struct addrinfo *host)
 {
 	g_return_val_if_fail (CAMEL_IS_TCP_STREAM (stream), -1);
 
@@ -128,7 +128,7 @@ camel_tcp_stream_connect (CamelTcpStream *stream, struct addrinfo *host)
 
 
 void 
-camel_tcp_stream_enable_compress (CamelTcpStream *stream)
+camel_lite_tcp_stream_enable_compress (CamelTcpStream *stream)
 {
 	g_return_if_fail (CAMEL_IS_TCP_STREAM (stream));
 
@@ -138,12 +138,12 @@ camel_tcp_stream_enable_compress (CamelTcpStream *stream)
 static int
 tcp_getsockopt (CamelTcpStream *stream, CamelSockOptData *data)
 {
-	w(g_warning ("CamelTcpStream::getsockopt called on default implementation"));
+	w(g_warning ("CamelLiteTcpStream::getsockopt called on default implementation"));
 	return -1;
 }
 
 /**
- * camel_tcp_stream_getsockopt:
+ * camel_lite_tcp_stream_getsockopt:
  * @stream: a #CamelTcpStream object
  * @data: socket option data
  *
@@ -152,7 +152,7 @@ tcp_getsockopt (CamelTcpStream *stream, CamelSockOptData *data)
  * Returns %0 on success or %-1 on fail
  **/
 int
-camel_tcp_stream_getsockopt (CamelTcpStream *stream, CamelSockOptData *data)
+camel_lite_tcp_stream_getsockopt (CamelTcpStream *stream, CamelSockOptData *data)
 {
 	g_return_val_if_fail (CAMEL_IS_TCP_STREAM (stream), -1);
 
@@ -162,12 +162,12 @@ camel_tcp_stream_getsockopt (CamelTcpStream *stream, CamelSockOptData *data)
 static int
 tcp_gettimeout (CamelTcpStream *stream)
 {
-	w(g_warning ("CamelTcpStream::gettimeout called on default implementation"));
+	w(g_warning ("CamelLiteTcpStream::gettimeout called on default implementation"));
 	return 330;
 }
 
 int
-camel_tcp_stream_gettimeout (CamelTcpStream *stream)
+camel_lite_tcp_stream_gettimeout (CamelTcpStream *stream)
 {
 	g_return_val_if_fail (CAMEL_IS_TCP_STREAM (stream), -1);
 
@@ -177,12 +177,12 @@ camel_tcp_stream_gettimeout (CamelTcpStream *stream)
 static int
 tcp_setsockopt (CamelTcpStream *stream, const CamelSockOptData *data)
 {
-	w(g_warning ("CamelTcpStream::setsockopt called on default implementation"));
+	w(g_warning ("CamelLiteTcpStream::setsockopt called on default implementation"));
 	return -1;
 }
 
 /**
- * camel_tcp_stream_setsockopt:
+ * camel_lite_tcp_stream_setsockopt:
  * @stream: a #CamelTcpStream object
  * @data: socket option data
  *
@@ -191,7 +191,7 @@ tcp_setsockopt (CamelTcpStream *stream, const CamelSockOptData *data)
  * Returns %0 on success or %-1 on fail
  **/
 int
-camel_tcp_stream_setsockopt (CamelTcpStream *stream, const CamelSockOptData *data)
+camel_lite_tcp_stream_setsockopt (CamelTcpStream *stream, const CamelSockOptData *data)
 {
 	g_return_val_if_fail (CAMEL_IS_TCP_STREAM (stream), -1);
 
@@ -201,12 +201,12 @@ camel_tcp_stream_setsockopt (CamelTcpStream *stream, const CamelSockOptData *dat
 static struct sockaddr *
 tcp_get_local_address (CamelTcpStream *stream, socklen_t *len)
 {
-	w(g_warning ("CamelTcpStream::get_local_address called on default implementation"));
+	w(g_warning ("CamelLiteTcpStream::get_local_address called on default implementation"));
 	return NULL;
 }
 
 /**
- * camel_tcp_stream_get_local_address:
+ * camel_lite_tcp_stream_get_local_address:
  * @stream: a #CamelTcpStream object
  * @len: pointer to address length which must be supplied
  *
@@ -216,7 +216,7 @@ tcp_get_local_address (CamelTcpStream *stream, socklen_t *len)
  * #g_free) if the stream is connected, or %NULL if not
  **/
 struct sockaddr *
-camel_tcp_stream_get_local_address (CamelTcpStream *stream, socklen_t *len)
+camel_lite_tcp_stream_get_local_address (CamelTcpStream *stream, socklen_t *len)
 {
 	g_return_val_if_fail (CAMEL_IS_TCP_STREAM (stream), NULL);
 	g_return_val_if_fail(len != NULL, NULL);
@@ -225,7 +225,7 @@ camel_tcp_stream_get_local_address (CamelTcpStream *stream, socklen_t *len)
 }
 
 int
-camel_tcp_stream_read_nb (CamelTcpStream *stream, char *buffer, size_t n)
+camel_lite_tcp_stream_read_nb (CamelTcpStream *stream, char *buffer, size_t n)
 {
 	return CTS_CLASS (stream)->read_nb (stream, buffer, n);
 }
@@ -233,12 +233,12 @@ camel_tcp_stream_read_nb (CamelTcpStream *stream, char *buffer, size_t n)
 static struct sockaddr *
 tcp_get_remote_address (CamelTcpStream *stream, socklen_t *len)
 {
-	w(g_warning ("CamelTcpStream::get_remote_address called on default implementation"));
+	w(g_warning ("CamelLiteTcpStream::get_remote_address called on default implementation"));
 	return NULL;
 }
 
 /**
- * camel_tcp_stream_get_remote_address:
+ * camel_lite_tcp_stream_get_remote_address:
  * @stream: a #CamelTcpStream object
  * @len: pointer to address length, which must be supplied
  *
@@ -248,7 +248,7 @@ tcp_get_remote_address (CamelTcpStream *stream, socklen_t *len)
  * #g_free) if the stream is connected, or %NULL if not.
  **/
 struct sockaddr *
-camel_tcp_stream_get_remote_address (CamelTcpStream *stream, socklen_t *len)
+camel_lite_tcp_stream_get_remote_address (CamelTcpStream *stream, socklen_t *len)
 {
 	g_return_val_if_fail (CAMEL_IS_TCP_STREAM (stream), NULL);
 	g_return_val_if_fail(len != NULL, NULL);

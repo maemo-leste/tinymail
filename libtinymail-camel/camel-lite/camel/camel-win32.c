@@ -67,7 +67,7 @@ setup (void)
 
 #define GETTER(varbl)				\
 const char *					\
-_camel_get_##varbl (void)			\
+_camel_lite_get_##varbl (void)			\
 {						\
         setup ();				\
         return varbl;				\

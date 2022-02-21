@@ -32,7 +32,7 @@
 #include "camel-sasl-plain.h"
 #include "camel-service.h"
 
-CamelServiceAuthType camel_sasl_plain_authtype = {
+CamelServiceAuthType camel_lite_sasl_plain_authtype = {
 	N_("PLAIN"),
 
 	N_("This option will connect to the server using a "
@@ -50,27 +50,27 @@ static CamelSaslClass *parent_class = NULL;
 static GByteArray *plain_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex);
 
 static void
-camel_sasl_plain_class_init (CamelSaslPlainClass *camel_sasl_plain_class)
+camel_lite_sasl_plain_class_init (CamelSaslPlainClass *camel_lite_sasl_plain_class)
 {
-	CamelSaslClass *camel_sasl_class = CAMEL_SASL_CLASS (camel_sasl_plain_class);
+	CamelSaslClass *camel_lite_sasl_class = CAMEL_SASL_CLASS (camel_lite_sasl_plain_class);
 
-	parent_class = CAMEL_SASL_CLASS (camel_type_get_global_classfuncs (camel_sasl_get_type ()));
+	parent_class = CAMEL_SASL_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_sasl_get_type ()));
 
 	/* virtual method overload */
-	camel_sasl_class->challenge = plain_challenge;
+	camel_lite_sasl_class->challenge = plain_challenge;
 }
 
 CamelType
-camel_sasl_plain_get_type (void)
+camel_lite_sasl_plain_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_sasl_get_type (),
-					    "CamelSaslPlain",
+		type = camel_lite_type_register (camel_lite_sasl_get_type (),
+					    "CamelLiteSaslPlain",
 					    sizeof (CamelSaslPlain),
 					    sizeof (CamelSaslPlainClass),
-					    (CamelObjectClassInitFunc) camel_sasl_plain_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_sasl_plain_class_init,
 					    NULL,
 					    NULL,
 					    NULL);
@@ -87,7 +87,7 @@ plain_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 
 #if 0
 	if (token) {
-		camel_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+		camel_lite_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 				     _("Authentication failed."));
 		return NULL;
 	}

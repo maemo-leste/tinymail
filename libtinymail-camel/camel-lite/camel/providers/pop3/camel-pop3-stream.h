@@ -33,9 +33,9 @@
 #endif
 
 
-#define CAMEL_POP3_STREAM(obj)         CAMEL_CHECK_CAST (obj, camel_pop3_stream_get_type (), CamelPOP3Stream)
-#define CAMEL_POP3_STREAM_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_pop3_stream_get_type (), CamelPOP3StreamClass)
-#define CAMEL_IS_POP3_STREAM(obj)      CAMEL_CHECK_TYPE (obj, camel_pop3_stream_get_type ())
+#define CAMEL_POP3_STREAM(obj)         CAMEL_CHECK_CAST (obj, camel_lite_pop3_stream_get_type (), CamelPOP3Stream)
+#define CAMEL_POP3_STREAM_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_pop3_stream_get_type (), CamelPOP3StreamClass)
+#define CAMEL_IS_POP3_STREAM(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_pop3_stream_get_type ())
 
 G_BEGIN_DECLS
 
@@ -46,14 +46,14 @@ typedef enum {
 	CAMEL_POP3_STREAM_LINE,
 	CAMEL_POP3_STREAM_DATA,
 	CAMEL_POP3_STREAM_EOD	/* end of data, acts as if end of stream */
-} camel_pop3_stream_mode_t;
+} camel_lite_pop3_stream_mode_t;
 
 struct _CamelPOP3Stream {
 	CamelStream parent;
 
 	CamelStream *source;
 
-	camel_pop3_stream_mode_t mode;
+	camel_lite_pop3_stream_mode_t mode;
 	int state;
 
 	unsigned char *buf, *ptr, *end;
@@ -64,16 +64,16 @@ struct _CamelPOP3StreamClass {
 	CamelStreamClass parent_class;
 };
 
-CamelType		 camel_pop3_stream_get_type	(void);
+CamelType		 camel_lite_pop3_stream_get_type	(void);
 
-CamelStream     *camel_pop3_stream_new		(CamelStream *source);
+CamelStream     *camel_lite_pop3_stream_new		(CamelStream *source);
 
 
-void		 camel_pop3_stream_set_mode     (CamelPOP3Stream *is, camel_pop3_stream_mode_t mode);
+void		 camel_lite_pop3_stream_set_mode     (CamelPOP3Stream *is, camel_lite_pop3_stream_mode_t mode);
 
-int              camel_pop3_stream_line		(CamelPOP3Stream *is, unsigned char **data, unsigned int *len);
-int 		 camel_pop3_stream_gets		(CamelPOP3Stream *is, unsigned char **start, unsigned int *len);
-int 		 camel_pop3_stream_getd		(CamelPOP3Stream *is, unsigned char **start, unsigned int *len);
+int              camel_lite_pop3_stream_line		(CamelPOP3Stream *is, unsigned char **data, unsigned int *len);
+int 		 camel_lite_pop3_stream_gets		(CamelPOP3Stream *is, unsigned char **start, unsigned int *len);
+int 		 camel_lite_pop3_stream_getd		(CamelPOP3Stream *is, unsigned char **start, unsigned int *len);
 
 G_END_DECLS
 

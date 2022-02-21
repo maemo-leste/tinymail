@@ -174,21 +174,21 @@ tny_camel_pop_store_account_reconnect (TnyCamelPOPStoreAccount *self)
 	if (service->reconnecter)
 		service->reconnecter (service, FALSE, service->data);
 
-	camel_service_disconnect ((CamelService *) service, TRUE, &ex);
-	if (camel_exception_is_set (&ex))
-		camel_exception_clear (&ex);
-	camel_service_connect ((CamelService *) service, &ex);
+	camel_lite_service_disconnect ((CamelService *) service, TRUE, &ex);
+	if (camel_lite_exception_is_set (&ex))
+		camel_lite_exception_clear (&ex);
+	camel_lite_service_connect ((CamelService *) service, &ex);
 
-	if (camel_exception_is_set (&ex))
+	if (camel_lite_exception_is_set (&ex))
 	{
-		camel_exception_clear (&ex);
+		camel_lite_exception_clear (&ex);
 		sleep (1);
-		camel_service_connect (service, &ex);
+		camel_lite_service_connect (service, &ex);
 	}
 
 	if (service->reconnection)
 	{
-		if (!camel_exception_is_set (&ex))
+		if (!camel_lite_exception_is_set (&ex))
 			service->reconnection (service, TRUE, service->data);
 		else
 			service->reconnection (service, FALSE, service->data);
@@ -295,7 +295,7 @@ tny_camel_pop_store_account_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

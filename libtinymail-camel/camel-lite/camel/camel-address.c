@@ -21,66 +21,66 @@
 #include "camel-address.h"
 
 
-static void camel_address_class_init (CamelAddressClass *klass);
-static void camel_address_init       (CamelAddress *obj);
-static void camel_address_finalize   (CamelObject *obj);
+static void camel_lite_address_class_init (CamelAddressClass *klass);
+static void camel_lite_address_init       (CamelAddress *obj);
+static void camel_lite_address_finalize   (CamelObject *obj);
 
-static CamelObjectClass *camel_address_parent;
+static CamelObjectClass *camel_lite_address_parent;
 
 static void
-camel_address_class_init (CamelAddressClass *klass)
+camel_lite_address_class_init (CamelAddressClass *klass)
 {
-	camel_address_parent = camel_type_get_global_classfuncs (camel_object_get_type ());
+	camel_lite_address_parent = camel_lite_type_get_global_classfuncs (camel_lite_object_get_type ());
 }
 
 static void
-camel_address_init (CamelAddress *obj)
+camel_lite_address_init (CamelAddress *obj)
 {
 	obj->addresses = g_ptr_array_new();
 }
 
 static void
-camel_address_finalize (CamelObject *obj)
+camel_lite_address_finalize (CamelObject *obj)
 {
-	camel_address_remove((CamelAddress *)obj, -1);
+	camel_lite_address_remove((CamelAddress *)obj, -1);
 	g_ptr_array_free(((CamelAddress *)obj)->addresses, TRUE);
 }
 
 CamelType
-camel_address_get_type (void)
+camel_lite_address_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_object_get_type (), "CamelAddress",
+		type = camel_lite_type_register (camel_lite_object_get_type (), "CamelLiteAddress",
 					    sizeof (CamelAddress),
 					    sizeof (CamelAddressClass),
-					    (CamelObjectClassInitFunc) camel_address_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_address_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_address_init,
-					    (CamelObjectFinalizeFunc) camel_address_finalize);
+					    (CamelObjectInitFunc) camel_lite_address_init,
+					    (CamelObjectFinalizeFunc) camel_lite_address_finalize);
 	}
 
 	return type;
 }
 
 /**
- * camel_address_new:
+ * camel_lite_address_new:
  *
  * Create a new #CamelAddress object.
  *
  * Returns a new #CamelAddress object
  **/
 CamelAddress *
-camel_address_new (void)
+camel_lite_address_new (void)
 {
-	CamelAddress *new = CAMEL_ADDRESS(camel_object_new(camel_address_get_type()));
+	CamelAddress *new = CAMEL_ADDRESS(camel_lite_object_new(camel_lite_address_get_type()));
 	return new;
 }
 
 
 /**
- * camel_address_new_clone:
+ * camel_lite_address_new_clone:
  * @addr: a #CamelAddress object
  *
  * Clone an existing address type.
@@ -88,17 +88,17 @@ camel_address_new (void)
  * Returns the cloned address
  **/
 CamelAddress *
-camel_address_new_clone (const CamelAddress *addr)
+camel_lite_address_new_clone (const CamelAddress *addr)
 {
-	CamelAddress *new = CAMEL_ADDRESS(camel_object_new(CAMEL_OBJECT_GET_TYPE(addr)));
+	CamelAddress *new = CAMEL_ADDRESS(camel_lite_object_new(CAMEL_OBJECT_GET_TYPE(addr)));
 
-	camel_address_cat(new, addr);
+	camel_lite_address_cat(new, addr);
 	return new;
 }
 
 
 /**
- * camel_address_length:
+ * camel_lite_address_length:
  * @addr: a #CamelAddress object
  *
  * Get the number of addresses stored in the address @addr.
@@ -106,14 +106,14 @@ camel_address_new_clone (const CamelAddress *addr)
  * Returns the number of addresses contained in @addr
  **/
 int
-camel_address_length (CamelAddress *addr)
+camel_lite_address_length (CamelAddress *addr)
 {
 	return addr->addresses->len;
 }
 
 
 /**
- * camel_address_decode:
+ * camel_lite_address_decode:
  * @addr: a #CamelAddress object
  * @raw: raw address description
  *
@@ -122,7 +122,7 @@ camel_address_length (CamelAddress *addr)
  * Returns the number of addresses parsed or %-1 on fail
  **/
 int
-camel_address_decode (CamelAddress *addr, const char *raw)
+camel_lite_address_decode (CamelAddress *addr, const char *raw)
 {
 	g_return_val_if_fail(CAMEL_IS_ADDRESS(addr), -1);
 
@@ -131,7 +131,7 @@ camel_address_decode (CamelAddress *addr, const char *raw)
 
 
 /**
- * camel_address_encode:
+ * camel_lite_address_encode:
  * @addr: a #CamelAddress object
  *
  * Encode an address in a format suitable for a raw header.
@@ -139,7 +139,7 @@ camel_address_decode (CamelAddress *addr, const char *raw)
  * Returns the encoded address
  **/
 char *
-camel_address_encode (CamelAddress *addr)
+camel_lite_address_encode (CamelAddress *addr)
 {
 	g_return_val_if_fail(CAMEL_IS_ADDRESS(addr), NULL);
 
@@ -148,7 +148,7 @@ camel_address_encode (CamelAddress *addr)
 
 
 /**
- * camel_address_unformat:
+ * camel_lite_address_unformat:
  * @addr: a #CamelAddress object
  * @raw: raw address description
  *
@@ -158,7 +158,7 @@ camel_address_encode (CamelAddress *addr)
  * Returns the number of addresses parsed or %-1 on fail
  **/
 int
-camel_address_unformat(CamelAddress *addr, const char *raw)
+camel_lite_address_unformat(CamelAddress *addr, const char *raw)
 {
 	g_return_val_if_fail(CAMEL_IS_ADDRESS(addr), -1);
 
@@ -167,7 +167,7 @@ camel_address_unformat(CamelAddress *addr, const char *raw)
 
 
 /**
- * camel_address_format:
+ * camel_lite_address_format:
  * @addr: a #CamelAddress object
  *
  * Format an address in a format suitable for display.
@@ -175,7 +175,7 @@ camel_address_unformat(CamelAddress *addr, const char *raw)
  * Returns a newly allocated string containing the formatted addresses
  **/
 char *
-camel_address_format (CamelAddress *addr)
+camel_lite_address_format (CamelAddress *addr)
 {
 	g_return_val_if_fail(CAMEL_IS_ADDRESS(addr), NULL);
 
@@ -184,7 +184,7 @@ camel_address_format (CamelAddress *addr)
 
 
 /**
- * camel_address_cat:
+ * camel_lite_address_cat:
  * @dest: destination #CamelAddress object
  * @source: source #CamelAddress object
  *
@@ -194,7 +194,7 @@ camel_address_format (CamelAddress *addr)
  * Returns the number of addresses concatenated
  **/
 int
-camel_address_cat (CamelAddress *dest, const CamelAddress *source)
+camel_lite_address_cat (CamelAddress *dest, const CamelAddress *source)
 {
 	g_return_val_if_fail(CAMEL_IS_ADDRESS(dest), -1);
 	g_return_val_if_fail(CAMEL_IS_ADDRESS(source), -1);
@@ -204,7 +204,7 @@ camel_address_cat (CamelAddress *dest, const CamelAddress *source)
 
 
 /**
- * camel_address_copy:
+ * camel_lite_address_copy:
  * @dest: destination #CamelAddress object
  * @source: source #CamelAddress object
  *
@@ -213,25 +213,25 @@ camel_address_cat (CamelAddress *dest, const CamelAddress *source)
  * Returns the number of addresses copied
  **/
 int
-camel_address_copy (CamelAddress *dest, const CamelAddress *source)
+camel_lite_address_copy (CamelAddress *dest, const CamelAddress *source)
 {
 	g_return_val_if_fail(CAMEL_IS_ADDRESS(dest), -1);
 	g_return_val_if_fail(CAMEL_IS_ADDRESS(source), -1);
 
-	camel_address_remove(dest, -1);
-	return camel_address_cat(dest, source);
+	camel_lite_address_remove(dest, -1);
+	return camel_lite_address_cat(dest, source);
 }
 
 
 /**
- * camel_address_remove:
+ * camel_lite_address_remove:
  * @addr: a #CamelAddress object
  * @index: The address to remove, use %-1 to remove all address.
  *
  * Remove an address by index, or all addresses.
  **/
 void
-camel_address_remove (CamelAddress *addr, int index)
+camel_lite_address_remove (CamelAddress *addr, int index)
 {
 	/* g_return_if_fail(CAMEL_IS_ADDRESS(addr)); */
 

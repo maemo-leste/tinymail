@@ -30,9 +30,9 @@
 
 #include <camel/camel-object.h>
 
-#define CAMEL_HTML_PARSER(obj)         CAMEL_CHECK_CAST (obj, camel_html_parser_get_type (), CamelHTMLParser)
-#define CAMEL_HTML_PARSER_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_html_parser_get_type (), CamelHTMLParserClass)
-#define CAMEL_IS_HTML_PARSER(obj)      CAMEL_CHECK_TYPE (obj, camel_html_parser_get_type ())
+#define CAMEL_HTML_PARSER(obj)         CAMEL_CHECK_CAST (obj, camel_lite_html_parser_get_type (), CamelHTMLParser)
+#define CAMEL_HTML_PARSER_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_html_parser_get_type (), CamelHTMLParserClass)
+#define CAMEL_IS_HTML_PARSER(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_html_parser_get_type ())
 
 G_BEGIN_DECLS
 
@@ -40,7 +40,7 @@ typedef struct _CamelHTMLParserClass CamelHTMLParserClass;
 typedef struct _CamelHTMLParser CamelHTMLParser;
 
 /* Parser/tokeniser states */
-typedef enum _camel_html_parser_t {
+typedef enum _camel_lite_html_parser_t {
 	CAMEL_HTML_PARSER_DATA,			/* raw data */
 	CAMEL_HTML_PARSER_ENT,			/* entity in data */
 	CAMEL_HTML_PARSER_ELEMENT,		/* element (tag + attributes scanned) */
@@ -55,7 +55,7 @@ typedef enum _camel_html_parser_t {
 	CAMEL_HTML_PARSER_VAL_ENT,		/* entity in value */
 	CAMEL_HTML_PARSER_EOD,			/* end of current data */
 	CAMEL_HTML_PARSER_EOF			/* end of file */
-} camel_html_parser_t;
+} camel_lite_html_parser_t;
 
 struct _CamelHTMLParser {
 	CamelObject parent;
@@ -67,15 +67,15 @@ struct _CamelHTMLParserClass {
 	CamelObjectClass parent_class;
 };
 
-CamelType		camel_html_parser_get_type	(void);
-CamelHTMLParser      *camel_html_parser_new	(void);
+CamelType		camel_lite_html_parser_get_type	(void);
+CamelHTMLParser      *camel_lite_html_parser_new	(void);
 
-void camel_html_parser_set_data(CamelHTMLParser *hp, const char *start, int len, int last);
-camel_html_parser_t camel_html_parser_step(CamelHTMLParser *hp, const char **datap, int *lenp);
-const char *camel_html_parser_left(CamelHTMLParser *hp, int *lenp);
-const char *camel_html_parser_tag(CamelHTMLParser *hp);
-const char *camel_html_parser_attr(CamelHTMLParser *hp, const char *name);
-const GPtrArray *camel_html_parser_attr_list(CamelHTMLParser *hp, const GPtrArray **values);
+void camel_lite_html_parser_set_data(CamelHTMLParser *hp, const char *start, int len, int last);
+camel_lite_html_parser_t camel_lite_html_parser_step(CamelHTMLParser *hp, const char **datap, int *lenp);
+const char *camel_lite_html_parser_left(CamelHTMLParser *hp, int *lenp);
+const char *camel_lite_html_parser_tag(CamelHTMLParser *hp);
+const char *camel_lite_html_parser_attr(CamelHTMLParser *hp, const char *name);
+const GPtrArray *camel_lite_html_parser_attr_list(CamelHTMLParser *hp, const GPtrArray **values);
 
 G_END_DECLS
 

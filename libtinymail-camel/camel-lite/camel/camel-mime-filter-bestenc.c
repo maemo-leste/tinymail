@@ -28,23 +28,23 @@
 
 #include "camel-mime-filter-bestenc.h"
 
-static void camel_mime_filter_bestenc_class_init (CamelMimeFilterBestencClass *klass);
-static void camel_mime_filter_bestenc_init       (CamelMimeFilter *obj);
+static void camel_lite_mime_filter_bestenc_class_init (CamelMimeFilterBestencClass *klass);
+static void camel_lite_mime_filter_bestenc_init       (CamelMimeFilter *obj);
 
-static CamelMimeFilterClass *camel_mime_filter_bestenc_parent;
+static CamelMimeFilterClass *camel_lite_mime_filter_bestenc_parent;
 
 CamelType
-camel_mime_filter_bestenc_get_type (void)
+camel_lite_mime_filter_bestenc_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type (), "CamelMimeFilterBestenc",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type (), "CamelLiteMimeFilterBestenc",
 					    sizeof (CamelMimeFilterBestenc),
 					    sizeof (CamelMimeFilterBestencClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_bestenc_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_bestenc_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_mime_filter_bestenc_init,
+					    (CamelObjectInitFunc) camel_lite_mime_filter_bestenc_init,
 					    NULL);
 	}
 
@@ -66,7 +66,7 @@ reset(CamelMimeFilter *mf)
 	f->hadfrom = FALSE;
 	f->startofline = TRUE;
 
-	camel_charset_init(&f->charset);
+	camel_lite_charset_init(&f->charset);
 }
 
 static void
@@ -155,7 +155,7 @@ filter(CamelMimeFilter *mf, char *in, size_t len, size_t prespace, char **out, s
 	f->total += len;
 
 	if (f->flags & CAMEL_BESTENC_GET_CHARSET)
-		camel_charset_step(&f->charset, in, len);
+		camel_lite_charset_step(&f->charset, in, len);
 
 donothing:
 	*out = in;
@@ -176,11 +176,11 @@ complete(CamelMimeFilter *mf, char *in, size_t len, size_t prespace, char **out,
 }
 
 static void
-camel_mime_filter_bestenc_class_init (CamelMimeFilterBestencClass *klass)
+camel_lite_mime_filter_bestenc_class_init (CamelMimeFilterBestencClass *klass)
 {
 	CamelMimeFilterClass *filter_class = (CamelMimeFilterClass *) klass;
 
-	camel_mime_filter_bestenc_parent = (CamelMimeFilterClass *)(camel_type_get_global_classfuncs (camel_mime_filter_get_type ()));
+	camel_lite_mime_filter_bestenc_parent = (CamelMimeFilterClass *)(camel_lite_type_get_global_classfuncs (camel_lite_mime_filter_get_type ()));
 
 	filter_class->reset = reset;
 	filter_class->filter = filter;
@@ -188,13 +188,13 @@ camel_mime_filter_bestenc_class_init (CamelMimeFilterBestencClass *klass)
 }
 
 static void
-camel_mime_filter_bestenc_init (CamelMimeFilter *f)
+camel_lite_mime_filter_bestenc_init (CamelMimeFilter *f)
 {
 	reset(f);
 }
 
 /**
- * camel_mime_filter_bestenc_new:
+ * camel_lite_mime_filter_bestenc_new:
  * @flags: a bitmask of data required.
  *
  * Create a new #CamelMimeFilterBestenc object.
@@ -202,16 +202,16 @@ camel_mime_filter_bestenc_init (CamelMimeFilter *f)
  * Returns a new #CamelMimeFilterBestenc object
  **/
 CamelMimeFilterBestenc *
-camel_mime_filter_bestenc_new (unsigned int flags)
+camel_lite_mime_filter_bestenc_new (unsigned int flags)
 {
-	CamelMimeFilterBestenc *new = (CamelMimeFilterBestenc *)camel_object_new(camel_mime_filter_bestenc_get_type());
+	CamelMimeFilterBestenc *new = (CamelMimeFilterBestenc *)camel_lite_object_new(camel_lite_mime_filter_bestenc_get_type());
 	new->flags = flags;
 	return new;
 }
 
 
 /**
- * camel_mime_filter_bestenc_get_best_encoding:
+ * camel_lite_mime_filter_bestenc_get_best_encoding:
  * @filter: a #CamelMimeFilterBestenc object
  * @required: maximum level of output encoding allowed.
  *
@@ -221,7 +221,7 @@ camel_mime_filter_bestenc_new (unsigned int flags)
  * Returns the best encoding to use
  **/
 CamelTransferEncoding
-camel_mime_filter_bestenc_get_best_encoding(CamelMimeFilterBestenc *filter, CamelBestencEncoding required)
+camel_lite_mime_filter_bestenc_get_best_encoding(CamelMimeFilterBestenc *filter, CamelBestencEncoding required)
 {
 	CamelTransferEncoding bestenc;
 	int istext;
@@ -274,7 +274,7 @@ camel_mime_filter_bestenc_get_best_encoding(CamelMimeFilterBestenc *filter, Came
 
 
 /**
- * camel_mime_filter_bestenc_get_best_charset:
+ * camel_lite_mime_filter_bestenc_get_best_charset:
  * @filter: a #CamelMimeFilterBestenc object
  *
  * Gets the best charset that can be used to contain this content.
@@ -283,21 +283,21 @@ camel_mime_filter_bestenc_get_best_encoding(CamelMimeFilterBestenc *filter, Came
  * text filtered by @filter
  **/
 const char *
-camel_mime_filter_bestenc_get_best_charset (CamelMimeFilterBestenc *filter)
+camel_lite_mime_filter_bestenc_get_best_charset (CamelMimeFilterBestenc *filter)
 {
-	return camel_charset_best_name(&filter->charset);
+	return camel_lite_charset_best_name(&filter->charset);
 }
 
 
 /**
- * camel_mime_filter_bestenc_set_flags:
+ * camel_lite_mime_filter_bestenc_set_flags:
  * @filter: a #CamelMimeFilterBestenc object
  * @flags: bestenc filter flags
  *
  * Set the flags for subsequent operations.
  **/
 void
-camel_mime_filter_bestenc_set_flags(CamelMimeFilterBestenc *filter, unsigned int flags)
+camel_lite_mime_filter_bestenc_set_flags(CamelMimeFilterBestenc *filter, unsigned int flags)
 {
 	filter->flags = flags;
 }

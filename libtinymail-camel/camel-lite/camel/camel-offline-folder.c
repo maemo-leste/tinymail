@@ -35,9 +35,9 @@
 
 #define CAMEL_OFFLINE_FOLDER_GET_CLASS(f) (CAMEL_OFFLINE_FOLDER_CLASS (CAMEL_OBJECT_GET_CLASS (f)))
 
-static void camel_offline_folder_class_init (CamelOfflineFolderClass *klass);
-static void camel_offline_folder_init (CamelOfflineFolder *folder, CamelOfflineFolderClass *klass);
-static void camel_offline_folder_finalize (CamelObject *object);
+static void camel_lite_offline_folder_class_init (CamelOfflineFolderClass *klass);
+static void camel_lite_offline_folder_init (CamelOfflineFolder *folder, CamelOfflineFolderClass *klass);
+static void camel_lite_offline_folder_finalize (CamelObject *object);
 
 static int offline_folder_getv (CamelObject *object, CamelException *ex, CamelArgGetV *args);
 static int offline_folder_setv (CamelObject *object, CamelException *ex, CamelArgV *args);
@@ -54,19 +54,19 @@ static CamelProperty offline_prop_list[] = {
 
 
 CamelType
-camel_offline_folder_get_type (void)
+camel_lite_offline_folder_get_type (void)
 {
 	static CamelType type = NULL;
 
 	if (!type) {
-		type = camel_type_register (CAMEL_FOLDER_TYPE,
-					    "CamelOfflineFolder",
+		type = camel_lite_type_register (CAMEL_FOLDER_TYPE,
+					    "CamelLiteOfflineFolder",
 					    sizeof (CamelOfflineFolder),
 					    sizeof (CamelOfflineFolderClass),
-					    (CamelObjectClassInitFunc) camel_offline_folder_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_offline_folder_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_offline_folder_init,
-					    (CamelObjectFinalizeFunc) camel_offline_folder_finalize);
+					    (CamelObjectInitFunc) camel_lite_offline_folder_init,
+					    (CamelObjectFinalizeFunc) camel_lite_offline_folder_finalize);
 	}
 
 	return type;
@@ -74,11 +74,11 @@ camel_offline_folder_get_type (void)
 
 
 static void
-camel_offline_folder_class_init (CamelOfflineFolderClass *klass)
+camel_lite_offline_folder_class_init (CamelOfflineFolderClass *klass)
 {
 	int i;
 
-	parent_class = (CamelFolderClass *) camel_type_get_global_classfuncs (CAMEL_FOLDER_TYPE);
+	parent_class = (CamelFolderClass *) camel_lite_type_get_global_classfuncs (CAMEL_FOLDER_TYPE);
 
 	if (offline_folder_props == NULL) {
 		for (i = 0; i < G_N_ELEMENTS (offline_prop_list); i++) {
@@ -108,22 +108,22 @@ offline_downsync_sync (CamelSession *session, CamelSessionThreadMsg *mm)
 	CamelMimeMessage *message;
 	int i;
 
-	camel_operation_start (NULL, _("Downloading new messages for offline mode"));
+	camel_lite_operation_start (NULL, _("Downloading new messages for offline mode"));
 
 	if (m->changes) {
 		for (i = 0; i < m->changes->uid_added->len; i++) {
 
-			camel_operation_progress (NULL, i, m->changes->uid_added->len);
+			camel_lite_operation_progress (NULL, i, m->changes->uid_added->len);
 			/* TNY: Partial message retrieval here is always body only */
 			/* TODO: Maybe detect what the original message was, if there was a message? */
-			if ((message = camel_folder_get_message (m->folder, m->changes->uid_added->pdata[i], CAMEL_FOLDER_RECEIVE_PARTIAL, -1, &mm->ex)))
-				camel_object_unref (message);
+			if ((message = camel_lite_folder_get_message (m->folder, m->changes->uid_added->pdata[i], CAMEL_FOLDER_RECEIVE_PARTIAL, -1, &mm->ex)))
+				camel_lite_object_unref (message);
 		}
 	} else {
-		camel_offline_folder_downsync ((CamelOfflineFolder *) m->folder, "(match-all)", &mm->ex);
+		camel_lite_offline_folder_downsync ((CamelOfflineFolder *) m->folder, "(match-all)", &mm->ex);
 	}
 
-	camel_operation_end (NULL);
+	camel_lite_operation_end (NULL);
 }
 
 static void
@@ -132,9 +132,9 @@ offline_downsync_free (CamelSession *session, CamelSessionThreadMsg *mm)
 	struct _offline_downsync_msg *m = (struct _offline_downsync_msg *) mm;
 
 	if (m->changes)
-		camel_folder_change_info_free (m->changes);
+		camel_lite_folder_change_info_free (m->changes);
 
-	camel_object_unref (m->folder);
+	camel_lite_object_unref (m->folder);
 }
 
 static CamelSessionThreadOps offline_downsync_ops = {
@@ -148,28 +148,28 @@ offline_folder_changed (CamelFolder *folder, CamelFolderChangeInfo *changes, voi
 	CamelOfflineFolder *offline = (CamelOfflineFolder *) folder;
 	CamelService *service = (CamelService *) folder->parent_store;
 
-	if (changes->uid_added->len > 0 && (offline->sync_offline || camel_url_get_param (service->url, "sync_offline"))) {
+	if (changes->uid_added->len > 0 && (offline->sync_offline || camel_lite_url_get_param (service->url, "sync_offline"))) {
 		CamelSession *session = service->session;
 		struct _offline_downsync_msg *m;
 
-		m = camel_session_thread_msg_new (session, &offline_downsync_ops, sizeof (*m));
-		m->changes = camel_folder_change_info_new ();
-		camel_folder_change_info_cat (m->changes, changes);
-		camel_object_ref (folder);
+		m = camel_lite_session_thread_msg_new (session, &offline_downsync_ops, sizeof (*m));
+		m->changes = camel_lite_folder_change_info_new ();
+		camel_lite_folder_change_info_cat (m->changes, changes);
+		camel_lite_object_ref (folder);
 		m->folder = folder;
 
-		camel_session_thread_queue (session, &m->msg, 0);
+		camel_lite_session_thread_queue (session, &m->msg, 0);
 	}
 }
 
 static void
-camel_offline_folder_init (CamelOfflineFolder *folder, CamelOfflineFolderClass *klass)
+camel_lite_offline_folder_init (CamelOfflineFolder *folder, CamelOfflineFolderClass *klass)
 {
-	camel_object_hook_event (folder, "folder_changed", (CamelObjectEventHookFunc) offline_folder_changed, NULL);
+	camel_lite_object_hook_event (folder, "folder_changed", (CamelObjectEventHookFunc) offline_folder_changed, NULL);
 }
 
 static void
-camel_offline_folder_finalize (CamelObject *object)
+camel_lite_offline_folder_finalize (CamelObject *object)
 {
 	;
 }
@@ -239,7 +239,7 @@ offline_folder_setv (CamelObject *object, CamelException *ex, CamelArgV *args)
 	}
 
 	/* if (save)
-		camel_object_state_write (object); */
+		camel_lite_object_state_write (object); */
 
 	return ((CamelObjectClass *) parent_class)->setv (object, ex, args);
 }
@@ -252,15 +252,15 @@ offline_folder_downsync (CamelOfflineFolder *offline, const char *expression, Ca
 	GPtrArray *uids;
 	int i;
 
-	camel_operation_start (NULL, _("Syncing messages in folder '%s' to disk"), folder->full_name);
+	camel_lite_operation_start (NULL, _("Syncing messages in folder '%s' to disk"), folder->full_name);
 
 	if (expression)
-		uids = camel_folder_search_by_expression (folder, expression, ex);
+		uids = camel_lite_folder_search_by_expression (folder, expression, ex);
 	else
-		uids = camel_folder_get_uids (folder);
+		uids = camel_lite_folder_get_uids (folder);
 
 	if (!uids) {
-		camel_operation_end (NULL);
+		camel_lite_operation_end (NULL);
 		return;
 	}
 
@@ -268,25 +268,25 @@ offline_folder_downsync (CamelOfflineFolder *offline, const char *expression, Ca
 
 		/* TNY: Partial message retrieval here is always body only */
 		/* TODO: Maybe detect what the original message was, if there was a message? */
-		message = camel_folder_get_message (folder, uids->pdata[i], CAMEL_FOLDER_RECEIVE_PARTIAL, -1, ex);
-		camel_operation_progress (NULL, i, uids->len);
+		message = camel_lite_folder_get_message (folder, uids->pdata[i], CAMEL_FOLDER_RECEIVE_PARTIAL, -1, ex);
+		camel_lite_operation_progress (NULL, i, uids->len);
 		if (message == NULL)
 			break;
 
-		camel_object_unref (message);
+		camel_lite_object_unref (message);
 	}
 
 	if (expression)
-		camel_folder_search_free (folder, uids);
+		camel_lite_folder_search_free (folder, uids);
 	else
-		camel_folder_free_uids (folder, uids);
+		camel_lite_folder_free_uids (folder, uids);
 
-	camel_operation_end (NULL);
+	camel_lite_operation_end (NULL);
 }
 
 
 /**
- * camel_offline_folder_downsync:
+ * camel_lite_offline_folder_downsync:
  * @offline: a #CamelOfflineFolder object
  * @expression: search expression describing which set of messages to downsync (%NULL for all)
  * @ex: a #CamelException
@@ -295,7 +295,7 @@ offline_folder_downsync (CamelOfflineFolder *offline, const char *expression, Ca
  * the local machine for offline availability.
  **/
 void
-camel_offline_folder_downsync (CamelOfflineFolder *offline, const char *expression, CamelException *ex)
+camel_lite_offline_folder_downsync (CamelOfflineFolder *offline, const char *expression, CamelException *ex)
 {
 	g_return_if_fail (CAMEL_IS_OFFLINE_FOLDER (offline));
 

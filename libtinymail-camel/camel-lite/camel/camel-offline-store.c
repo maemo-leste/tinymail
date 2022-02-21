@@ -34,9 +34,9 @@
 #include "camel-session.h"
 
 
-static void camel_offline_store_class_init (CamelOfflineStoreClass *klass);
-static void camel_offline_store_init (CamelOfflineStore *store, CamelOfflineStoreClass *klass);
-static void camel_offline_store_finalize (CamelObject *object);
+static void camel_lite_offline_store_class_init (CamelOfflineStoreClass *klass);
+static void camel_lite_offline_store_init (CamelOfflineStore *store, CamelOfflineStoreClass *klass);
+static void camel_lite_offline_store_finalize (CamelObject *object);
 
 static void offline_store_construct (CamelService *service, CamelSession *session,
 				     CamelProvider *provider, CamelURL *url,
@@ -47,19 +47,19 @@ static CamelStoreClass *parent_class = NULL;
 
 
 CamelType
-camel_offline_store_get_type (void)
+camel_lite_offline_store_get_type (void)
 {
 	static CamelType type = NULL;
 
 	if (!type) {
-		type = camel_type_register (CAMEL_STORE_TYPE,
-					    "CamelOfflineStore",
+		type = camel_lite_type_register (CAMEL_STORE_TYPE,
+					    "CamelLiteOfflineStore",
 					    sizeof (CamelOfflineStore),
 					    sizeof (CamelOfflineStoreClass),
-					    (CamelObjectClassInitFunc) camel_offline_store_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_offline_store_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_offline_store_init,
-					    (CamelObjectFinalizeFunc) camel_offline_store_finalize);
+					    (CamelObjectInitFunc) camel_lite_offline_store_init,
+					    (CamelObjectFinalizeFunc) camel_lite_offline_store_finalize);
 	}
 
 	return type;
@@ -67,21 +67,21 @@ camel_offline_store_get_type (void)
 
 
 static void
-camel_offline_store_class_init (CamelOfflineStoreClass *klass)
+camel_lite_offline_store_class_init (CamelOfflineStoreClass *klass)
 {
-	parent_class = (CamelStoreClass *) camel_type_get_global_classfuncs (CAMEL_STORE_TYPE);
+	parent_class = (CamelStoreClass *) camel_lite_type_get_global_classfuncs (CAMEL_STORE_TYPE);
 
 	((CamelServiceClass *) klass)->construct = offline_store_construct;
 }
 
 static void
-camel_offline_store_init (CamelOfflineStore *store, CamelOfflineStoreClass *klass)
+camel_lite_offline_store_init (CamelOfflineStore *store, CamelOfflineStoreClass *klass)
 {
 	store->state = CAMEL_OFFLINE_STORE_NETWORK_AVAIL;
 }
 
 static void
-camel_offline_store_finalize (CamelObject *object)
+camel_lite_offline_store_finalize (CamelObject *object)
 {
 	;
 }
@@ -95,16 +95,16 @@ offline_store_construct (CamelService *service, CamelSession *session,
 	CamelOfflineStore *store = CAMEL_OFFLINE_STORE (service);
 
 	CAMEL_SERVICE_CLASS (parent_class)->construct (service, session, provider, url, ex);
-	if (camel_exception_is_set (ex))
+	if (camel_lite_exception_is_set (ex))
 		return;
 
-	store->state = camel_session_is_online (session) ?
+	store->state = camel_lite_session_is_online (session) ?
 		CAMEL_OFFLINE_STORE_NETWORK_AVAIL : CAMEL_OFFLINE_STORE_NETWORK_UNAVAIL;
 }
 
 
 /**
- * camel_offline_store_set_network_state:
+ * camel_lite_offline_store_set_network_state:
  * @store: a #CamelOfflineStore object
  * @state: the network state
  * @ex: a #CamelException
@@ -113,16 +113,16 @@ offline_store_construct (CamelService *service, CamelSession *session,
  * or #CAMEL_OFFLINE_STORE_NETWORK_UNAVAIL.
  **/
 void
-camel_offline_store_set_network_state (CamelOfflineStore *store, int state, CamelException *ex)
+camel_lite_offline_store_set_network_state (CamelOfflineStore *store, int state, CamelException *ex)
 {
 	CamelException lex;
 	CamelService *service = CAMEL_SERVICE (store);
-	gboolean network_state = camel_session_get_network_state (service->session);
+	gboolean network_state = camel_lite_session_get_network_state (service->session);
 
 	if (store->state == state)
 		return;
 
-	camel_exception_init (&lex);
+	camel_lite_exception_init (&lex);
 	if (store->state == CAMEL_OFFLINE_STORE_NETWORK_AVAIL) {
 		/* network available -> network unavailable */
 		if (network_state) {
@@ -131,33 +131,33 @@ camel_offline_store_set_network_state (CamelOfflineStore *store, int state, Came
 				CamelFolder *folder;
 				int i, sync;
 
-				sync = camel_url_get_param (((CamelService *) store)->url, "sync_offline") != NULL;
+				sync = camel_lite_url_get_param (((CamelService *) store)->url, "sync_offline") != NULL;
 
-				folders = camel_object_bag_list (((CamelStore *) store)->folders);
+				folders = camel_lite_object_bag_list (((CamelStore *) store)->folders);
 				for (i = 0; i < folders->len; i++) {
 					folder = folders->pdata[i];
 
 					if (CAMEL_CHECK_TYPE (folder, CAMEL_OFFLINE_FOLDER_TYPE)
 					    && (sync || ((CamelOfflineFolder *) folder)->sync_offline)) {
-						camel_offline_folder_downsync ((CamelOfflineFolder *) folder, NULL, &lex);
-						camel_exception_clear (&lex);
+						camel_lite_offline_folder_downsync ((CamelOfflineFolder *) folder, NULL, &lex);
+						camel_lite_exception_clear (&lex);
 					}
 
-					camel_object_unref (folder);
+					camel_lite_object_unref (folder);
 				}
 
 				g_ptr_array_free (folders, TRUE);
 			}
 
-			camel_store_sync (CAMEL_STORE (store), FALSE, &lex);
-			camel_exception_clear (&lex);
+			camel_lite_store_sync (CAMEL_STORE (store), FALSE, &lex);
+			camel_lite_exception_clear (&lex);
 		}
 
-		if (!camel_service_disconnect (CAMEL_SERVICE (store), network_state, ex))
+		if (!camel_lite_service_disconnect (CAMEL_SERVICE (store), network_state, ex))
 			return;
 	} else {
 		/* network unavailable -> network available */
-		if (!camel_service_connect (CAMEL_SERVICE (store), ex))
+		if (!camel_lite_service_connect (CAMEL_SERVICE (store), ex))
 			return;
 	}
 
@@ -165,13 +165,13 @@ camel_offline_store_set_network_state (CamelOfflineStore *store, int state, Came
 }
 
 void
-camel_offline_store_prepare_for_offline (CamelOfflineStore *store, CamelException *ex)
+camel_lite_offline_store_prepare_for_offline (CamelOfflineStore *store, CamelException *ex)
 {
 	CamelException lex;
 	CamelService *service = CAMEL_SERVICE (store);
-	gboolean network_state = camel_session_get_network_state (service->session);
+	gboolean network_state = camel_lite_session_get_network_state (service->session);
 
-	camel_exception_init (&lex);
+	camel_lite_exception_init (&lex);
 	if (network_state) {	
 		if (store->state == CAMEL_OFFLINE_STORE_NETWORK_AVAIL) {
 			if (((CamelStore *) store)->folders) {
@@ -179,25 +179,25 @@ camel_offline_store_prepare_for_offline (CamelOfflineStore *store, CamelExceptio
 				CamelFolder *folder;
 				int i, sync;
 				
-				sync = camel_url_get_param (((CamelService *) store)->url, "sync_offline") != NULL;
+				sync = camel_lite_url_get_param (((CamelService *) store)->url, "sync_offline") != NULL;
 				
-				folders = camel_object_bag_list (((CamelStore *) store)->folders);
+				folders = camel_lite_object_bag_list (((CamelStore *) store)->folders);
 				for (i = 0; i < folders->len; i++) {
 					folder = folders->pdata[i];
 
 					if (CAMEL_CHECK_TYPE (folder, CAMEL_OFFLINE_FOLDER_TYPE)
 					    && (sync || ((CamelOfflineFolder *) folder)->sync_offline)) {
-						camel_offline_folder_downsync ((CamelOfflineFolder *) folder, NULL, &lex);
-						camel_exception_clear (&lex);
+						camel_lite_offline_folder_downsync ((CamelOfflineFolder *) folder, NULL, &lex);
+						camel_lite_exception_clear (&lex);
 					}
-					camel_object_unref (folder);
+					camel_lite_object_unref (folder);
 				}
 				g_ptr_array_free (folders, TRUE);
 			}
 		}	
 
-		camel_store_sync (CAMEL_STORE (store), FALSE, &lex);
-		camel_exception_clear (&lex);
+		camel_lite_store_sync (CAMEL_STORE (store), FALSE, &lex);
+		camel_lite_exception_clear (&lex);
 	
 	}
 }

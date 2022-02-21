@@ -25,7 +25,7 @@
 
 #include <camel/camel-sasl.h>
 
-#define CAMEL_SASL_ANONYMOUS_TYPE     (camel_sasl_anonymous_get_type ())
+#define CAMEL_SASL_ANONYMOUS_TYPE     (camel_lite_sasl_anonymous_get_type ())
 #define CAMEL_SASL_ANONYMOUS(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SASL_ANONYMOUS_TYPE, CamelSaslAnonymous))
 #define CAMEL_SASL_ANONYMOUS_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SASL_ANONYMOUS_TYPE, CamelSaslAnonymousClass))
 #define CAMEL_IS_SASL_ANONYMOUS(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SASL_ANONYMOUS_TYPE))
@@ -53,12 +53,12 @@ typedef struct _CamelSaslAnonymousClass {
 
 
 /* Standard Camel function */
-CamelType camel_sasl_anonymous_get_type (void);
+CamelType camel_lite_sasl_anonymous_get_type (void);
 
 /* public methods */
-CamelSasl *camel_sasl_anonymous_new (CamelSaslAnonTraceType type, const char *trace_info);
+CamelSasl *camel_lite_sasl_anonymous_new (CamelSaslAnonTraceType type, const char *trace_info);
 
-extern CamelServiceAuthType camel_sasl_anonymous_authtype;
+extern CamelServiceAuthType camel_lite_sasl_anonymous_authtype;
 
 G_END_DECLS
 

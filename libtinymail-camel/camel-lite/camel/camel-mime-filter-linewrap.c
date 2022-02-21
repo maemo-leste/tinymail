@@ -38,7 +38,7 @@ static void reset (CamelMimeFilter *f);
 
 
 static void
-camel_mime_filter_linewrap_class_init (CamelMimeFilterLinewrapClass *klass)
+camel_lite_mime_filter_linewrap_class_init (CamelMimeFilterLinewrapClass *klass)
 {
 	CamelMimeFilterClass *mime_filter_class =
 		(CamelMimeFilterClass *) klass;
@@ -49,15 +49,15 @@ camel_mime_filter_linewrap_class_init (CamelMimeFilterLinewrapClass *klass)
 }
 
 CamelType
-camel_mime_filter_linewrap_get_type (void)
+camel_lite_mime_filter_linewrap_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type(), "CamelMimeFilterLinewrap",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type(), "CamelLiteMimeFilterLinewrap",
 					    sizeof (CamelMimeFilterLinewrap),
 					    sizeof (CamelMimeFilterLinewrapClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_linewrap_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_linewrap_class_init,
 					    NULL,
 					    NULL,
 					    NULL);
@@ -75,7 +75,7 @@ filter (CamelMimeFilter *f, char *in, size_t len, size_t prespace,
 	int nchars = linewrap->nchars;
 
 	/* we'll be adding chars here so we need a bigger buffer */
-	camel_mime_filter_set_size (f, 3 * len, FALSE);
+	camel_lite_mime_filter_set_size (f, 3 * len, FALSE);
 
 	p = in;
 	q = f->outbuf;
@@ -130,10 +130,10 @@ reset (CamelMimeFilter *f)
 }
 
 CamelMimeFilter *
-camel_mime_filter_linewrap_new (guint preferred_len, guint max_len, char indent_char)
+camel_lite_mime_filter_linewrap_new (guint preferred_len, guint max_len, char indent_char)
 {
 	CamelMimeFilterLinewrap *linewrap =
-		CAMEL_MIME_FILTER_LINEWRAP (camel_object_new (CAMEL_MIME_FILTER_LINEWRAP_TYPE));
+		CAMEL_MIME_FILTER_LINEWRAP (camel_lite_object_new (CAMEL_MIME_FILTER_LINEWRAP_TYPE));
 
 	linewrap->indent = indent_char;
 	linewrap->wrap_len = preferred_len;

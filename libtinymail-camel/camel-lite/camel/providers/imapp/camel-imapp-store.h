@@ -30,7 +30,7 @@
 #include "camel-imapp-driver.h"
 #include <libedataserver/e-memory.h>
 
-#define CAMEL_IMAPP_STORE_TYPE     (camel_imapp_store_get_type ())
+#define CAMEL_IMAPP_STORE_TYPE     (camel_lite_imapp_store_get_type ())
 #define CAMEL_IMAPP_STORE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_IMAPP_STORE_TYPE, CamelIMAPPStore))
 #define CAMEL_IMAPP_STORE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_IMAPP_STORE_TYPE, CamelIMAPPStoreClass))
 #define CAMEL_IS_IMAP_STORE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_IMAPP_STORE_TYPE))
@@ -63,7 +63,7 @@ typedef struct {
 } CamelIMAPPStoreClass;
 
 /* Standard Camel function */
-CamelType camel_imapp_store_get_type (void);
+CamelType camel_lite_imapp_store_get_type (void);
 
 G_END_DECLS
 

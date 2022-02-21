@@ -34,7 +34,7 @@ class_init(CamelIMAPPEngineClass *ieclass)
 {
 	ieclass->tagprefix = 'A';
 
-	camel_object_class_add_event((CamelObjectClass *)ieclass, "status", NULL);
+	camel_lite_object_class_add_event((CamelObjectClass *)ieclass, "status", NULL);
 }
 
 static void
@@ -65,7 +65,7 @@ static void
 object_finalise(CamelIMAPPEngine *ie, CamelIMAPPEngineClass *ieclass)
 {
 	/* FIXME: need to free the commands ... */
-	while (camel_imapp_engine_iterate(ie, NULL) > 0)
+	while (camel_lite_imapp_engine_iterate(ie, NULL) > 0)
 		;
 
 	g_hash_table_foreach(ie->handlers, (GHFunc)handler_free, NULL);
@@ -73,14 +73,14 @@ object_finalise(CamelIMAPPEngine *ie, CamelIMAPPEngineClass *ieclass)
 }
 
 CamelType
-camel_imapp_engine_get_type (void)
+camel_lite_imapp_engine_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (
-			camel_object_get_type (),
-			"CamelIMAPPEngine",
+		type = camel_lite_type_register (
+			camel_lite_object_get_type (),
+			"CamelLiteIMAPPEngine",
 			sizeof (CamelIMAPPEngine),
 			sizeof (CamelIMAPPEngineClass),
 			(CamelObjectClassInitFunc) class_init,
@@ -123,7 +123,7 @@ static int resp_capability(CamelIMAPPEngine *ie, guint32 id, void *data)
 
 	printf("got capability response:\n");
 	while (1) {
-		tok = camel_imapp_stream_token(ie->stream, &token, &len);
+		tok = camel_lite_imapp_stream_token(ie->stream, &token, &len);
 		switch(tok) {
 		case IMAP_TOK_TOKEN:
 			p = token;
@@ -139,7 +139,7 @@ static int resp_capability(CamelIMAPPEngine *ie, guint32 id, void *data)
 			return 0;
 		case IMAP_TOK_ERROR:
 		case IMAP_TOK_PROTOCOL:
-			camel_imapp_engine_skip(ie);
+			camel_lite_imapp_engine_skip(ie);
 			return -1;
 		default:
 			printf("Unknown Response token %02x '%c'\n", tok, isprint(tok)?tok:'.');
@@ -156,7 +156,7 @@ static int resp_expunge(CamelIMAPPEngine *ie, guint32 id, void *data)
 {
 	printf("message expunged: %d\n", id);
 
-	return camel_imapp_engine_skip(ie);
+	return camel_lite_imapp_engine_skip(ie);
 }
 
 static int resp_flags(CamelIMAPPEngine *ie, guint32 id, void *data)
@@ -167,7 +167,7 @@ static int resp_flags(CamelIMAPPEngine *ie, guint32 id, void *data)
 
 	printf("flags: %08x\n", flags);
 
-	return camel_imapp_engine_skip(ie);
+	return camel_lite_imapp_engine_skip(ie);
 }
 
 /* exists count */
@@ -178,7 +178,7 @@ static int resp_exists(CamelIMAPPEngine *ie, guint32 id, void *data)
 	if (ie->select_response)
 		ie->select_response->exists = id;
 
-	return camel_imapp_engine_skip(ie);
+	return camel_lite_imapp_engine_skip(ie);
 }
 
 static int resp_recent(CamelIMAPPEngine *ie, guint32 id, void *data)
@@ -188,7 +188,7 @@ static int resp_recent(CamelIMAPPEngine *ie, guint32 id, void *data)
 	if (ie->select_response)
 		ie->select_response->recent = id;
 
-	return camel_imapp_engine_skip(ie);
+	return camel_lite_imapp_engine_skip(ie);
 }
 
 static int resp_fetch(CamelIMAPPEngine *ie, guint32 id, void *data)
@@ -199,7 +199,7 @@ static int resp_fetch(CamelIMAPPEngine *ie, guint32 id, void *data)
 	imap_dump_fetch(finfo);
 	imap_free_fetch(finfo);
 
-	return camel_imapp_engine_skip(ie);
+	return camel_lite_imapp_engine_skip(ie);
 }
 
 #if 0
@@ -211,33 +211,33 @@ static int resp_list(CamelIMAPPEngine *ie, guint32 id, void *data)
 	printf("list:  '%s' (%c)\n", linfo->name, linfo->separator);
 	imap_free_list(linfo);
 
-	return camel_imapp_engine_skip(ie);
+	return camel_lite_imapp_engine_skip(ie);
 }
 #endif
 
 CamelIMAPPEngine *
-camel_imapp_engine_new(CamelIMAPPStream *stream)
+camel_lite_imapp_engine_new(CamelIMAPPStream *stream)
 {
 	CamelIMAPPEngine * volatile engine;
 
-	engine = CAMEL_IMAPP_ENGINE (camel_object_new (CAMEL_IMAPP_ENGINE_TYPE));
+	engine = CAMEL_IMAPP_ENGINE (camel_lite_object_new (CAMEL_IMAPP_ENGINE_TYPE));
 	engine->stream = stream;
-	camel_object_ref((CamelObject *)stream);
+	camel_lite_object_ref((CamelObject *)stream);
 
-	camel_imapp_engine_add_handler(engine, "CAPABILITY", resp_capability, engine);
+	camel_lite_imapp_engine_add_handler(engine, "CAPABILITY", resp_capability, engine);
 
 	/* mailbox_data */
-	camel_imapp_engine_add_handler(engine, "FLAGS", (CamelIMAPPEngineFunc)resp_flags, engine);
-	camel_imapp_engine_add_handler(engine, "EXISTS", (CamelIMAPPEngineFunc)resp_exists, engine);
-	camel_imapp_engine_add_handler(engine, "RECENT", (CamelIMAPPEngineFunc)resp_recent, engine);
+	camel_lite_imapp_engine_add_handler(engine, "FLAGS", (CamelIMAPPEngineFunc)resp_flags, engine);
+	camel_lite_imapp_engine_add_handler(engine, "EXISTS", (CamelIMAPPEngineFunc)resp_exists, engine);
+	camel_lite_imapp_engine_add_handler(engine, "RECENT", (CamelIMAPPEngineFunc)resp_recent, engine);
 
 #if 0
-	camel_imapp_engine_add_handler(engine, "LIST", (CamelIMAPPEngineFunc)resp_list, engine);
-	camel_imapp_engine_add_handler(engine, "LSUB", (CamelIMAPPEngineFunc)resp_list, engine);
+	camel_lite_imapp_engine_add_handler(engine, "LIST", (CamelIMAPPEngineFunc)resp_list, engine);
+	camel_lite_imapp_engine_add_handler(engine, "LSUB", (CamelIMAPPEngineFunc)resp_list, engine);
 #endif
 	/* message_data */
-	camel_imapp_engine_add_handler(engine, "EXPUNGE", (CamelIMAPPEngineFunc)resp_expunge, engine);
-	camel_imapp_engine_add_handler(engine, "FETCH", (CamelIMAPPEngineFunc)resp_fetch, engine);
+	camel_lite_imapp_engine_add_handler(engine, "EXPUNGE", (CamelIMAPPEngineFunc)resp_expunge, engine);
+	camel_lite_imapp_engine_add_handler(engine, "FETCH", (CamelIMAPPEngineFunc)resp_fetch, engine);
 
 	/* TODO: move this to a driver:connect call? */
 	CAMEL_TRY {
@@ -245,7 +245,7 @@ camel_imapp_engine_new(CamelIMAPPStream *stream)
 		unsigned int len;
 		int tok;
 
-		tok = camel_imapp_stream_token(stream, &token, &len);
+		tok = camel_lite_imapp_stream_token(stream, &token, &len);
 		if (tok == '*') {
 			struct _status_info *sinfo = imap_parse_status(stream);
 
@@ -260,19 +260,19 @@ camel_imapp_engine_new(CamelIMAPPStream *stream)
 				break;
 			default:
 				imap_free_status(sinfo);
-				camel_exception_throw(1, "Server refused connection: %s", sinfo->text);
+				camel_lite_exception_throw(1, "Server refused connection: %s", sinfo->text);
 				break;
 			}
 			imap_free_status(sinfo);
 		} else {
 			engine->state = IMAP_ENGINE_CONNECT;
 			printf("unknwon server greeting, ignored\n");
-			camel_imapp_engine_skip(engine);
+			camel_lite_imapp_engine_skip(engine);
 		}
-		camel_imapp_engine_capabilities(engine);
+		camel_lite_imapp_engine_capabilities(engine);
 	} CAMEL_CATCH(ex) {
 		printf("connection failed: %s\n", ex->desc);
-		camel_object_unref((CamelObject *)engine);
+		camel_lite_object_unref((CamelObject *)engine);
 		engine = NULL;
 	} CAMEL_DONE;
 
@@ -280,7 +280,7 @@ camel_imapp_engine_new(CamelIMAPPStream *stream)
 }
 
 void
-camel_imapp_engine_add_handler(CamelIMAPPEngine *imap, const char *response, CamelIMAPPEngineFunc func, void *data)
+camel_lite_imapp_engine_add_handler(CamelIMAPPEngine *imap, const char *response, CamelIMAPPEngineFunc func, void *data)
 {
 	struct _handler *h;
 	const unsigned char *p;
@@ -300,35 +300,35 @@ camel_imapp_engine_add_handler(CamelIMAPPEngine *imap, const char *response, Cam
 }
 
 int
-camel_imapp_engine_capabilities(CamelIMAPPEngine *ie)
+camel_lite_imapp_engine_capabilities(CamelIMAPPEngine *ie)
 {
 	CamelIMAPPCommand *ic;
 
 	/* reset capabilities */
 	ie->capa = 0;
 
-	ic = camel_imapp_engine_command_new(ie, "CAPABILITY", NULL, "CAPABILITY");
-	camel_imapp_engine_command_queue(ie, ic);
-	while (camel_imapp_engine_iterate(ie, ic)>0)
+	ic = camel_lite_imapp_engine_command_new(ie, "CAPABILITY", NULL, "CAPABILITY");
+	camel_lite_imapp_engine_command_queue(ie, ic);
+	while (camel_lite_imapp_engine_iterate(ie, ic)>0)
 		;
-	camel_imapp_engine_command_free(ie, ic);
+	camel_lite_imapp_engine_command_free(ie, ic);
 
 	return 0;
 }
 
 /* skip the rest of the line of tokens */
 int
-camel_imapp_engine_skip(CamelIMAPPEngine *imap)
+camel_lite_imapp_engine_skip(CamelIMAPPEngine *imap)
 {
 	int tok;
 	unsigned char *token;
 	unsigned int len;
 
 	do {
-		tok = camel_imapp_stream_token(imap->stream, &token, &len);
+		tok = camel_lite_imapp_stream_token(imap->stream, &token, &len);
 		if (tok == IMAP_TOK_LITERAL) {
-			camel_imapp_stream_set_literal(imap->stream, len);
-			while ((tok = camel_imapp_stream_getl(imap->stream, &token, &len)) > 0) {
+			camel_lite_imapp_stream_set_literal(imap->stream, len);
+			while ((tok = camel_lite_imapp_stream_getl(imap->stream, &token, &len)) > 0) {
 				printf("Skip literal data '%.*s'\n", (int)len, token);
 			}
 		}
@@ -352,14 +352,14 @@ iterate_untagged(CamelIMAPPEngine *imap)
 
 	e(printf("got untagged response\n"));
 	id = 0;
-	tok = camel_imapp_stream_token(imap->stream, &token, &len);
+	tok = camel_lite_imapp_stream_token(imap->stream, &token, &len);
 	if (tok == IMAP_TOK_INT) {
 		id = strtoul(token, NULL, 10);
-		tok = camel_imapp_stream_token(imap->stream, &token, &len);
+		tok = camel_lite_imapp_stream_token(imap->stream, &token, &len);
 	}
 
 	if (tok == '\n')
-		camel_exception_throw(1, "truncated server response");
+		camel_lite_exception_throw(1, "truncated server response");
 
 	e(printf("Have token '%s' id %d\n", token, id));
 	p = token;
@@ -387,9 +387,9 @@ iterate_untagged(CamelIMAPPEngine *imap)
 		/* TODO: validate which ones of these can happen as unsolicited responses */
 		/* TODO: handle bye/preauth differently */
 		/* FIXME: free sinfo */
-		camel_imapp_stream_ungettoken(imap->stream, tok, token, len);
+		camel_lite_imapp_stream_ungettoken(imap->stream, tok, token, len);
 		sinfo = imap_parse_status(imap->stream);
-		camel_object_trigger_event(imap, "status", sinfo);
+		camel_lite_object_trigger_event(imap, "status", sinfo);
 		imap_free_status(sinfo);
 #if 0
 		switch(sinfo->condition) {
@@ -430,7 +430,7 @@ iterate_untagged(CamelIMAPPEngine *imap)
 		break;
 	default:
 		printf("unknown token: %s\n", token);
-		camel_imapp_engine_skip(imap);
+		camel_lite_imapp_engine_skip(imap);
 		/* unknown response, just ignore it */
 	}
 
@@ -450,7 +450,7 @@ iterate_continuation(CamelIMAPPEngine *imap)
 	ic = imap->literal;
 	imap->literal = NULL;
 	if (ic == NULL) {
-		camel_imapp_engine_skip(imap);
+		camel_lite_imapp_engine_skip(imap);
 		printf("got continuation response with no outstanding continuation requests?\n");
 		return 1;
 	}
@@ -460,27 +460,27 @@ iterate_continuation(CamelIMAPPEngine *imap)
 	switch(cp->type & CAMEL_IMAPP_COMMAND_MASK) {
 	case CAMEL_IMAPP_COMMAND_DATAWRAPPER:
 		printf("writing data wrapper to literal\n");
-		camel_data_wrapper_write_to_stream((CamelDataWrapper *)cp->ob, (CamelStream *)imap->stream);
+		camel_lite_data_wrapper_write_to_stream((CamelDataWrapper *)cp->ob, (CamelStream *)imap->stream);
 		break;
 	case CAMEL_IMAPP_COMMAND_STREAM:
 		printf("writing stream to literal\n");
-		camel_stream_write_to_stream((CamelStream *)cp->ob, (CamelStream *)imap->stream);
+		camel_lite_stream_write_to_stream((CamelStream *)cp->ob, (CamelStream *)imap->stream);
 		break;
 	case CAMEL_IMAPP_COMMAND_AUTH: {
-		CamelException *ex = camel_exception_new();
+		CamelException *ex = camel_lite_exception_new();
 		char *resp;
 		unsigned char *token;
 		int tok, len;
 
-		tok = camel_imapp_stream_token(imap->stream, &token, &len);
-		resp = camel_sasl_challenge_base64((CamelSasl *)cp->ob, token, ex);
-		if (camel_exception_is_set(ex))
-			camel_exception_throw_ex(ex);
-		camel_exception_free(ex);
+		tok = camel_lite_imapp_stream_token(imap->stream, &token, &len);
+		resp = camel_lite_sasl_challenge_base64((CamelSasl *)cp->ob, token, ex);
+		if (camel_lite_exception_is_set(ex))
+			camel_lite_exception_throw_ex(ex);
+		camel_lite_exception_free(ex);
 
 		printf("got auth continuation, feeding token '%s' back to auth mech\n", resp);
 
-		camel_stream_write((CamelStream *)imap->stream, resp, strlen(resp));
+		camel_lite_stream_write((CamelStream *)imap->stream, resp, strlen(resp));
 
 		/* we want to keep getting called until we get a status reponse from the server
 		   ignore what sasl tells us */
@@ -489,16 +489,16 @@ iterate_continuation(CamelIMAPPEngine *imap)
 		break; }
 	default:
 		/* should we just ignore? */
-		camel_exception_throw(1, "continuation response for non-continuation request");
+		camel_lite_exception_throw(1, "continuation response for non-continuation request");
 	}
 
-	camel_imapp_engine_skip(imap);
+	camel_lite_imapp_engine_skip(imap);
 
 	cp = cp->next;
 	if (cp->next) {
 		ic->current = cp;
 		printf("next part of command \"A%05u: %s\"\n", ic->tag, cp->data);
-		camel_stream_printf((CamelStream *)imap->stream, "%s\r\n", cp->data);
+		camel_lite_stream_printf((CamelStream *)imap->stream, "%s\r\n", cp->data);
 		if (cp->type & CAMEL_IMAPP_COMMAND_CONTINUATION) {
 			imap->literal = ic;
 		} else {
@@ -506,14 +506,14 @@ iterate_continuation(CamelIMAPPEngine *imap)
 		}
 	} else {
 		printf("%p: queueing continuation\n", ic);
-		camel_stream_printf((CamelStream *)imap->stream, "\r\n");
+		camel_lite_stream_printf((CamelStream *)imap->stream, "\r\n");
 	}
 
 	if (imap->literal == NULL) {
 		ic = (CamelIMAPPCommand *)e_dlist_remhead(&imap->queue);
 		if (ic) {
 			printf("found outstanding op, queueing\n");
-			camel_imapp_engine_command_queue(imap, ic);
+			camel_lite_imapp_engine_command_queue(imap, ic);
 		}
 	}
 
@@ -528,10 +528,10 @@ iterate_completion(CamelIMAPPEngine *imap, unsigned char *token)
 	unsigned int tag;
 
 	if (token[0] != imap->tagprefix)
-		camel_exception_throw(1, "Server sent unexpected response: %s", token);
+		camel_lite_exception_throw(1, "Server sent unexpected response: %s", token);
 
 	tag = strtoul(token+1, NULL, 10);
-	ic = camel_imapp_engine_command_find_tag(imap, tag);
+	ic = camel_lite_imapp_engine_command_find_tag(imap, tag);
 	if (ic) {
 		printf("Got completion response for command %05u '%s'\n", ic->tag, ic->name);
 		printf("%p: removing command from qwueue, we were at '%s'\n", ic, ic->current->data);
@@ -554,7 +554,7 @@ iterate_completion(CamelIMAPPEngine *imap, unsigned char *token)
 		if (ic->complete)
 			ic->complete(imap, ic, ic->complete_data);
 	} else {
-		camel_exception_throw(1, "got response tag unexpectedly: %s", token);
+		camel_lite_exception_throw(1, "got response tag unexpectedly: %s", token);
 	}
 
 	if (imap->literal != NULL) {
@@ -569,7 +569,7 @@ iterate_completion(CamelIMAPPEngine *imap, unsigned char *token)
 	ic = (CamelIMAPPCommand *)e_dlist_remhead(&imap->queue);
 	if (ic) {
 		printf("found outstanding op, queueing\n");
-		camel_imapp_engine_command_queue(imap, ic);
+		camel_lite_imapp_engine_command_queue(imap, ic);
 	}
 
 	return 1;
@@ -578,7 +578,7 @@ iterate_completion(CamelIMAPPEngine *imap, unsigned char *token)
 
 /* Do work if there's any to do */
 int
-camel_imapp_engine_iterate(CamelIMAPPEngine *imap, CamelIMAPPCommand *icwait)
+camel_lite_imapp_engine_iterate(CamelIMAPPEngine *imap, CamelIMAPPCommand *icwait)
 /* throws IO,PARSE exception */
 {
 	unsigned int len;
@@ -592,7 +592,7 @@ camel_imapp_engine_iterate(CamelIMAPPEngine *imap, CamelIMAPPCommand *icwait)
 
 	/* lock here? */
 
-	tok = camel_imapp_stream_token(imap->stream, &token, &len);
+	tok = camel_lite_imapp_stream_token(imap->stream, &token, &len);
 	if (tok == '*')
 		iterate_untagged(imap);
 	else if (tok == IMAP_TOK_TOKEN)
@@ -600,7 +600,7 @@ camel_imapp_engine_iterate(CamelIMAPPEngine *imap, CamelIMAPPCommand *icwait)
 	else if (tok == '+')
 		iterate_continuation(imap);
 	else
-		camel_exception_throw(1, "unexpected server response: %s", token);
+		camel_lite_exception_throw(1, "unexpected server response: %s", token);
 
 	if (e_dlist_empty(&imap->active))
 		return 0;
@@ -609,7 +609,7 @@ camel_imapp_engine_iterate(CamelIMAPPEngine *imap, CamelIMAPPCommand *icwait)
 }
 
 CamelIMAPPCommand *
-camel_imapp_engine_command_new(CamelIMAPPEngine *imap, const char *name, const char *select, const char *fmt, ...)
+camel_lite_imapp_engine_command_new(CamelIMAPPEngine *imap, const char *name, const char *select, const char *fmt, ...)
 {
 	CamelIMAPPCommand *ic;
 	va_list ap;
@@ -617,7 +617,7 @@ camel_imapp_engine_command_new(CamelIMAPPEngine *imap, const char *name, const c
 	ic = g_malloc0(sizeof(*ic));
 	ic->tag = imap->tag++;
 	ic->name = name;
-	ic->mem = (CamelStreamMem *)camel_stream_mem_new();
+	ic->mem = (CamelStreamMem *)camel_lite_stream_mem_new();
 	ic->select = g_strdup(select);
 	e_dlist_init(&ic->parts);
 
@@ -631,7 +631,7 @@ camel_imapp_engine_command_new(CamelIMAPPEngine *imap, const char *name, const c
 }
 
 void
-camel_imapp_engine_command_add(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, const char *fmt, ...)
+camel_lite_imapp_engine_command_add(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, const char *fmt, ...)
 {
 	va_list ap;
 
@@ -645,7 +645,7 @@ camel_imapp_engine_command_add(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, co
 }
 
 void
-camel_imapp_engine_command_complete(CamelIMAPPEngine *imap, struct _CamelIMAPPCommand *ic, CamelIMAPPCommandFunc func, void *data)
+camel_lite_imapp_engine_command_complete(CamelIMAPPEngine *imap, struct _CamelIMAPPCommand *ic, CamelIMAPPCommandFunc func, void *data)
 {
 	ic->complete = func;
 	ic->complete_data = data;
@@ -653,7 +653,7 @@ camel_imapp_engine_command_complete(CamelIMAPPEngine *imap, struct _CamelIMAPPCo
 
 /* FIXME: make imap command's refcounted? */
 void
-camel_imapp_engine_command_free (CamelIMAPPEngine *imap, CamelIMAPPCommand *ic)
+camel_lite_imapp_engine_command_free (CamelIMAPPEngine *imap, CamelIMAPPCommand *ic)
 {
 	CamelIMAPPCommandPart *cp, *cn;
 
@@ -663,14 +663,14 @@ camel_imapp_engine_command_free (CamelIMAPPEngine *imap, CamelIMAPPCommand *ic)
 	/* Note the command must not be in any queue? */
 
 	if (ic->mem)
-		camel_object_unref((CamelObject *)ic->mem);
+		camel_lite_object_unref((CamelObject *)ic->mem);
 	imap_free_status(ic->status);
 	g_free(ic->select);
 
 	while ( (cp = ((CamelIMAPPCommandPart *)e_dlist_remhead(&ic->parts))) ) {
 		g_free(cp->data);
 		if (cp->ob)
-			camel_object_unref(cp->ob);
+			camel_lite_object_unref(cp->ob);
 		g_free(cp);
 	}
 
@@ -679,7 +679,7 @@ camel_imapp_engine_command_free (CamelIMAPPEngine *imap, CamelIMAPPCommand *ic)
 
 /* FIXME: error handling */
 void
-camel_imapp_engine_command_queue(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic)
+camel_lite_imapp_engine_command_queue(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic)
 {
 	CamelIMAPPCommandPart *cp;
 
@@ -692,7 +692,7 @@ camel_imapp_engine_command_queue(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic)
 }
 
 CamelIMAPPCommand *
-camel_imapp_engine_command_find (CamelIMAPPEngine *imap, const char *name)
+camel_lite_imapp_engine_command_find (CamelIMAPPEngine *imap, const char *name)
 {
 	CamelIMAPPCommand *ic, *in;
 
@@ -714,7 +714,7 @@ camel_imapp_engine_command_find (CamelIMAPPEngine *imap, const char *name)
 }
 
 CamelIMAPPCommand *
-camel_imapp_engine_command_find_tag(CamelIMAPPEngine *imap, unsigned int tag)
+camel_lite_imapp_engine_command_find_tag(CamelIMAPPEngine *imap, unsigned int tag)
 {
 	CamelIMAPPCommand *ic, *in;
 
@@ -737,7 +737,7 @@ camel_imapp_engine_command_find_tag(CamelIMAPPEngine *imap, unsigned int tag)
 /* ********************************************************************** */
 
 CamelIMAPPSelectResponse *
-camel_imapp_engine_select(CamelIMAPPEngine *imap, const char *name)
+camel_lite_imapp_engine_select(CamelIMAPPEngine *imap, const char *name)
 {
 	CamelIMAPPSelectResponse * volatile resp;
 	CamelIMAPPCommand * volatile ic = NULL;
@@ -746,30 +746,30 @@ camel_imapp_engine_select(CamelIMAPPEngine *imap, const char *name)
 	imap->select_response = resp;
 
 	CAMEL_TRY {
-		ic = camel_imapp_engine_command_new(imap, "SELECT", NULL, "SELECT %s", name);
-		camel_imapp_engine_command_queue(imap, ic);
-		while (camel_imapp_engine_iterate(imap, ic) > 0)
+		ic = camel_lite_imapp_engine_command_new(imap, "SELECT", NULL, "SELECT %s", name);
+		camel_lite_imapp_engine_command_queue(imap, ic);
+		while (camel_lite_imapp_engine_iterate(imap, ic) > 0)
 			;
 
 		if (ic->status->result != IMAP_OK)
-			camel_exception_throw(1, "select failed: %s", ic->status->text);
+			camel_lite_exception_throw(1, "select failed: %s", ic->status->text);
 		resp->status = ic->status;
 		ic->status = NULL;
 	} CAMEL_CATCH (e) {
-		camel_imapp_engine_command_free(imap, ic);
-		camel_imapp_engine_select_free(imap, resp);
+		camel_lite_imapp_engine_command_free(imap, ic);
+		camel_lite_imapp_engine_select_free(imap, resp);
 		imap->select_response = NULL;
-		camel_exception_throw_ex(e);
+		camel_lite_exception_throw_ex(e);
 	} CAMEL_DONE;
 
-	camel_imapp_engine_command_free(imap, ic);
+	camel_lite_imapp_engine_command_free(imap, ic);
 	imap->select_response = NULL;
 
 	return resp;
 }
 
 void
-camel_imapp_engine_select_free(CamelIMAPPEngine *imap, CamelIMAPPSelectResponse *select)
+camel_lite_imapp_engine_select_free(CamelIMAPPEngine *imap, CamelIMAPPSelectResponse *select)
 {
 	if (select) {
 		imap_free_status(select->status);
@@ -780,7 +780,7 @@ camel_imapp_engine_select_free(CamelIMAPPEngine *imap, CamelIMAPPSelectResponse 
 /* ********************************************************************** */
 
 static void
-imap_engine_command_add_part(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, camel_imapp_command_part_t type, CamelObject *ob)
+imap_engine_command_add_part(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, camel_lite_imapp_command_part_t type, CamelObject *ob)
 {
 	CamelIMAPPCommandPart *cp;
 	CamelStreamNull *null;
@@ -789,25 +789,25 @@ imap_engine_command_add_part(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, came
 	switch(type & CAMEL_IMAPP_COMMAND_MASK) {
 	case CAMEL_IMAPP_COMMAND_DATAWRAPPER:
 	case CAMEL_IMAPP_COMMAND_STREAM:
-		null = (CamelStreamNull *)camel_stream_null_new();
+		null = (CamelStreamNull *)camel_lite_stream_null_new();
 		if ( (type & CAMEL_IMAPP_COMMAND_MASK) == CAMEL_IMAPP_COMMAND_DATAWRAPPER) {
-			camel_data_wrapper_write_to_stream((CamelDataWrapper *)ob, (CamelStream *)null);
+			camel_lite_data_wrapper_write_to_stream((CamelDataWrapper *)ob, (CamelStream *)null);
 		} else {
-			camel_stream_reset((CamelStream *)ob);
-			camel_stream_write_to_stream((CamelStream *)ob, (CamelStream *)null);
-			camel_stream_reset((CamelStream *)ob);
+			camel_lite_stream_reset((CamelStream *)ob);
+			camel_lite_stream_write_to_stream((CamelStream *)ob, (CamelStream *)null);
+			camel_lite_stream_reset((CamelStream *)ob);
 		}
 		type |= CAMEL_IMAPP_COMMAND_CONTINUATION;
-		camel_object_ref(ob);
+		camel_lite_object_ref(ob);
 		ob_size = null->written;
-		camel_object_unref((CamelObject *)null);
-		camel_stream_printf((CamelStream *)ic->mem, "{%u}", ob_size);
+		camel_lite_object_unref((CamelObject *)null);
+		camel_lite_stream_printf((CamelStream *)ic->mem, "{%u}", ob_size);
 		break;
 	case CAMEL_IMAPP_COMMAND_AUTH:
 		/* we presume we'll need to get additional data only if we're not authenticated yet */
-		camel_object_ref(ob);
-		camel_stream_printf((CamelStream *)ic->mem, "%s", ((CamelSasl *)ob)->mech);
-		if (!camel_sasl_authenticated((CamelSasl *)ob))
+		camel_lite_object_ref(ob);
+		camel_lite_stream_printf((CamelStream *)ic->mem, "%s", ((CamelSasl *)ob)->mech);
+		if (!camel_lite_sasl_authenticated((CamelSasl *)ob))
 			type |= CAMEL_IMAPP_COMMAND_CONTINUATION;
 		break;
 	default:
@@ -823,7 +823,7 @@ imap_engine_command_add_part(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, came
 	memcpy(cp->data, ic->mem->buffer->data, cp->data_size);
 	cp->data[cp->data_size] = 0;
 
-	camel_stream_reset((CamelStream *)ic->mem);
+	camel_lite_stream_reset((CamelStream *)ic->mem);
 	/* FIXME: hackish? */
 	g_byte_array_set_size(ic->mem->buffer, 0);
 
@@ -854,7 +854,7 @@ imap_engine_command_complete(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic)
 
 	c(printf("command has %d parts\n", len(&ic->parts)));
 
-	camel_object_unref((CamelObject *)ic->mem);
+	camel_lite_object_unref((CamelObject *)ic->mem);
 	ic->mem = NULL;
 }
 
@@ -886,11 +886,11 @@ imap_engine_command_addv(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, const ch
 		switch(c) {
 		case '%':
 			if (*p == '%') {
-				camel_stream_write((CamelStream *)ic->mem, ps, p-ps);
+				camel_lite_stream_write((CamelStream *)ic->mem, ps, p-ps);
 				p++;
 				ps = p;
 			} else {
-				camel_stream_write((CamelStream *)ic->mem, ps, p-ps-1);
+				camel_lite_stream_write((CamelStream *)ic->mem, ps, p-ps-1);
 				start = p-1;
 				width = 0;
 				left = FALSE;
@@ -937,20 +937,20 @@ imap_engine_command_addv(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, const ch
 					break;
 				case 't': /* token */
 					s = va_arg(ap, char *);
-					camel_stream_write((CamelStream *)ic->mem, s, strlen(s));
+					camel_lite_stream_write((CamelStream *)ic->mem, s, strlen(s));
 					break;
 				case 's': /* simple string */
 					s = va_arg(ap, char *);
 					c(printf("got string '%s'\n", s));
 					/* FIXME: escpae chars, convert to literal or literal+, etc */
-					camel_stream_printf((CamelStream *)ic->mem, "\"%s\"", s);
+					camel_lite_stream_printf((CamelStream *)ic->mem, "\"%s\"", s);
 					break;
 				case 'f': /* imap folder name */
 					s = va_arg(ap, char *);
 					c(printf("got folder '%s'\n", s));
 					/* FIXME: encode folder name */
 					/* FIXME: namespace? */
-					camel_stream_printf((CamelStream *)ic->mem, "\"%s\"", s?s:"");
+					camel_lite_stream_printf((CamelStream *)ic->mem, "\"%s\"", s?s:"");
 					break;
 				case 'F': /* IMAP flags set */
 					f = va_arg(ap, guint32);
@@ -959,7 +959,7 @@ imap_engine_command_addv(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, const ch
 				case 'c':
 					d = va_arg(ap, int);
 					ch = d;
-					camel_stream_write((CamelStream *)ic->mem, &ch, 1);
+					camel_lite_stream_write((CamelStream *)ic->mem, &ch, 1);
 					break;
 				case 'd': /* int/unsigned */
 				case 'u':
@@ -968,13 +968,13 @@ imap_engine_command_addv(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, const ch
 						c(printf("got long int '%d'\n", (int)l));
 						memcpy(buffer, start, p-start);
 						buffer[p-start] = 0;
-						camel_stream_printf((CamelStream *)ic->mem, buffer, l);
+						camel_lite_stream_printf((CamelStream *)ic->mem, buffer, l);
 					} else {
 						d = va_arg(ap, int);
 						c(printf("got int '%d'\n", d));
 						memcpy(buffer, start, p-start);
 						buffer[p-start] = 0;
-						camel_stream_printf((CamelStream *)ic->mem, buffer, d);
+						camel_lite_stream_printf((CamelStream *)ic->mem, buffer, d);
 					}
 					break;
 				}
@@ -986,14 +986,14 @@ imap_engine_command_addv(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, const ch
 			c = *p;
 			if (c) {
 				g_assert(c == '\\');
-				camel_stream_write((CamelStream *)ic->mem, ps, p-ps);
+				camel_lite_stream_write((CamelStream *)ic->mem, ps, p-ps);
 				p++;
 				ps = p;
 			}
 		}
 	}
 
-	camel_stream_write((CamelStream *)ic->mem, ps, p-ps-1);
+	camel_lite_stream_write((CamelStream *)ic->mem, ps, p-ps-1);
 }
 
 
@@ -1013,10 +1013,10 @@ cie_worker(void *data)
 		/* of course ... we can't do anything like store/search if we have to select
 		   first, because it'll mess up all the sequence numbers ... hrm ... bugger */
 
-		select = camel_imapp_engine_command_new(imap, "SELECT", NULL, "SELECT %s", ic->select);
+		select = camel_lite_imapp_engine_command_new(imap, "SELECT", NULL, "SELECT %s", ic->select);
 		g_free(imap->last_select);
 		imap->last_select = g_strdup(ic->select);
-		camel_imapp_engine_command_queue(imap, select);
+		camel_lite_imapp_engine_command_queue(imap, select);
 		/* how does it get freed? handle inside engine? */
 	}
 
@@ -1034,7 +1034,7 @@ cie_worker(void *data)
 	/* how to handle exceptions here? */
 
 	printf("queueing command \"%c%05u %s\"\n", imap->tagprefix, ic->tag, cp->data);
-	camel_stream_printf((CamelStream *)imap->stream, "%c%05u %s\r\n", imap->tagprefix, ic->tag, cp->data);
+	camel_lite_stream_printf((CamelStream *)imap->stream, "%c%05u %s\r\n", imap->tagprefix, ic->tag, cp->data);
 
 	if (cp->type & CAMEL_IMAPP_COMMAND_CONTINUATION) {
 		printf("%p: active literal\n", ic);
@@ -1057,7 +1057,7 @@ cie_worker(void *data)
 
 static pthread_key_t handler_key = 0;
 
-void camel_exception_setup(void)
+void camel_lite_exception_setup(void)
 {
 	pthread_key_create(&handler_key, NULL);
 }
@@ -1066,13 +1066,13 @@ void camel_exception_setup(void)
 /* this is per-thread in threaded mode */
 static struct _CamelExceptionEnv *handler = NULL;
 
-void camel_exception_setup(void)
+void camel_lite_exception_setup(void)
 {
 }
 #endif
 
 void
-camel_exception_try(struct _CamelExceptionEnv *env)
+camel_lite_exception_try(struct _CamelExceptionEnv *env)
 {
 #ifdef ENABLE_THREADS
 	struct _CamelExceptionEnv *handler;
@@ -1089,7 +1089,7 @@ camel_exception_try(struct _CamelExceptionEnv *env)
 }
 
 void
-camel_exception_throw_ex(CamelException *ex)
+camel_lite_exception_throw_ex(CamelException *ex)
 {
 	struct _CamelExceptionEnv *env;
 #ifdef ENABLE_THREADS
@@ -1116,22 +1116,22 @@ camel_exception_throw_ex(CamelException *ex)
 }
 
 void
-camel_exception_throw(int id, char *fmt, ...)
+camel_lite_exception_throw(int id, char *fmt, ...)
 {
 	CamelException *ex;
 	va_list ap;
 
-	ex = camel_exception_new();
+	ex = camel_lite_exception_new();
 	ex->id = id;
 	va_start(ap, fmt);
 	ex->desc = g_strdup_vprintf(fmt, ap);
 	va_end(ap);
 
-	camel_exception_throw_ex(ex);
+	camel_lite_exception_throw_ex(ex);
 }
 
 void
-camel_exception_drop(struct _CamelExceptionEnv *env)
+camel_lite_exception_drop(struct _CamelExceptionEnv *env)
 {
 #ifdef ENABLE_THREADS
 	pthread_setspecific(handler_key, env->parent);
@@ -1141,7 +1141,7 @@ camel_exception_drop(struct _CamelExceptionEnv *env)
 }
 
 void
-camel_exception_done(struct _CamelExceptionEnv *env)
+camel_lite_exception_done(struct _CamelExceptionEnv *env)
 {
 #ifdef ENABLE_THREADS
 	pthread_setspecific(handler_key, env->parent);
@@ -1149,6 +1149,6 @@ camel_exception_done(struct _CamelExceptionEnv *env)
 	handler = env->parent;
 #endif
 	if (env->ex != NULL) {
-		camel_exception_free(env->ex);
+		camel_lite_exception_free(env->ex);
 	}
 }

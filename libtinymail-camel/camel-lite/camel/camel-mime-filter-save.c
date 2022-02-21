@@ -37,7 +37,7 @@ static void reset (CamelMimeFilter *f);
 
 
 static void
-camel_mime_filter_save_class_init (CamelMimeFilterSaveClass *klass)
+camel_lite_mime_filter_save_class_init (CamelMimeFilterSaveClass *klass)
 {
 	CamelMimeFilterClass *mime_filter_class =
 		(CamelMimeFilterClass *) klass;
@@ -48,15 +48,15 @@ camel_mime_filter_save_class_init (CamelMimeFilterSaveClass *klass)
 }
 
 CamelType
-camel_mime_filter_save_get_type (void)
+camel_lite_mime_filter_save_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type(), "CamelMimeFilterSave",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type(), "CamelLiteMimeFilterSave",
 					    sizeof (CamelMimeFilterSave),
 					    sizeof (CamelMimeFilterSaveClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_save_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_save_class_init,
 					    NULL,
 					    NULL,
 					    NULL);
@@ -72,7 +72,7 @@ filter (CamelMimeFilter *f, char *in, size_t len, size_t prespace,
 	CamelMimeFilterSave *save = (CamelMimeFilterSave *) f;
 
 	if (save->stream)
-		camel_stream_write (save->stream, in, len);
+		camel_lite_stream_write (save->stream, in, len);
 
 	*out = in;
 	*outlen = len;
@@ -95,25 +95,25 @@ reset (CamelMimeFilter *f)
 
 
 /**
- * camel_mime_filter_save_new:
+ * camel_lite_mime_filter_save_new:
  *
  * Create a new #CamelMimeFilterSave filter object.
  *
  * Returns a new #CamelMimeFilterSave object
  **/
 CamelMimeFilter *
-camel_mime_filter_save_new (void)
+camel_lite_mime_filter_save_new (void)
 {
-	CamelMimeFilterSave *save = CAMEL_MIME_FILTER_SAVE (camel_object_new (CAMEL_MIME_FILTER_SAVE_TYPE));
+	CamelMimeFilterSave *save = CAMEL_MIME_FILTER_SAVE (camel_lite_object_new (CAMEL_MIME_FILTER_SAVE_TYPE));
 
-	save->stream = camel_stream_mem_new ();
+	save->stream = camel_lite_stream_mem_new ();
 
 	return (CamelMimeFilter *) save;
 }
 
 
 /**
- * camel_mime_filter_save_new_with_stream:
+ * camel_lite_mime_filter_save_new_with_stream:
  * @stream: a #CamelStream object
  *
  * Create a new #CamelMimeFilterSave filter object that will save a
@@ -122,12 +122,12 @@ camel_mime_filter_save_new (void)
  * Returns a new #CamelMimeFilterSave object
  **/
 CamelMimeFilter *
-camel_mime_filter_save_new_with_stream (CamelStream *stream)
+camel_lite_mime_filter_save_new_with_stream (CamelStream *stream)
 {
-	CamelMimeFilterSave *save = CAMEL_MIME_FILTER_SAVE (camel_object_new (CAMEL_MIME_FILTER_SAVE_TYPE));
+	CamelMimeFilterSave *save = CAMEL_MIME_FILTER_SAVE (camel_lite_object_new (CAMEL_MIME_FILTER_SAVE_TYPE));
 
 	save->stream = stream;
-	camel_object_ref (stream);
+	camel_lite_object_ref (stream);
 
 	return (CamelMimeFilter *) save;
 }

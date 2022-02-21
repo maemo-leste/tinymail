@@ -99,13 +99,13 @@ static int write_n(int fd, void *buffer, int inlen)
 }
 
 void
-camel_exception_setv (CamelException *ex, ExceptionId id, const char *format, ...)
+camel_lite_exception_setv (CamelException *ex, ExceptionId id, const char *format, ...)
 {
 	;
 }
 
 void
-camel_exception_clear (CamelException *exception)
+camel_lite_exception_clear (CamelException *exception)
 {
 	;
 }
@@ -152,11 +152,11 @@ static int lock_path(const char *path, guint32 *lockid)
 	}
 
 	/* we try the real uid first, and if that fails, try the 'root id' */
-	if (camel_lock_dot(path, NULL) == -1) {
+	if (camel_lite_lock_dot(path, NULL) == -1) {
 #ifdef SETEUID_SAVES
 		if (lock_real_uid != lock_root_uid) {
 			if (seteuid(lock_root_uid) != -1) {
-				if (camel_lock_dot(path, NULL) == -1) {
+				if (camel_lite_lock_dot(path, NULL) == -1) {
 					seteuid(lock_real_uid);
 					res = CAMEL_LOCK_HELPER_STATUS_SYSTEM;
 					goto fail;
@@ -218,11 +218,11 @@ static int unlock_id(guint32 lockid)
 #ifdef SETEUID_SAVES
 				if (info->uid != lock_real_uid) {
 					seteuid(lock_root_uid);
-					camel_unlock_dot(info->path);
+					camel_lite_unlock_dot(info->path);
 					seteuid(lock_real_uid);
 				} else
 #endif
-					camel_unlock_dot(info->path);
+					camel_lite_unlock_dot(info->path);
 
 				p->next = info->next;
 				free(info);

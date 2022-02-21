@@ -26,9 +26,9 @@
 #include <glib.h>
 #include <camel/camel-store.h>
 
-#define CAMEL_VEE_STORE(obj)         CAMEL_CHECK_CAST (obj, camel_vee_store_get_type (), CamelVeeStore)
-#define CAMEL_VEE_STORE_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_vee_store_get_type (), CamelVeeStoreClass)
-#define CAMEL_IS_VEE_STORE(obj)      CAMEL_CHECK_TYPE (obj, camel_vee_store_get_type ())
+#define CAMEL_VEE_STORE(obj)         CAMEL_CHECK_CAST (obj, camel_lite_vee_store_get_type (), CamelVeeStore)
+#define CAMEL_VEE_STORE_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_vee_store_get_type (), CamelVeeStoreClass)
+#define CAMEL_IS_VEE_STORE(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_vee_store_get_type ())
 
 G_BEGIN_DECLS
 
@@ -41,7 +41,7 @@ typedef struct _CamelVeeStoreClass CamelVeeStoreClass;
 struct _CamelVeeStore {
 	CamelStore parent;
 
-	/* Unmatched folder, set up in camel_vee_store_init */
+	/* Unmatched folder, set up in camel_lite_vee_store_init */
 	struct _CamelVeeFolder *folder_unmatched;
 	GHashTable *unmatched_uids;
 };
@@ -50,8 +50,8 @@ struct _CamelVeeStoreClass {
 	CamelStoreClass parent_class;
 };
 
-CamelType		camel_vee_store_get_type	(void);
-CamelVeeStore      *camel_vee_store_new	(void);
+CamelType		camel_lite_vee_store_get_type	(void);
+CamelVeeStore      *camel_lite_vee_store_new	(void);
 
 G_END_DECLS
 

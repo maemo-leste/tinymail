@@ -36,7 +36,7 @@
 #include "camel-sasl-cram-md5.h"
 #include "camel-service.h"
 
-CamelServiceAuthType camel_sasl_cram_md5_authtype = {
+CamelServiceAuthType camel_lite_sasl_cram_md5_authtype = {
 	N_("CRAM-MD5"),
 
 	N_("This option will connect to the server using a "
@@ -54,27 +54,27 @@ static CamelSaslClass *parent_class = NULL;
 static GByteArray *cram_md5_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex);
 
 static void
-camel_sasl_cram_md5_class_init (CamelSaslCramMd5Class *camel_sasl_cram_md5_class)
+camel_lite_sasl_cram_md5_class_init (CamelSaslCramMd5Class *camel_lite_sasl_cram_md5_class)
 {
-	CamelSaslClass *camel_sasl_class = CAMEL_SASL_CLASS (camel_sasl_cram_md5_class);
+	CamelSaslClass *camel_lite_sasl_class = CAMEL_SASL_CLASS (camel_lite_sasl_cram_md5_class);
 
-	parent_class = CAMEL_SASL_CLASS (camel_type_get_global_classfuncs (camel_sasl_get_type ()));
+	parent_class = CAMEL_SASL_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_sasl_get_type ()));
 
 	/* virtual method overload */
-	camel_sasl_class->challenge = cram_md5_challenge;
+	camel_lite_sasl_class->challenge = cram_md5_challenge;
 }
 
 CamelType
-camel_sasl_cram_md5_get_type (void)
+camel_lite_sasl_cram_md5_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_sasl_get_type (),
-					    "CamelSaslCramMd5",
+		type = camel_lite_type_register (camel_lite_sasl_get_type (),
+					    "CamelLiteSaslCramMd5",
 					    sizeof (CamelSaslCramMd5),
 					    sizeof (CamelSaslCramMd5Class),
-					    (CamelObjectClassInitFunc) camel_sasl_cram_md5_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_sasl_cram_md5_class_init,
 					    NULL,
 					    NULL,
 					    NULL);

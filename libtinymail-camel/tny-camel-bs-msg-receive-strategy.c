@@ -93,12 +93,12 @@ tny_camel_bs_msg_receive_strategy_start_receiving_part (TnyCamelBsMsgReceiveStra
 
 		/* TODO: play with IMAP's CONVERT here ... */
 
-		filename = camel_folder_fetch (cfolder, uid, text_part_spec, binary, &ex);
+		filename = camel_lite_folder_fetch (cfolder, uid, text_part_spec, binary, &ex);
 		g_free (text_part_spec);
 
-		if (camel_exception_is_set (&ex)) {
+		if (camel_lite_exception_is_set (&ex)) {
 			_tny_camel_exception_to_tny_error (&ex, err);
-			camel_exception_clear (&ex);
+			camel_lite_exception_clear (&ex);
 			retval = NULL;
 		} else {
 			int fd = open (filename, 0);
@@ -151,7 +151,7 @@ retrieve_subparts_headers (CamelFolder *folder, const gchar *uid, bodystruct_t *
 		gboolean hdr_bin = FALSE;
 
 		part_spec = g_strconcat (bodystructure->part_spec, ".HEADER", NULL);
-		gchar *mpstr = camel_folder_fetch (folder, uid, part_spec, &hdr_bin, ex);
+		gchar *mpstr = camel_lite_folder_fetch (folder, uid, part_spec, &hdr_bin, ex);
 
 		/* Very importat. If a message/rfc822 doesn't have proper HEADER, then
 		 * server may be behaving wrongly (as gmail does sometimes). In these cases
@@ -159,7 +159,7 @@ retrieve_subparts_headers (CamelFolder *folder, const gchar *uid, bodystruct_t *
 		 * children are then indexed as rfc822_id.1.1, rfc822_id.1.2 instead of
 		 * rfc822_id.1 and rfc822_id.2 */
 
-		if (!camel_exception_is_set (ex) && mpstr) {
+		if (!camel_lite_exception_is_set (ex) && mpstr) {
 			struct stat sb;
 
 			if (stat (mpstr, &sb) == 0) {
@@ -183,7 +183,7 @@ retrieve_subparts_headers (CamelFolder *folder, const gchar *uid, bodystruct_t *
 		g_free (mpstr);
 		g_free (part_spec);
 
-		if (camel_exception_is_set (ex))
+		if (camel_lite_exception_is_set (ex))
 			return;
 	}
 
@@ -192,7 +192,7 @@ retrieve_subparts_headers (CamelFolder *folder, const gchar *uid, bodystruct_t *
 
 		retrieve_subparts_headers (folder, uid, children, ex);
 
-		if (camel_exception_is_set (ex))
+		if (camel_lite_exception_is_set (ex))
 			return;
 		children = children->next;
 	}
@@ -210,11 +210,11 @@ tny_camel_bs_msg_receive_strategy_perform_get_msg_default (TnyMsgReceiveStrategy
 	CamelFolder *cfolder = _tny_camel_folder_get_camel_folder (TNY_CAMEL_FOLDER (folder));
 
 	uid = tny_header_dup_uid (TNY_HEADER (header));
-	structure_str = camel_folder_fetch_structure (cfolder, (const char *) uid, &ex);
+	structure_str = camel_lite_folder_fetch_structure (cfolder, (const char *) uid, &ex);
 
-	if (camel_exception_is_set (&ex)) {
+	if (camel_lite_exception_is_set (&ex)) {
 		_tny_camel_exception_to_tny_error (&ex, err);
-		camel_exception_clear (&ex);
+		camel_lite_exception_clear (&ex);
 		if (structure_str)
 			g_free (structure_str);
 		g_free (uid);
@@ -234,9 +234,9 @@ tny_camel_bs_msg_receive_strategy_perform_get_msg_default (TnyMsgReceiveStrategy
 	if (bodystructure) {
 		retrieve_subparts_headers (cfolder, uid, bodystructure, &ex);
 
-		if (camel_exception_is_set (&ex)) {
+		if (camel_lite_exception_is_set (&ex)) {
 			_tny_camel_exception_to_tny_error (&ex, err);
-			camel_exception_clear (&ex);
+			camel_lite_exception_clear (&ex);
 			g_free (uid);
 			bodystruct_free (bodystructure);
 			return NULL;
@@ -266,7 +266,7 @@ tny_camel_bs_msg_receive_strategy_perform_get_msg_default (TnyMsgReceiveStrategy
 				TnyStream *tny_null_stream;
 
 				body = TNY_MIME_PART (tny_iterator_get_current (iterator));
-				null_stream = camel_stream_null_new ();
+				null_stream = camel_lite_stream_null_new ();
 				tny_null_stream = tny_camel_stream_new (null_stream);
 				tny_mime_part_write_to_stream (body, tny_null_stream, err);
 				g_object_unref (tny_null_stream);

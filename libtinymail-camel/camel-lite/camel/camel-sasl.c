@@ -50,36 +50,36 @@ static CamelObjectClass *parent_class = NULL;
 static GByteArray *sasl_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex);
 
 static void
-camel_sasl_class_init (CamelSaslClass *camel_sasl_class)
+camel_lite_sasl_class_init (CamelSaslClass *camel_lite_sasl_class)
 {
-	parent_class = camel_type_get_global_classfuncs (CAMEL_OBJECT_TYPE);
+	parent_class = camel_lite_type_get_global_classfuncs (CAMEL_OBJECT_TYPE);
 
 	/* virtual method definition */
-	camel_sasl_class->challenge = sasl_challenge;
+	camel_lite_sasl_class->challenge = sasl_challenge;
 }
 
 static void
-camel_sasl_finalize (CamelSasl *sasl)
+camel_lite_sasl_finalize (CamelSasl *sasl)
 {
 	g_free (sasl->service_name);
 	g_free (sasl->mech);
-	camel_object_unref (sasl->service);
+	camel_lite_object_unref (sasl->service);
 }
 
 CamelType
-camel_sasl_get_type (void)
+camel_lite_sasl_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (CAMEL_OBJECT_TYPE,
-					    "CamelSasl",
+		type = camel_lite_type_register (CAMEL_OBJECT_TYPE,
+					    "CamelLiteSasl",
 					    sizeof (CamelSasl),
 					    sizeof (CamelSaslClass),
-					    (CamelObjectClassInitFunc) camel_sasl_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_sasl_class_init,
 					    NULL,
 					    NULL,
-					    (CamelObjectFinalizeFunc) camel_sasl_finalize);
+					    (CamelObjectFinalizeFunc) camel_lite_sasl_finalize);
 	}
 
 	return type;
@@ -94,7 +94,7 @@ sasl_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 }
 
 /**
- * camel_sasl_challenge:
+ * camel_lite_sasl_challenge:
  * @sasl: a #CamelSasl object
  * @token: a token, or %NULL
  * @ex: a #CamelException
@@ -108,7 +108,7 @@ sasl_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
  * also be set.
  **/
 GByteArray *
-camel_sasl_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
+camel_lite_sasl_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 {
 	g_return_val_if_fail (CAMEL_IS_SASL (sasl), NULL);
 
@@ -116,18 +116,18 @@ camel_sasl_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 }
 
 /**
- * camel_sasl_challenge_base64:
+ * camel_lite_sasl_challenge_base64:
  * @sasl: a #CamelSasl object
  * @token: a base64-encoded token
  * @ex: a #CamelException
  *
- * As with #camel_sasl_challenge, but the challenge @token and the
+ * As with #camel_lite_sasl_challenge, but the challenge @token and the
  * response are both base64-encoded.
  *
  * Returns the base64 encoded challenge string
  **/
 char *
-camel_sasl_challenge_base64 (CamelSasl *sasl, const char *token, CamelException *ex)
+camel_lite_sasl_challenge_base64 (CamelSasl *sasl, const char *token, CamelException *ex)
 {
 	GByteArray *token_binary, *ret_binary;
 	char *ret;
@@ -145,7 +145,7 @@ camel_sasl_challenge_base64 (CamelSasl *sasl, const char *token, CamelException 
 	} else
 		token_binary = NULL;
 
-	ret_binary = camel_sasl_challenge (sasl, token_binary, ex);
+	ret_binary = camel_lite_sasl_challenge (sasl, token_binary, ex);
 	if (token_binary)
 		g_byte_array_free (token_binary, TRUE);
 	if (!ret_binary)
@@ -161,7 +161,7 @@ camel_sasl_challenge_base64 (CamelSasl *sasl, const char *token, CamelException 
 }
 
 /**
- * camel_sasl_authenticated:
+ * camel_lite_sasl_authenticated:
  * @sasl: a #CamelSasl object
  *
  * Returns whether or not @sasl has successfully authenticated the
@@ -170,14 +170,14 @@ camel_sasl_challenge_base64 (CamelSasl *sasl, const char *token, CamelException 
  * verify that it has accepted it.
  **/
 gboolean
-camel_sasl_authenticated (CamelSasl *sasl)
+camel_lite_sasl_authenticated (CamelSasl *sasl)
 {
 	return sasl->authenticated;
 }
 
 
 /**
- * camel_sasl_new:
+ * camel_lite_sasl_new:
  * @service_name: the SASL service name
  * @mechanism: the SASL mechanism
  * @service: the CamelService that will be using this SASL
@@ -187,7 +187,7 @@ camel_sasl_authenticated (CamelSasl *sasl)
  * supported.
  **/
 CamelSasl *
-camel_sasl_new (const char *service_name, const char *mechanism, CamelService *service)
+camel_lite_sasl_new (const char *service_name, const char *mechanism, CamelService *service)
 {
 	CamelSasl *sasl;
 
@@ -198,93 +198,93 @@ camel_sasl_new (const char *service_name, const char *mechanism, CamelService *s
 	/* We don't do ANONYMOUS here, because it's a little bit weird. */
 
 	if (!strcmp (mechanism, "CRAM-MD5"))
-		sasl = (CamelSasl *) camel_object_new (CAMEL_SASL_CRAM_MD5_TYPE);
+		sasl = (CamelSasl *) camel_lite_object_new (CAMEL_SASL_CRAM_MD5_TYPE);
 	else if (!strcmp (mechanism, "DIGEST-MD5"))
-		sasl = (CamelSasl *) camel_object_new (CAMEL_SASL_DIGEST_MD5_TYPE);
+		sasl = (CamelSasl *) camel_lite_object_new (CAMEL_SASL_DIGEST_MD5_TYPE);
 #ifdef HAVE_KRB5
 	else if (!strcmp (mechanism, "GSSAPI"))
-		sasl = (CamelSasl *) camel_object_new (CAMEL_SASL_GSSAPI_TYPE);
+		sasl = (CamelSasl *) camel_lite_object_new (CAMEL_SASL_GSSAPI_TYPE);
 #endif
 #ifdef HAVE_KRB4
 	else if (!strcmp (mechanism, "KERBEROS_V4"))
-		sasl = (CamelSasl *) camel_object_new (CAMEL_SASL_KERBEROS4_TYPE);
+		sasl = (CamelSasl *) camel_lite_object_new (CAMEL_SASL_KERBEROS4_TYPE);
 #endif
 	else if (!strcmp (mechanism, "PLAIN"))
-		sasl = (CamelSasl *) camel_object_new (CAMEL_SASL_PLAIN_TYPE);
+		sasl = (CamelSasl *) camel_lite_object_new (CAMEL_SASL_PLAIN_TYPE);
 	else if (!strcmp (mechanism, "LOGIN"))
-		sasl = (CamelSasl *) camel_object_new (CAMEL_SASL_LOGIN_TYPE);
+		sasl = (CamelSasl *) camel_lite_object_new (CAMEL_SASL_LOGIN_TYPE);
 	else if (!strcmp (mechanism, "POPB4SMTP"))
-		sasl = (CamelSasl *) camel_object_new (CAMEL_SASL_POPB4SMTP_TYPE);
+		sasl = (CamelSasl *) camel_lite_object_new (CAMEL_SASL_POPB4SMTP_TYPE);
 	else if (!strcmp (mechanism, "NTLM"))
-		sasl = (CamelSasl *) camel_object_new (CAMEL_SASL_NTLM_TYPE);
+		sasl = (CamelSasl *) camel_lite_object_new (CAMEL_SASL_NTLM_TYPE);
 	else
 		return NULL;
 
 	sasl->mech = g_strdup (mechanism);
 	sasl->service_name = g_strdup (service_name);
 	sasl->service = service;
-	camel_object_ref (service);
+	camel_lite_object_ref (service);
 
 	return sasl;
 }
 
 /**
- * camel_sasl_authtype_list:
+ * camel_lite_sasl_authtype_list:
  * @include_plain: whether or not to include the PLAIN mechanism
  *
  * Returns a #GList of SASL-supported authtypes. The caller must
  * free the list, but not the contents.
  **/
 GList *
-camel_sasl_authtype_list (gboolean include_plain)
+camel_lite_sasl_authtype_list (gboolean include_plain)
 {
 	GList *types = NULL;
 
-	types = g_list_prepend (types, &camel_sasl_cram_md5_authtype);
-	types = g_list_prepend (types, &camel_sasl_digest_md5_authtype);
+	types = g_list_prepend (types, &camel_lite_sasl_cram_md5_authtype);
+	types = g_list_prepend (types, &camel_lite_sasl_digest_md5_authtype);
 #ifdef HAVE_KRB5
-	types = g_list_prepend (types, &camel_sasl_gssapi_authtype);
+	types = g_list_prepend (types, &camel_lite_sasl_gssapi_authtype);
 #endif
 #ifdef HAVE_KRB4
-	types = g_list_prepend (types, &camel_sasl_kerberos4_authtype);
+	types = g_list_prepend (types, &camel_lite_sasl_kerberos4_authtype);
 #endif
-	types = g_list_prepend (types, &camel_sasl_ntlm_authtype);
+	types = g_list_prepend (types, &camel_lite_sasl_ntlm_authtype);
 	if (include_plain)
-		types = g_list_prepend (types, &camel_sasl_plain_authtype);
+		types = g_list_prepend (types, &camel_lite_sasl_plain_authtype);
 
 	return types;
 }
 
 /**
- * camel_sasl_authtype:
+ * camel_lite_sasl_authtype:
  * @mechanism: the SASL mechanism to get an authtype for
  *
  * Returns a #CamelServiceAuthType for the given mechanism, if
  * it is supported.
  **/
 CamelServiceAuthType *
-camel_sasl_authtype (const char *mechanism)
+camel_lite_sasl_authtype (const char *mechanism)
 {
 	if (!strcmp (mechanism, "CRAM-MD5"))
-		return &camel_sasl_cram_md5_authtype;
+		return &camel_lite_sasl_cram_md5_authtype;
 	else if (!strcmp (mechanism, "DIGEST-MD5"))
-		return &camel_sasl_digest_md5_authtype;
+		return &camel_lite_sasl_digest_md5_authtype;
 #ifdef HAVE_KRB5
 	else if (!strcmp (mechanism, "GSSAPI"))
-		return &camel_sasl_gssapi_authtype;
+		return &camel_lite_sasl_gssapi_authtype;
 #endif
 #ifdef HAVE_KRB4
 	else if (!strcmp (mechanism, "KERBEROS_V4"))
-		return &camel_sasl_kerberos4_authtype;
+		return &camel_lite_sasl_kerberos4_authtype;
 #endif
 	else if (!strcmp (mechanism, "PLAIN"))
-		return &camel_sasl_plain_authtype;
+		return &camel_lite_sasl_plain_authtype;
 	else if (!strcmp (mechanism, "LOGIN"))
-		return &camel_sasl_login_authtype;
+		return &camel_lite_sasl_login_authtype;
 	else if (!strcmp(mechanism, "POPB4SMTP"))
-		return &camel_sasl_popb4smtp_authtype;
+		return &camel_lite_sasl_popb4smtp_authtype;
 	else if (!strcmp (mechanism, "NTLM"))
-		return &camel_sasl_ntlm_authtype;
+		return &camel_lite_sasl_ntlm_authtype;
 	else
 		return NULL;
 }

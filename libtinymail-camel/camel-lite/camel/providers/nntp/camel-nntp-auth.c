@@ -34,25 +34,25 @@
 #include "camel-nntp-resp-codes.h"
 
 int
-camel_nntp_auth_authenticate (CamelNNTPStore *store, CamelException *ex)
+camel_lite_nntp_auth_authenticate (CamelNNTPStore *store, CamelException *ex)
 {
 	CamelService *service = CAMEL_SERVICE (store);
-	CamelSession *session = camel_service_get_session (service);
+	CamelSession *session = camel_lite_service_get_session (service);
 	int resp;
 
 	if (!service->url->authmech && !service->url->passwd) {
 		gchar *prompt;
 
-		prompt = camel_session_build_password_prompt (
+		prompt = camel_lite_session_build_password_prompt (
 			"NNTP", service->url->user, service->url->host);
 
-		service->url->passwd = camel_session_get_password (
+		service->url->passwd = camel_lite_session_get_password (
 			session, prompt, TRUE, service, "password", ex);
 
 		g_free (prompt);
 
 		if (!service->url->passwd) {
-			camel_exception_set (ex, CAMEL_EXCEPTION_USER_CANCEL,
+			camel_lite_exception_set (ex, CAMEL_EXCEPTION_USER_CANCEL,
 					     "You didn\'t enter a password.");
 			resp = 666;
 			goto done;
@@ -60,25 +60,25 @@ camel_nntp_auth_authenticate (CamelNNTPStore *store, CamelException *ex)
 	}
 
 	/* first send username */
-	resp = camel_nntp_command (store, ex, NULL, "AUTHINFO USER %s", service->url->user);
+	resp = camel_lite_nntp_command (store, ex, NULL, "AUTHINFO USER %s", service->url->user);
 
 	if (resp == NNTP_AUTH_REJECTED) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 				      _("Server rejected username"));
 		goto done;
 
 	}
 	else if (resp != NNTP_AUTH_CONTINUE) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 				      _("Failed to send username to server"));
 		goto done;
 	}
 
 	/* then send the username if the server asks for it */
-	resp = camel_nntp_command (store, ex, NULL, "AUTHINFO PASS %s", service->url->passwd);
+	resp = camel_lite_nntp_command (store, ex, NULL, "AUTHINFO PASS %s", service->url->passwd);
 
 	if (resp == NNTP_AUTH_REJECTED) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 				      _("Server rejected username/password"));
 		goto done;
 	}

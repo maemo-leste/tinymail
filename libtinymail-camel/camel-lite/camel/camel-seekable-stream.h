@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <camel/camel-stream.h>
 
-#define CAMEL_SEEKABLE_STREAM_TYPE     (camel_seekable_stream_get_type ())
+#define CAMEL_SEEKABLE_STREAM_TYPE     (camel_lite_seekable_stream_get_type ())
 #define CAMEL_SEEKABLE_STREAM(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SEEKABLE_STREAM_TYPE, CamelSeekableStream))
 #define CAMEL_SEEKABLE_STREAM_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SEEKABLE_STREAM_TYPE, CamelSeekableStreamClass))
 #define CAMEL_IS_SEEKABLE_STREAM(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SEEKABLE_STREAM_TYPE))
@@ -66,13 +66,13 @@ typedef struct {
 } CamelSeekableStreamClass;
 
 /* Standard Camel function */
-CamelType camel_seekable_stream_get_type (void);
+CamelType camel_lite_seekable_stream_get_type (void);
 
 /* public methods */
-off_t    camel_seekable_stream_seek            (CamelSeekableStream *stream, off_t offset,
+off_t    camel_lite_seekable_stream_seek            (CamelSeekableStream *stream, off_t offset,
 						CamelStreamSeekPolicy policy);
-off_t	 camel_seekable_stream_tell    	       (CamelSeekableStream *stream);
-int	 camel_seekable_stream_set_bounds      (CamelSeekableStream *stream, off_t start, off_t end);
+off_t	 camel_lite_seekable_stream_tell    	       (CamelSeekableStream *stream);
+int	 camel_lite_seekable_stream_set_bounds      (CamelSeekableStream *stream, off_t start, off_t end);
 
 G_END_DECLS
 

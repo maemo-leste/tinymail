@@ -26,24 +26,24 @@
 
 #include <camel/camel-cipher-context.h>
 
-#define CAMEL_SMIME_CONTEXT_TYPE    (camel_smime_context_get_type())
+#define CAMEL_SMIME_CONTEXT_TYPE    (camel_lite_smime_context_get_type())
 #define CAMEL_SMIME_CONTEXT(obj)    (CAMEL_CHECK_CAST((obj), CAMEL_SMIME_CONTEXT_TYPE, CamelSMIMEContext))
 #define CAMEL_SMIME_CONTEXT_CLASS(k)(CAMEL_CHECK_CLASS_CAST((k), CAMEL_SMIME_CONTEXT_TYPE, CamelSMIMEContextClass))
 #define CAMEL_IS_SMIME_CONTEXT(o)   (CAMEL_CHECK_TYPE((o), CAMEL_SMIME_CONTEXT_TYPE))
 
 G_BEGIN_DECLS
 
-typedef enum _camel_smime_sign_t {
+typedef enum _camel_lite_smime_sign_t {
 	CAMEL_SMIME_SIGN_CLEARSIGN,
 	CAMEL_SMIME_SIGN_ENVELOPED
-} camel_smime_sign_t;
+} camel_lite_smime_sign_t;
 
-typedef enum _camel_smime_describe_t {
+typedef enum _camel_lite_smime_describe_t {
 	CAMEL_SMIME_SIGNED = 1<<0,
 	CAMEL_SMIME_ENCRYPTED = 1<<1,
 	CAMEL_SMIME_CERTS = 1<<2,
 	CAMEL_SMIME_CRLS = 1<<3
-} camel_smime_describe_t;
+} camel_lite_smime_describe_t;
 
 typedef struct _CamelSMIMEContext CamelSMIMEContext;
 typedef struct _CamelSMIMEContextClass CamelSMIMEContextClass;
@@ -58,16 +58,16 @@ struct _CamelSMIMEContextClass {
 	CamelCipherContextClass cipher_class;
 };
 
-CamelType camel_smime_context_get_type(void);
+CamelType camel_lite_smime_context_get_type(void);
 
-CamelCipherContext *camel_smime_context_new(CamelSession *session);
+CamelCipherContext *camel_lite_smime_context_new(CamelSession *session);
 
 /* nick to use for SMIMEEncKeyPrefs attribute for signed data */
-void camel_smime_context_set_encrypt_key(CamelSMIMEContext *context, gboolean use, const char *key);
+void camel_lite_smime_context_set_encrypt_key(CamelSMIMEContext *context, gboolean use, const char *key);
 /* set signing mode, clearsigned multipart/signed or enveloped */
-void camel_smime_context_set_sign_mode(CamelSMIMEContext *context, camel_smime_sign_t type);
+void camel_lite_smime_context_set_sign_mode(CamelSMIMEContext *context, camel_lite_smime_sign_t type);
 
-guint32 camel_smime_context_describe_part(CamelSMIMEContext *, struct _CamelMimePart *);
+guint32 camel_lite_smime_context_describe_part(CamelSMIMEContext *, struct _CamelMimePart *);
 
 G_END_DECLS
 

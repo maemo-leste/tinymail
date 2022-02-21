@@ -26,7 +26,7 @@
 #include <sys/types.h>
 #include <camel/camel-sasl.h>
 
-#define CAMEL_SASL_DIGEST_MD5_TYPE     (camel_sasl_digest_md5_get_type ())
+#define CAMEL_SASL_DIGEST_MD5_TYPE     (camel_lite_sasl_digest_md5_get_type ())
 #define CAMEL_SASL_DIGEST_MD5(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SASL_DIGEST_MD5_TYPE, CamelSaslDigestMd5))
 #define CAMEL_SASL_DIGEST_MD5_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SASL_DIGEST_MD5_TYPE, CamelSaslDigestMd5Class))
 #define CAMEL_IS_SASL_DIGEST_MD5(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SASL_DIGEST_MD5_TYPE))
@@ -47,9 +47,9 @@ typedef struct _CamelSaslDigestMd5Class {
 
 
 /* Standard Camel function */
-CamelType camel_sasl_digest_md5_get_type (void);
+CamelType camel_lite_sasl_digest_md5_get_type (void);
 
-extern CamelServiceAuthType camel_sasl_digest_md5_authtype;
+extern CamelServiceAuthType camel_lite_sasl_digest_md5_authtype;
 
 G_END_DECLS
 

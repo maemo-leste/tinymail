@@ -123,7 +123,7 @@ begin_read (CamelTcpStreamSSL *stream)
 		retval = FALSE;
 	} else {
 		stream->priv->reads ++;
-		camel_object_ref (stream);
+		camel_lite_object_ref (stream);
 	}
 	g_mutex_unlock (stream->priv->reads_lock);
 	return retval;
@@ -149,7 +149,7 @@ end_read (CamelTcpStreamSSL *stream)
 		PR_Close (stream->priv->sockfd);
 		stream->priv->sockfd = NULL;
 	}
-	camel_object_unref (stream);
+	camel_lite_object_unref (stream);
 }
 
 
@@ -186,28 +186,28 @@ ssl_enable_compress (CamelTcpStream *stream)
 }
 
 static void
-camel_tcp_stream_ssl_class_init (CamelTcpStreamSSLClass *camel_tcp_stream_ssl_class)
+camel_lite_tcp_stream_ssl_class_init (CamelTcpStreamSSLClass *camel_lite_tcp_stream_ssl_class)
 {
-	CamelTcpStreamClass *camel_tcp_stream_class =
-		CAMEL_TCP_STREAM_CLASS (camel_tcp_stream_ssl_class);
-	CamelStreamClass *camel_stream_class =
-		CAMEL_STREAM_CLASS (camel_tcp_stream_ssl_class);
+	CamelTcpStreamClass *camel_lite_tcp_stream_class =
+		CAMEL_TCP_STREAM_CLASS (camel_lite_tcp_stream_ssl_class);
+	CamelStreamClass *camel_lite_stream_class =
+		CAMEL_STREAM_CLASS (camel_lite_tcp_stream_ssl_class);
 
-	parent_class = CAMEL_TCP_STREAM_CLASS (camel_type_get_global_classfuncs (camel_tcp_stream_get_type ()));
+	parent_class = CAMEL_TCP_STREAM_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_tcp_stream_get_type ()));
 
-	camel_stream_class->read = stream_read;
-	camel_stream_class->write = stream_write;
-	camel_stream_class->flush = stream_flush;
-	camel_stream_class->close = stream_close;
+	camel_lite_stream_class->read = stream_read;
+	camel_lite_stream_class->write = stream_write;
+	camel_lite_stream_class->flush = stream_flush;
+	camel_lite_stream_class->close = stream_close;
 
-	camel_tcp_stream_class->enable_compress = ssl_enable_compress;
-	camel_tcp_stream_class->gettimeout = stream_gettimeout;
-	camel_tcp_stream_class->read_nb = stream_read_nb;
-	camel_tcp_stream_class->connect = stream_connect;
-	camel_tcp_stream_class->getsockopt = stream_getsockopt;
-	camel_tcp_stream_class->setsockopt = stream_setsockopt;
-	camel_tcp_stream_class->get_local_address  = stream_get_local_address;
-	camel_tcp_stream_class->get_remote_address = stream_get_remote_address;
+	camel_lite_tcp_stream_class->enable_compress = ssl_enable_compress;
+	camel_lite_tcp_stream_class->gettimeout = stream_gettimeout;
+	camel_lite_tcp_stream_class->read_nb = stream_read_nb;
+	camel_lite_tcp_stream_class->connect = stream_connect;
+	camel_lite_tcp_stream_class->getsockopt = stream_getsockopt;
+	camel_lite_tcp_stream_class->setsockopt = stream_setsockopt;
+	camel_lite_tcp_stream_class->get_local_address  = stream_get_local_address;
+	camel_lite_tcp_stream_class->get_remote_address = stream_get_remote_address;
 }
 
 static int
@@ -217,7 +217,7 @@ stream_gettimeout (CamelTcpStream *stream)
 }
 
 static void
-camel_tcp_stream_ssl_init (gpointer object, gpointer klass)
+camel_lite_tcp_stream_ssl_init (gpointer object, gpointer klass)
 {
 	CamelTcpStreamSSL *stream = CAMEL_TCP_STREAM_SSL (object);
 
@@ -226,7 +226,7 @@ camel_tcp_stream_ssl_init (gpointer object, gpointer klass)
 }
 
 static void
-camel_tcp_stream_ssl_finalize (CamelObject *object)
+camel_lite_tcp_stream_ssl_finalize (CamelObject *object)
 {
 	CamelTcpStreamSSL *stream = CAMEL_TCP_STREAM_SSL (object);
 
@@ -235,7 +235,7 @@ camel_tcp_stream_ssl_finalize (CamelObject *object)
 	}
 
 	if (stream->priv->session)
-		camel_object_unref(stream->priv->session);
+		camel_lite_object_unref(stream->priv->session);
 
 	g_mutex_free (stream->priv->reads_lock);
 
@@ -246,19 +246,19 @@ camel_tcp_stream_ssl_finalize (CamelObject *object)
 
 
 CamelType
-camel_tcp_stream_ssl_get_type (void)
+camel_lite_tcp_stream_ssl_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_tcp_stream_get_type (),
-					    "CamelTcpStreamSSL",
+		type = camel_lite_type_register (camel_lite_tcp_stream_get_type (),
+					    "CamelLiteTcpStreamSSL",
 					    sizeof (CamelTcpStreamSSL),
 					    sizeof (CamelTcpStreamSSLClass),
-					    (CamelObjectClassInitFunc) camel_tcp_stream_ssl_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_tcp_stream_ssl_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_tcp_stream_ssl_init,
-					    (CamelObjectFinalizeFunc) camel_tcp_stream_ssl_finalize);
+					    (CamelObjectInitFunc) camel_lite_tcp_stream_ssl_init,
+					    (CamelObjectFinalizeFunc) camel_lite_tcp_stream_ssl_finalize);
 	}
 
 	return type;
@@ -266,7 +266,7 @@ camel_tcp_stream_ssl_get_type (void)
 
 
 /**
- * camel_tcp_stream_ssl_new:
+ * camel_lite_tcp_stream_ssl_new:
  * @session: an active #CamelSession object
  * @expected_host: host that the stream is expected to connect with
  * @flags: a bitwise combination of any of
@@ -284,18 +284,18 @@ camel_tcp_stream_ssl_get_type (void)
 static gboolean has_init = FALSE;
 
 CamelStream *
-camel_tcp_stream_ssl_new (CamelService *service, const char *expected_host, guint32 flags)
+camel_lite_tcp_stream_ssl_new (CamelService *service, const char *expected_host, guint32 flags)
 {
 	CamelTcpStreamSSL *stream;
 
 	g_assert(CAMEL_IS_SESSION(service->session));
 
-	stream = CAMEL_TCP_STREAM_SSL (camel_object_new (camel_tcp_stream_ssl_get_type ()));
+	stream = CAMEL_TCP_STREAM_SSL (camel_lite_object_new (camel_lite_tcp_stream_ssl_get_type ()));
 
 	stream->priv->session = service->session;
 
 	if (!has_init) {
-		char *str = camel_session_get_storage_path (stream->priv->session, service, NULL);
+		char *str = camel_lite_session_get_storage_path (stream->priv->session, service, NULL);
 		if (!str)
 			str = g_strdup (g_get_tmp_dir ());
 
@@ -305,8 +305,8 @@ camel_tcp_stream_ssl_new (CamelService *service, const char *expected_host, guin
 				g_warning ("Failed to initialize NSS");
 				g_free (str);
 				stream->priv->session = NULL;
-				camel_stream_close (stream);
-				camel_object_unref (stream);
+				camel_lite_stream_close (stream);
+				camel_lite_object_unref (stream);
 				return NULL;
 			}
 		}
@@ -314,7 +314,7 @@ camel_tcp_stream_ssl_new (CamelService *service, const char *expected_host, guin
 		g_free (str);
 	}
 
-	camel_object_ref(service->session);
+	camel_lite_object_ref(service->session);
 	stream->priv->expected_host = g_strdup (expected_host);
 	stream->priv->ssl_mode = TRUE;
 	stream->priv->flags = flags;
@@ -325,7 +325,7 @@ camel_tcp_stream_ssl_new (CamelService *service, const char *expected_host, guin
 
 
 /**
- * camel_tcp_stream_ssl_new_raw:
+ * camel_lite_tcp_stream_ssl_new_raw:
  * @service: an active #CamelService object
  * @expected_host: host that the stream is expected to connect with
  * @flags: a bitwise combination of any of
@@ -340,16 +340,16 @@ camel_tcp_stream_ssl_new (CamelService *service, const char *expected_host, guin
  * Returns a new #CamelTcpStreamSSL stream not yet toggled into SSL mode
  **/
 CamelStream *
-camel_tcp_stream_ssl_new_raw (CamelService *service, const char *expected_host, guint32 flags)
+camel_lite_tcp_stream_ssl_new_raw (CamelService *service, const char *expected_host, guint32 flags)
 {
 	CamelTcpStreamSSL *stream;
 
 	g_assert(CAMEL_IS_SESSION(service->session));
 
-	stream = CAMEL_TCP_STREAM_SSL (camel_object_new (camel_tcp_stream_ssl_get_type ()));
+	stream = CAMEL_TCP_STREAM_SSL (camel_lite_object_new (camel_lite_tcp_stream_ssl_get_type ()));
 
 	stream->priv->session = service->session;
-	camel_object_ref(service->session);
+	camel_lite_object_ref(service->session);
 	stream->priv->expected_host = g_strdup (expected_host);
 	stream->priv->ssl_mode = FALSE;
 	stream->priv->flags = flags;
@@ -423,7 +423,7 @@ set_errno (int code)
 
 
 /**
- * camel_tcp_stream_ssl_enable_ssl:
+ * camel_lite_tcp_stream_ssl_enable_ssl:
  * @ssl: a #CamelTcpStreamSSL object
  *
  * Toggles an ssl-capable stream into ssl mode (if it isn't already).
@@ -431,7 +431,7 @@ set_errno (int code)
  * Returns %0 on success or %-1 on fail
  **/
 int
-camel_tcp_stream_ssl_enable_ssl (CamelTcpStreamSSL *ssl)
+camel_lite_tcp_stream_ssl_enable_ssl (CamelTcpStreamSSL *ssl)
 {
 	PRFileDesc *fd;
 	int nonblock;
@@ -549,12 +549,12 @@ stream_read (CamelStream *stream, char *buffer, size_t n)
 	PRFileDesc *cancel_fd;
 	ssize_t nread;
 
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
 
-	cancel_fd = camel_operation_cancel_prfd (NULL);
+	cancel_fd = camel_lite_operation_cancel_prfd (NULL);
 	if (cancel_fd == NULL) {
 		PRSocketOptionData sockopts;
 		PRPollDesc pollfds[1];
@@ -687,12 +687,12 @@ stream_write (CamelStream *stream, const char *buffer, size_t n)
 	ssize_t w, written = 0;
 	PRFileDesc *cancel_fd;
 
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
 
-	cancel_fd = camel_operation_cancel_prfd (NULL);
+	cancel_fd = camel_lite_operation_cancel_prfd (NULL);
 	if (cancel_fd == NULL) {
 		PRSocketOptionData sockopts;
 		PRPollDesc pollfds[1];
@@ -967,9 +967,9 @@ ssl_auth_cert (void *data, PRFileDesc *sockfd, PRBool checksig, PRBool is_server
 }
 #endif
 
-static CamelCert *camel_certdb_nss_cert_get(CamelCertDB *certdb, CERTCertificate *cert, CamelSession *session);
-static CamelCert *camel_certdb_nss_cert_add(CamelCertDB *certdb, CERTCertificate *cert, CamelSession *session);
-static void camel_certdb_nss_cert_set(CamelCertDB *certdb, CamelCert *ccert, CERTCertificate *cert, CamelSession *session);
+static CamelCert *camel_lite_certdb_nss_cert_get(CamelCertDB *certdb, CERTCertificate *cert, CamelSession *session);
+static CamelCert *camel_lite_certdb_nss_cert_add(CamelCertDB *certdb, CERTCertificate *cert, CamelSession *session);
+static void camel_lite_certdb_nss_cert_set(CamelCertDB *certdb, CamelCert *ccert, CERTCertificate *cert, CamelSession *session);
 
 static char *
 cert_fingerprint(CERTCertificate *cert)
@@ -997,13 +997,13 @@ cert_fingerprint(CERTCertificate *cert)
 
 /* lookup a cert uses fingerprint to index an on-disk file */
 static CamelCert *
-camel_certdb_nss_cert_get(CamelCertDB *certdb, CERTCertificate *cert, CamelSession *session)
+camel_lite_certdb_nss_cert_get(CamelCertDB *certdb, CERTCertificate *cert, CamelSession *session)
 {
 	char *fingerprint;
 	CamelCert *ccert;
 
 	fingerprint = cert_fingerprint (cert);
-	ccert = camel_certdb_get_cert (certdb, fingerprint);
+	ccert = camel_lite_certdb_get_cert (certdb, fingerprint);
 	if (ccert == NULL) {
 		g_free (fingerprint);
 		return ccert;
@@ -1017,7 +1017,7 @@ camel_certdb_nss_cert_get(CamelCertDB *certdb, CERTCertificate *cert, CamelSessi
 		GError *error = NULL;
 
 		filename = g_build_filename (
-			session->storage_path, ".camel_certs", fingerprint, NULL);
+			session->storage_path, ".camel_lite_certs", fingerprint, NULL);
 		g_file_get_contents (filename, &contents, &length, &error);
 		if (error != NULL) {
 			g_warning (
@@ -1025,7 +1025,7 @@ camel_certdb_nss_cert_get(CamelCertDB *certdb, CERTCertificate *cert, CamelSessi
 				filename, error->message);
 			g_error_free (error);
 
-			camel_certdb_touch (certdb);
+			camel_lite_certdb_touch (certdb);
 			g_free (fingerprint);
 			g_free (filename);
 
@@ -1044,7 +1044,7 @@ camel_certdb_nss_cert_get(CamelCertDB *certdb, CERTCertificate *cert, CamelSessi
 	if (ccert->rawcert->len != cert->derCert.len
 	    || memcmp(ccert->rawcert->data, cert->derCert.data, cert->derCert.len) != 0) {
 		g_warning("rawcert != derCer");
-		camel_certdb_touch(certdb);
+		camel_lite_certdb_touch(certdb);
 	}
 
 	return ccert;
@@ -1052,31 +1052,31 @@ camel_certdb_nss_cert_get(CamelCertDB *certdb, CERTCertificate *cert, CamelSessi
 
 /* add a cert to the certdb */
 static CamelCert *
-camel_certdb_nss_cert_add(CamelCertDB *certdb, CERTCertificate *cert, CamelSession *session)
+camel_lite_certdb_nss_cert_add(CamelCertDB *certdb, CERTCertificate *cert, CamelSession *session)
 {
 	CamelCert *ccert;
 	char *fingerprint;
 
 	fingerprint = cert_fingerprint(cert);
 
-	ccert = camel_certdb_cert_new(certdb);
-	camel_cert_set_issuer(certdb, ccert, CERT_NameToAscii(&cert->issuer));
-	camel_cert_set_subject(certdb, ccert, CERT_NameToAscii(&cert->subject));
+	ccert = camel_lite_certdb_cert_new(certdb);
+	camel_lite_cert_set_issuer(certdb, ccert, CERT_NameToAscii(&cert->issuer));
+	camel_lite_cert_set_subject(certdb, ccert, CERT_NameToAscii(&cert->subject));
 	/* hostname is set in caller */
-	/*camel_cert_set_hostname(certdb, ccert, ssl->priv->expected_host);*/
-	camel_cert_set_fingerprint(certdb, ccert, fingerprint);
+	/*camel_lite_cert_set_hostname(certdb, ccert, ssl->priv->expected_host);*/
+	camel_lite_cert_set_fingerprint(certdb, ccert, fingerprint);
 	g_free(fingerprint);
 
-	camel_certdb_nss_cert_set(certdb, ccert, cert, session);
+	camel_lite_certdb_nss_cert_set(certdb, ccert, cert, session);
 
-	camel_certdb_add(certdb, ccert);
+	camel_lite_certdb_add(certdb, ccert);
 
 	return ccert;
 }
 
 /* set the 'raw' cert (& save it) */
 static void
-camel_certdb_nss_cert_set(CamelCertDB *certdb, CamelCert *ccert, CERTCertificate *cert, CamelSession *session)
+camel_lite_certdb_nss_cert_set(CamelCertDB *certdb, CamelCert *ccert, CERTCertificate *cert, CamelSession *session)
 {
 	char *dir, *path, *fingerprint;
 	CamelStream *stream;
@@ -1090,7 +1090,7 @@ camel_certdb_nss_cert_set(CamelCertDB *certdb, CamelCert *ccert, CERTCertificate
 	g_byte_array_set_size (ccert->rawcert, cert->derCert.len);
 	memcpy (ccert->rawcert->data, cert->derCert.data, cert->derCert.len);
 
-	dir = g_build_filename (session->storage_path, ".camel_certs", NULL);
+	dir = g_build_filename (session->storage_path, ".camel_lite_certs", NULL);
 
 	if (g_stat (dir, &st) == -1 && g_mkdir_with_parents (dir, 0700) == -1) {
 		g_warning ("Could not create cert directory '%s': %s", dir, strerror (errno));
@@ -1101,14 +1101,14 @@ camel_certdb_nss_cert_set(CamelCertDB *certdb, CamelCert *ccert, CERTCertificate
 	path = g_strdup_printf ("%s/%s", dir, fingerprint);
 	g_free (dir);
 
-	stream = camel_stream_fs_new_with_name (path, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+	stream = camel_lite_stream_fs_new_with_name (path, O_WRONLY | O_CREAT | O_TRUNC, 0600);
 	if (stream != NULL) {
-		if (camel_stream_write (stream, (const char *) ccert->rawcert->data, ccert->rawcert->len) == -1) {
+		if (camel_lite_stream_write (stream, (const char *) ccert->rawcert->data, ccert->rawcert->len) == -1) {
 			g_warning ("Could not save cert: %s: %s", path, strerror (errno));
 			g_unlink (path);
 		}
-		camel_stream_close (stream);
-		camel_object_unref (stream);
+		camel_lite_stream_close (stream);
+		camel_lite_object_unref (stream);
 	} else {
 		g_warning ("Could not save cert: %s: %s", path, strerror (errno));
 	}
@@ -1167,14 +1167,14 @@ ssl_bad_cert (void *data, PRFileDesc *sockfd)
 	if (cert == NULL)
 		return SECFailure;
 
-	certdb = camel_certdb_get_default();
-	ccert = camel_certdb_nss_cert_get(certdb, cert, priv->session);
+	certdb = camel_lite_certdb_get_default();
+	ccert = camel_lite_certdb_nss_cert_get(certdb, cert, priv->session);
 	if (ccert == NULL) {
-		ccert = camel_certdb_nss_cert_add(certdb, cert, priv->session);
-		camel_cert_set_hostname(certdb, ccert, ssl->priv->expected_host);
+		ccert = camel_lite_certdb_nss_cert_add(certdb, cert, priv->session);
+		camel_lite_cert_set_hostname(certdb, ccert, ssl->priv->expected_host);
 	}
 
-	trust = camel_cert_get_trust (certdb, ccert);
+	trust = camel_lite_cert_get_trust (certdb, ccert);
 	if (trust == CAMEL_CERT_TRUST_UNKNOWN) {
 		status = CERT_VerifyCertNow(cert->dbhandle, cert, TRUE, certUsageSSLClient, NULL);
 		fingerprint = cert_fingerprint(cert);
@@ -1182,8 +1182,8 @@ ssl_bad_cert (void *data, PRFileDesc *sockfd)
 					      "Subject:           %s\n"
 					      "Fingerprint:       %s\n"
 					      "Signature:         %s"),
-					    ccert?camel_cert_get_issuer (certdb, ccert):CERT_NameToAscii (&cert->issuer),
-					    ccert?camel_cert_get_subject (certdb, ccert):CERT_NameToAscii (&cert->subject),
+					    ccert?camel_lite_cert_get_issuer (certdb, ccert):CERT_NameToAscii (&cert->issuer),
+					    ccert?camel_lite_cert_get_subject (certdb, ccert):CERT_NameToAscii (&cert->subject),
 					    fingerprint, status == SECSuccess?_("GOOD"):_("BAD"));
 		g_free(fingerprint);
 
@@ -1193,19 +1193,19 @@ ssl_bad_cert (void *data, PRFileDesc *sockfd)
 		g_free (cert_str);
 
 		/* query the user to find out if we want to accept this certificate */
-		accept = camel_session_alert_user_with_id (ssl->priv->session, CAMEL_SESSION_ALERT_WARNING, CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, priv->service);
+		accept = camel_lite_session_alert_user_with_id (ssl->priv->session, CAMEL_SESSION_ALERT_WARNING, CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, priv->service);
 		g_free(prompt);
 		if (accept) {
-			camel_certdb_nss_cert_set(certdb, ccert, cert, ssl->priv->session);
-			camel_cert_set_trust(certdb, ccert, CAMEL_CERT_TRUST_FULLY);
-			camel_certdb_touch(certdb);
+			camel_lite_certdb_nss_cert_set(certdb, ccert, cert, ssl->priv->session);
+			camel_lite_cert_set_trust(certdb, ccert, CAMEL_CERT_TRUST_FULLY);
+			camel_lite_certdb_touch(certdb);
 		}
 	} else {
 		accept = trust != CAMEL_CERT_TRUST_NEVER;
 	}
 
-	camel_certdb_cert_unref(certdb, ccert);
-	camel_object_unref(certdb);
+	camel_lite_certdb_cert_unref(certdb, ccert);
+	camel_lite_object_unref(certdb);
 
 	priv->accepted = accept;
 
@@ -1237,7 +1237,7 @@ ssl_bad_cert (void *data, PRFileDesc *sockfd)
 			prompt = g_strdup_printf(_("Certificate problem: %s\nIssuer: %s"), cert->subjectName, cert->issuerName);
 
 			CamelService *service = NULL; /* TODO: Is there a CamelService that we can use? */
-			if (camel_session_alert_user_with_id(ssl->priv->session, CAMEL_SESSION_ALERT_WARNING, CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, service)) {
+			if (camel_lite_session_alert_user_with_id(ssl->priv->session, CAMEL_SESSION_ALERT_WARNING, CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, service)) {
 
 				nick = get_nickname(cert);
 				if (NULL == nick) {
@@ -1290,7 +1290,7 @@ ssl_bad_cert (void *data, PRFileDesc *sockfd)
 			prompt = g_strdup_printf(_("Bad certificate domain: %s\nIssuer: %s"), cert->subjectName, cert->issuerName);
 
 			CamelService *service = NULL; /* TODO: Is there a CamelService that we can use? */
-			if (camel_session_alert_user_with_id (ssl->priv->session, CAMEL_SESSION_ALERT_WARNING, CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, service)) {
+			if (camel_lite_session_alert_user_with_id (ssl->priv->session, CAMEL_SESSION_ALERT_WARNING, CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, service)) {
 				host = SSL_RevealURL(sockfd);
 				status = CERT_AddOKDomainName(cert, host);
 				printf("add ok domain name : %s\n", status == SECFailure?"fail":"ok");
@@ -1309,7 +1309,7 @@ ssl_bad_cert (void *data, PRFileDesc *sockfd)
 			prompt = g_strdup_printf(_("Certificate expired: %s\nIssuer: %s"), cert->subjectName, cert->issuerName);
 
 			CamelService *service = NULL; /* TODO: Is there a CamelService that we can use? */
-			if (camel_session_alert_user_with_id(ssl->priv->session, CAMEL_SESSION_ALERT_WARNING, CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, service)) {
+			if (camel_lite_session_alert_user_with_id(ssl->priv->session, CAMEL_SESSION_ALERT_WARNING, CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, service)) {
 				cert->timeOK = PR_TRUE;
 				status = CERT_VerifyCertNow(cert->dbhandle, cert, TRUE, certUsageSSLClient, NULL);
 				error = PR_GetError();
@@ -1327,7 +1327,7 @@ ssl_bad_cert (void *data, PRFileDesc *sockfd)
 			prompt = g_strdup_printf(_("Certificate revocation list expired: %s\nIssuer: %s"), cert->subjectName, cert->issuerName);
 
 			CamelService *service = NULL; /* TODO: Is there a CamelService that we can use? */
-			if (camel_session_alert_user_with_id(ssl->priv->session, CAMEL_SESSION_ALERT_WARNING, CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, service)) {
+			if (camel_lite_session_alert_user_with_id(ssl->priv->session, CAMEL_SESSION_ALERT_WARNING, CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, service)) {
 				host = SSL_RevealURL(sockfd);
 				status = CERT_AddOKDomainName(cert, host);
 			}
@@ -1467,7 +1467,7 @@ socket_connect(CamelTcpStream *stream, struct addrinfo *host)
 		fd = ssl_fd;
 	}
 
-	cancel_fd = camel_operation_cancel_prfd(NULL);
+	cancel_fd = camel_lite_operation_cancel_prfd(NULL);
 
 	if (PR_Connect (fd, &netaddr, cancel_fd?PR_INTERVAL_NO_WAIT:(CONNECT_TIMEOUT*1000)) == PR_FAILURE) {
 		int errnosave;

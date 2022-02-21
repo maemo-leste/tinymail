@@ -41,14 +41,14 @@ typedef struct {
 	int fd;
 } CamelUIDCache;
 
-CamelUIDCache *camel_uid_cache_new (const char *filename);
-gboolean camel_uid_cache_save (CamelUIDCache *cache);
-void camel_uid_cache_destroy (CamelUIDCache *cache);
+CamelUIDCache *camel_lite_uid_cache_new (const char *filename);
+gboolean camel_lite_uid_cache_save (CamelUIDCache *cache);
+void camel_lite_uid_cache_destroy (CamelUIDCache *cache);
 
-GPtrArray *camel_uid_cache_get_new_uids (CamelUIDCache *cache, GPtrArray *uids);
+GPtrArray *camel_lite_uid_cache_get_new_uids (CamelUIDCache *cache, GPtrArray *uids);
 
-void camel_uid_cache_save_uid (CamelUIDCache *cache, const char *uid);
-void camel_uid_cache_free_uids (GPtrArray *uids);
+void camel_lite_uid_cache_save_uid (CamelUIDCache *cache, const char *uid);
+void camel_lite_uid_cache_free_uids (GPtrArray *uids);
 
 G_END_DECLS
 

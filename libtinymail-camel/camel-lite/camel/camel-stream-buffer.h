@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <camel/camel-seekable-stream.h>
 
-#define CAMEL_STREAM_BUFFER_TYPE     (camel_stream_buffer_get_type ())
+#define CAMEL_STREAM_BUFFER_TYPE     (camel_lite_stream_buffer_get_type ())
 #define CAMEL_STREAM_BUFFER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_STREAM_BUFFER_TYPE, CamelStreamBuffer))
 #define CAMEL_STREAM_BUFFER_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_STREAM_BUFFER_TYPE, CamelStreamBufferClass))
 #define CAMEL_IS_STREAM_BUFFER(o)    (CAMEL_CHECK_TYPE((o), CAMEL_STREAM_BUFFER_TYPE))
@@ -77,26 +77,26 @@ typedef struct {
 
 
 /* Standard Camel function */
-CamelType camel_stream_buffer_get_type (void);
+CamelType camel_lite_stream_buffer_get_type (void);
 
 
 /* public methods */
-CamelStream *camel_stream_buffer_new (CamelStream *stream,
+CamelStream *camel_lite_stream_buffer_new (CamelStream *stream,
 				      CamelStreamBufferMode mode);
-CamelStream *camel_stream_buffer_new_with_vbuf (CamelStream *stream,
+CamelStream *camel_lite_stream_buffer_new_with_vbuf (CamelStream *stream,
 						CamelStreamBufferMode mode,
 						char *buf, guint32 size);
 
 /* unimplemented
-   CamelStream *camel_stream_buffer_set_vbuf (CamelStreamBuffer *b, CamelStreamBufferMode mode, char *buf, guint32 size); */
+   CamelStream *camel_lite_stream_buffer_set_vbuf (CamelStreamBuffer *b, CamelStreamBufferMode mode, char *buf, guint32 size); */
 
 /* read a line of characters */
-int camel_stream_buffer_gets (CamelStreamBuffer *sbf, char *buf, unsigned int max);
+int camel_lite_stream_buffer_gets (CamelStreamBuffer *sbf, char *buf, unsigned int max);
 
-char *camel_stream_buffer_read_line (CamelStreamBuffer *sbf);
-int camel_tcp_stream_buffer_gets_nb (CamelStreamBuffer *sbf, char *buf, unsigned int max);
+char *camel_lite_stream_buffer_read_line (CamelStreamBuffer *sbf);
+int camel_lite_tcp_stream_buffer_gets_nb (CamelStreamBuffer *sbf, char *buf, unsigned int max);
 
-ssize_t camel_stream_buffer_read_opp (CamelStream *stream, char *buffer, size_t n, int len);
+ssize_t camel_lite_stream_buffer_read_opp (CamelStream *stream, char *buffer, size_t n, int len);
 
 G_END_DECLS
 

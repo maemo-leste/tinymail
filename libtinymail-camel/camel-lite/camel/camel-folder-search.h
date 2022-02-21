@@ -27,10 +27,10 @@
 #include <camel/camel-object.h>
 #include <camel/camel-index.h>
 
-#define CAMEL_FOLDER_SEARCH_TYPE         (camel_folder_search_get_type ())
-#define CAMEL_FOLDER_SEARCH(obj)         CAMEL_CHECK_CAST (obj, camel_folder_search_get_type (), CamelFolderSearch)
-#define CAMEL_FOLDER_SEARCH_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_folder_search_get_type (), CamelFolderSearchClass)
-#define CAMEL_IS_FOLDER_SEARCH(obj)      CAMEL_CHECK_TYPE (obj, camel_folder_search_get_type ())
+#define CAMEL_FOLDER_SEARCH_TYPE         (camel_lite_folder_search_get_type ())
+#define CAMEL_FOLDER_SEARCH(obj)         CAMEL_CHECK_CAST (obj, camel_lite_folder_search_get_type (), CamelFolderSearch)
+#define CAMEL_FOLDER_SEARCH_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_folder_search_get_type (), CamelFolderSearchClass)
+#define CAMEL_IS_FOLDER_SEARCH(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_folder_search_get_type ())
 
 G_BEGIN_DECLS
 
@@ -115,19 +115,19 @@ struct _CamelFolderSearchClass {
 	ESExpResult * (*uid)(struct _ESExp *f, int argc, struct _ESExpResult **argv, CamelFolderSearch *s);
 };
 
-CamelType		camel_folder_search_get_type	(void);
-CamelFolderSearch      *camel_folder_search_new	(void);
-void camel_folder_search_construct (CamelFolderSearch *search);
+CamelType		camel_lite_folder_search_get_type	(void);
+CamelFolderSearch      *camel_lite_folder_search_new	(void);
+void camel_lite_folder_search_construct (CamelFolderSearch *search);
 
 /* This stuff currently gets cleared when you run a search ... what on earth was i thinking ... */
-void camel_folder_search_set_folder(CamelFolderSearch *search, CamelFolder *folder);
-void camel_folder_search_set_summary(CamelFolderSearch *search, GPtrArray *summary);
-void camel_folder_search_set_body_index(CamelFolderSearch *search, CamelIndex *index);
+void camel_lite_folder_search_set_folder(CamelFolderSearch *search, CamelFolder *folder);
+void camel_lite_folder_search_set_summary(CamelFolderSearch *search, GPtrArray *summary);
+void camel_lite_folder_search_set_body_index(CamelFolderSearch *search, CamelIndex *index);
 /* this interface is deprecated */
-GPtrArray *camel_folder_search_execute_expression(CamelFolderSearch *search, const char *expr, CamelException *ex);
+GPtrArray *camel_lite_folder_search_execute_expression(CamelFolderSearch *search, const char *expr, CamelException *ex);
 
-GPtrArray *camel_folder_search_search(CamelFolderSearch *search, const char *expr, GPtrArray *uids, CamelException *ex);
-void camel_folder_search_free_result(CamelFolderSearch *search, GPtrArray *);
+GPtrArray *camel_lite_folder_search_search(CamelFolderSearch *search, const char *expr, GPtrArray *uids, CamelException *ex);
+void camel_lite_folder_search_free_result(CamelFolderSearch *search, GPtrArray *);
 
 G_END_DECLS
 

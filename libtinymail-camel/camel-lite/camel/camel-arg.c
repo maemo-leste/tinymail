@@ -28,7 +28,7 @@
 
 #include "camel-arg.h"
 
-int camel_argv_build(CamelArgV *tv)
+int camel_lite_argv_build(CamelArgV *tv)
 {
 	register guint32 tag;
 	register int i;
@@ -77,7 +77,7 @@ fail:
 	return more;
 }
 
-int camel_arggetv_build(CamelArgGetV *tv)
+int camel_lite_arggetv_build(CamelArgGetV *tv)
 {
 	register guint32 tag;
 	register int i;

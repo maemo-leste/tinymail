@@ -94,9 +94,9 @@ static struct {
 static GHashTable *enriched_hash = NULL;
 
 
-static void camel_mime_filter_enriched_class_init (CamelMimeFilterEnrichedClass *klass);
-static void camel_mime_filter_enriched_init       (CamelMimeFilterEnriched *filter);
-static void camel_mime_filter_enriched_finalize   (CamelObject *obj);
+static void camel_lite_mime_filter_enriched_class_init (CamelMimeFilterEnrichedClass *klass);
+static void camel_lite_mime_filter_enriched_init       (CamelMimeFilterEnriched *filter);
+static void camel_lite_mime_filter_enriched_finalize   (CamelObject *obj);
 
 static void filter_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 			   char **out, size_t *outlen, size_t *outprespace);
@@ -109,38 +109,38 @@ static CamelMimeFilterClass *parent_class = NULL;
 
 
 CamelType
-camel_mime_filter_enriched_get_type (void)
+camel_lite_mime_filter_enriched_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type (),
-					    "CamelMimeFilterEnriched",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type (),
+					    "CamelLiteMimeFilterEnriched",
 					    sizeof (CamelMimeFilterEnriched),
 					    sizeof (CamelMimeFilterEnrichedClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_enriched_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_enriched_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_mime_filter_enriched_init,
-					    (CamelObjectFinalizeFunc) camel_mime_filter_enriched_finalize);
+					    (CamelObjectInitFunc) camel_lite_mime_filter_enriched_init,
+					    (CamelObjectFinalizeFunc) camel_lite_mime_filter_enriched_finalize);
 	}
 
 	return type;
 }
 
 static void
-camel_mime_filter_enriched_class_init (CamelMimeFilterEnrichedClass *klass)
+camel_lite_mime_filter_enriched_class_init (CamelMimeFilterEnrichedClass *klass)
 {
 	CamelMimeFilterClass *filter_class = (CamelMimeFilterClass *) klass;
 	int i;
 
-	parent_class = CAMEL_MIME_FILTER_CLASS (camel_mime_filter_get_type ());
+	parent_class = CAMEL_MIME_FILTER_CLASS (camel_lite_mime_filter_get_type ());
 
 	filter_class->reset = filter_reset;
 	filter_class->filter = filter_filter;
 	filter_class->complete = filter_complete;
 
 	if (!enriched_hash) {
-		enriched_hash = g_hash_table_new (camel_strcase_hash, camel_strcase_equal);
+		enriched_hash = g_hash_table_new (camel_lite_strcase_hash, camel_lite_strcase_equal);
 		for (i = 0; i < NUM_ENRICHED_TAGS; i++)
 			g_hash_table_insert (enriched_hash, enriched_tags[i].enriched,
 					     enriched_tags[i].html);
@@ -148,13 +148,13 @@ camel_mime_filter_enriched_class_init (CamelMimeFilterEnrichedClass *klass)
 }
 
 static void
-camel_mime_filter_enriched_finalize (CamelObject *obj)
+camel_lite_mime_filter_enriched_finalize (CamelObject *obj)
 {
 	;
 }
 
 static void
-camel_mime_filter_enriched_init (CamelMimeFilterEnriched *filter)
+camel_lite_mime_filter_enriched_init (CamelMimeFilterEnriched *filter)
 {
 	filter->flags = 0;
 	filter->nofill = 0;
@@ -284,7 +284,7 @@ enriched_to_html (CamelMimeFilter *filter, char *in, size_t inlen, size_t prespa
 	register const char *inptr;
 	register char *outptr;
 
-	camel_mime_filter_set_size (filter, inlen * 2 + 6, FALSE);
+	camel_lite_mime_filter_set_size (filter, inlen * 2 + 6, FALSE);
 
 	inptr = in;
 	inend = in + inlen;
@@ -511,7 +511,7 @@ enriched_to_html (CamelMimeFilter *filter, char *in, size_t inlen, size_t prespa
            do. */
 
 	if (inptr < inend)
-		camel_mime_filter_backup (filter, inptr, (unsigned) (inend - inptr));
+		camel_lite_mime_filter_backup (filter, inptr, (unsigned) (inend - inptr));
 
 	*out = filter->outbuf;
 	*outlen = outptr - filter->outbuf;
@@ -526,13 +526,13 @@ enriched_to_html (CamelMimeFilter *filter, char *in, size_t inlen, size_t prespa
 
 		grow = (inend - inptr) * 2 + 20;
 		offset = outptr - filter->outbuf;
-		camel_mime_filter_set_size (filter, filter->outsize + grow, TRUE);
+		camel_lite_mime_filter_set_size (filter, filter->outsize + grow, TRUE);
 		outend = filter->outbuf + filter->outsize;
 		outptr = filter->outbuf + offset;
 
 		goto retry;
 	} else {
-		camel_mime_filter_backup (filter, inptr, (unsigned) (inend - inptr));
+		camel_lite_mime_filter_backup (filter, inptr, (unsigned) (inend - inptr));
 	}
 
 	*out = filter->outbuf;
@@ -564,7 +564,7 @@ filter_reset (CamelMimeFilter *filter)
 
 
 /**
- * camel_mime_filter_enriched_new:
+ * camel_lite_mime_filter_enriched_new:
  * @flags: bitwise set of flags to specify filter behaviour
  *
  * Create a new #CamelMimeFilterEnriched object to convert input text
@@ -573,11 +573,11 @@ filter_reset (CamelMimeFilter *filter)
  * Returns a new #CamelMimeFilterEnriched object
  **/
 CamelMimeFilter *
-camel_mime_filter_enriched_new (guint32 flags)
+camel_lite_mime_filter_enriched_new (guint32 flags)
 {
 	CamelMimeFilterEnriched *new;
 
-	new = (CamelMimeFilterEnriched *) camel_object_new (CAMEL_TYPE_MIME_FILTER_ENRICHED);
+	new = (CamelMimeFilterEnriched *) camel_lite_object_new (CAMEL_TYPE_MIME_FILTER_ENRICHED);
 	new->flags = flags;
 
 	return CAMEL_MIME_FILTER (new);
@@ -585,7 +585,7 @@ camel_mime_filter_enriched_new (guint32 flags)
 
 
 /**
- * camel_enriched_to_html:
+ * camel_lite_enriched_to_html:
  * @in: input textual string
  * @flags: flags specifying filter behaviour
  *
@@ -596,7 +596,7 @@ camel_mime_filter_enriched_new (guint32 flags)
  * richtext version of @in.
  **/
 char *
-camel_enriched_to_html(const char *in, guint32 flags)
+camel_lite_enriched_to_html(const char *in, guint32 flags)
 {
 	CamelMimeFilter *filter;
 	size_t outlen, outpre;
@@ -605,11 +605,11 @@ camel_enriched_to_html(const char *in, guint32 flags)
 	if (in == NULL)
 		return NULL;
 
-	filter = camel_mime_filter_enriched_new(flags);
+	filter = camel_lite_mime_filter_enriched_new(flags);
 
-	camel_mime_filter_complete(filter, (char *)in, strlen(in), 0, &outbuf, &outlen, &outpre);
+	camel_lite_mime_filter_complete(filter, (char *)in, strlen(in), 0, &outbuf, &outlen, &outpre);
 	outbuf = g_strndup (outbuf, outlen);
-	camel_object_unref (filter);
+	camel_lite_object_unref (filter);
 
 	return outbuf;
 }

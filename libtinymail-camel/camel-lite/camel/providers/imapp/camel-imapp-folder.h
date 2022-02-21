@@ -26,7 +26,7 @@
 
 #include <camel/camel-folder.h>
 
-#define CAMEL_IMAPP_FOLDER_TYPE     (camel_imapp_folder_get_type ())
+#define CAMEL_IMAPP_FOLDER_TYPE     (camel_lite_imapp_folder_get_type ())
 #define CAMEL_IMAPP_FOLDER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_IMAPP_FOLDER_TYPE, CamelIMAPPFolder))
 #define CAMEL_IMAPP_FOLDER_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_IMAPP_FOLDER_TYPE, CamelIMAPPFolderClass))
 #define CAMEL_IS_IMAP_FOLDER(o)    (CAMEL_CHECK_TYPE((o), CAMEL_IMAPP_FOLDER_TYPE))
@@ -51,10 +51,10 @@ typedef struct _CamelIMAPPFolderClass {
 } CamelIMAPPFolderClass;
 
 /* Standard Camel function */
-CamelType camel_imapp_folder_get_type (void);
+CamelType camel_lite_imapp_folder_get_type (void);
 
 /* public methods */
-CamelFolder *camel_imapp_folder_new(CamelStore *parent, const char *path);
+CamelFolder *camel_lite_imapp_folder_new(CamelStore *parent, const char *path);
 
 G_END_DECLS
 

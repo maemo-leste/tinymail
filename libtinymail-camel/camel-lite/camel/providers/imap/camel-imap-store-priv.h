@@ -35,9 +35,9 @@ G_BEGIN_DECLS
  * each tick, we set 28 minutes */
 #define IDLE_DEFAULT_SLEEP_TIME 28*60
 
-void _camel_imap_store_current_folder_finalize (CamelObject *stream, gpointer event_data, gpointer user_data);
-void _camel_imap_store_old_folder_finalize (CamelObject *stream, gpointer event_data, gpointer user_data);
-void _camel_imap_store_last_folder_finalize (CamelObject *stream, gpointer event_data, gpointer user_data);
+void _camel_lite_imap_store_current_folder_finalize (CamelObject *stream, gpointer event_data, gpointer user_data);
+void _camel_lite_imap_store_old_folder_finalize (CamelObject *stream, gpointer event_data, gpointer user_data);
+void _camel_lite_imap_store_last_folder_finalize (CamelObject *stream, gpointer event_data, gpointer user_data);
 
 G_END_DECLS
 

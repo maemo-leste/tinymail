@@ -68,7 +68,7 @@ static CamelProvider pop3_provider = {
 	/* ... */
 };
 
-CamelServiceAuthType camel_pop3_password_authtype = {
+CamelServiceAuthType camel_lite_pop3_password_authtype = {
 	N_("Password"),
 
 	N_("This option will connect to the POP server using a plaintext "
@@ -78,7 +78,7 @@ CamelServiceAuthType camel_pop3_password_authtype = {
 	TRUE
 };
 
-CamelServiceAuthType camel_pop3_apop_authtype = {
+CamelServiceAuthType camel_lite_pop3_apop_authtype = {
 	"APOP",
 
 	N_("This option will connect to the POP server using an encrypted "
@@ -90,21 +90,21 @@ CamelServiceAuthType camel_pop3_apop_authtype = {
 };
 
 void
-camel_provider_module_init(void)
+camel_lite_provider_module_init(void)
 {
 	CamelServiceAuthType *auth;
 
-	pop3_provider.object_types[CAMEL_PROVIDER_STORE] = camel_pop3_store_get_type();
-	pop3_provider.url_hash = camel_url_hash;
-	pop3_provider.url_equal = camel_url_equal;
+	pop3_provider.object_types[CAMEL_PROVIDER_STORE] = camel_lite_pop3_store_get_type();
+	pop3_provider.url_hash = camel_lite_url_hash;
+	pop3_provider.url_equal = camel_lite_url_equal;
 
-	pop3_provider.authtypes = camel_sasl_authtype_list (FALSE);
-	auth = camel_sasl_authtype("LOGIN");
+	pop3_provider.authtypes = camel_lite_sasl_authtype_list (FALSE);
+	auth = camel_lite_sasl_authtype("LOGIN");
 	if (auth)
 		pop3_provider.authtypes = g_list_prepend(pop3_provider.authtypes, auth);
-	pop3_provider.authtypes = g_list_prepend(pop3_provider.authtypes, &camel_pop3_apop_authtype);
-	pop3_provider.authtypes = g_list_prepend(pop3_provider.authtypes, &camel_pop3_password_authtype);
+	pop3_provider.authtypes = g_list_prepend(pop3_provider.authtypes, &camel_lite_pop3_apop_authtype);
+	pop3_provider.authtypes = g_list_prepend(pop3_provider.authtypes, &camel_lite_pop3_password_authtype);
 	pop3_provider.translation_domain = GETTEXT_PACKAGE;
 
-	camel_provider_register(&pop3_provider);
+	camel_lite_provider_register(&pop3_provider);
 }

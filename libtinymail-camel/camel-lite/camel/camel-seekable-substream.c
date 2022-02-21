@@ -41,40 +41,40 @@ static	off_t	 stream_seek  (CamelSeekableStream *stream, off_t offset,
 			       CamelStreamSeekPolicy policy);
 
 static void
-camel_seekable_substream_class_init (CamelSeekableSubstreamClass *camel_seekable_substream_class)
+camel_lite_seekable_substream_class_init (CamelSeekableSubstreamClass *camel_lite_seekable_substream_class)
 {
-	CamelSeekableStreamClass *camel_seekable_stream_class =
-		CAMEL_SEEKABLE_STREAM_CLASS (camel_seekable_substream_class);
-	CamelStreamClass *camel_stream_class =
-		CAMEL_STREAM_CLASS (camel_seekable_substream_class);
+	CamelSeekableStreamClass *camel_lite_seekable_stream_class =
+		CAMEL_SEEKABLE_STREAM_CLASS (camel_lite_seekable_substream_class);
+	CamelStreamClass *camel_lite_stream_class =
+		CAMEL_STREAM_CLASS (camel_lite_seekable_substream_class);
 
-	parent_class = CAMEL_SEEKABLE_STREAM_CLASS (camel_type_get_global_classfuncs (camel_seekable_stream_get_type ()));
+	parent_class = CAMEL_SEEKABLE_STREAM_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_seekable_stream_get_type ()));
 
 	/* virtual method definition */
 
 	/* virtual method overload */
-	camel_stream_class->read = stream_read;
-	camel_stream_class->write = stream_write;
-	camel_stream_class->flush = stream_flush;
-	camel_stream_class->close = stream_close;
-	camel_stream_class->eos = eos;
+	camel_lite_stream_class->read = stream_read;
+	camel_lite_stream_class->write = stream_write;
+	camel_lite_stream_class->flush = stream_flush;
+	camel_lite_stream_class->close = stream_close;
+	camel_lite_stream_class->eos = eos;
 
-	camel_seekable_stream_class->seek = stream_seek;
+	camel_lite_seekable_stream_class->seek = stream_seek;
 
 }
 
 static void
-camel_seekable_substream_finalize (CamelObject *object)
+camel_lite_seekable_substream_finalize (CamelObject *object)
 {
 	CamelSeekableSubstream *seekable_substream =
 		CAMEL_SEEKABLE_SUBSTREAM (object);
 
 	if (seekable_substream->parent_stream)
-		camel_object_unref (seekable_substream->parent_stream);
+		camel_lite_object_unref (seekable_substream->parent_stream);
 }
 
 static void
-camel_seekable_substream_init (gpointer object, gpointer klass)
+camel_lite_seekable_substream_init (gpointer object, gpointer klass)
 {
 	CamelSeekableSubstream *seekable_substream = (CamelSeekableSubstream *) object;
 	seekable_substream->parent_stream = NULL;
@@ -82,25 +82,25 @@ camel_seekable_substream_init (gpointer object, gpointer klass)
 }
 
 CamelType
-camel_seekable_substream_get_type (void)
+camel_lite_seekable_substream_get_type (void)
 {
-	static CamelType camel_seekable_substream_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_seekable_substream_type = CAMEL_INVALID_TYPE;
 
-	if (camel_seekable_substream_type == CAMEL_INVALID_TYPE) {
-		camel_seekable_substream_type = camel_type_register (camel_seekable_stream_get_type (), "CamelSeekableSubstream",
+	if (camel_lite_seekable_substream_type == CAMEL_INVALID_TYPE) {
+		camel_lite_seekable_substream_type = camel_lite_type_register (camel_lite_seekable_stream_get_type (), "CamelLiteSeekableSubstream",
 								     sizeof (CamelSeekableSubstream),
 								     sizeof (CamelSeekableSubstreamClass),
-								     (CamelObjectClassInitFunc) camel_seekable_substream_class_init,
+								     (CamelObjectClassInitFunc) camel_lite_seekable_substream_class_init,
 								     NULL,
-								     (CamelObjectInitFunc) camel_seekable_substream_init,
-								     (CamelObjectFinalizeFunc) camel_seekable_substream_finalize);
+								     (CamelObjectInitFunc) camel_lite_seekable_substream_init,
+								     (CamelObjectFinalizeFunc) camel_lite_seekable_substream_finalize);
 	}
 
-	return camel_seekable_substream_type;
+	return camel_lite_seekable_substream_type;
 }
 
 /**
- * camel_seekable_substream_new:
+ * camel_lite_seekable_substream_new:
  * @parent_stream: a #CamelSeekableStream object
  * @inf_bound: a lower bound
  * @sup_bound: an upper bound
@@ -117,23 +117,23 @@ camel_seekable_substream_get_type (void)
  * Return value: the substream
  **/
 CamelStream *
-camel_seekable_substream_new(CamelSeekableStream *parent_stream, off_t start, off_t end)
+camel_lite_seekable_substream_new(CamelSeekableStream *parent_stream, off_t start, off_t end)
 {
 	CamelSeekableSubstream *seekable_substream;
 
 	g_return_val_if_fail (CAMEL_IS_SEEKABLE_STREAM (parent_stream), NULL);
 
 	/* Create the seekable substream. */
-	seekable_substream = CAMEL_SEEKABLE_SUBSTREAM (camel_object_new (camel_seekable_substream_get_type ()));
+	seekable_substream = CAMEL_SEEKABLE_SUBSTREAM (camel_lite_object_new (camel_lite_seekable_substream_get_type ()));
 
 	/* Initialize it. */
 	seekable_substream->parent_stream = parent_stream;
-	camel_object_ref (parent_stream);
+	camel_lite_object_ref (parent_stream);
 
 	/* Set the bound of the substream. We can ignore any possible error
 	 * here, because if we fail to seek now, it will try again later.
 	 */
-	camel_seekable_stream_set_bounds ((CamelSeekableStream *)seekable_substream, start, end);
+	camel_lite_seekable_stream_set_bounds ((CamelSeekableStream *)seekable_substream, start, end);
 
 	return CAMEL_STREAM (seekable_substream);
 }
@@ -143,10 +143,10 @@ parent_reset (CamelSeekableSubstream *seekable_substream, CamelSeekableStream *p
 {
 	CamelSeekableStream *seekable_stream = CAMEL_SEEKABLE_STREAM (seekable_substream);
 
-	if (camel_seekable_stream_tell (parent) == seekable_stream->position)
+	if (camel_lite_seekable_stream_tell (parent) == seekable_stream->position)
 		return TRUE;
 
-	return camel_seekable_stream_seek (parent, (off_t) seekable_stream->position, CAMEL_STREAM_SET) == seekable_stream->position;
+	return camel_lite_seekable_stream_seek (parent, (off_t) seekable_stream->position, CAMEL_STREAM_SET) == seekable_stream->position;
 }
 
 static ssize_t
@@ -177,7 +177,7 @@ stream_read (CamelStream *stream, char *buffer, size_t n)
 		return 0;
 	}
 
-	v = camel_stream_read (CAMEL_STREAM (parent), buffer, n);
+	v = camel_lite_stream_read (CAMEL_STREAM (parent), buffer, n);
 
 	/* ignore <0 - it's an error, let the caller deal */
 	if (v > 0)
@@ -214,7 +214,7 @@ stream_write (CamelStream *stream, const char *buffer, size_t n)
 		return 0;
 	}
 
-	v = camel_stream_write((CamelStream *)parent, buffer, n);
+	v = camel_lite_stream_write((CamelStream *)parent, buffer, n);
 
 	/* ignore <0 - it's an error, let the caller deal */
 	if (v > 0)
@@ -229,7 +229,7 @@ stream_flush (CamelStream *stream)
 {
 	CamelSeekableSubstream *sus = (CamelSeekableSubstream *)stream;
 
-	return camel_stream_flush(CAMEL_STREAM(sus->parent_stream));
+	return camel_lite_stream_flush(CAMEL_STREAM(sus->parent_stream));
 }
 
 static int
@@ -254,7 +254,7 @@ eos (CamelStream *stream)
 		if (!parent_reset (seekable_substream, parent))
 			return TRUE;
 
-		eos = camel_stream_eos (CAMEL_STREAM (parent));
+		eos = camel_lite_stream_eos (CAMEL_STREAM (parent));
 		if (!eos && (seekable_stream->bound_end != CAMEL_STREAM_UNBOUND)) {
 			eos = seekable_stream->position >= seekable_stream->bound_end;
 		}
@@ -284,7 +284,7 @@ stream_seek (CamelSeekableStream *seekable_stream, off_t offset,
 
 	case CAMEL_STREAM_END:
 		if (seekable_stream->bound_end == CAMEL_STREAM_UNBOUND) {
-			real_offset = camel_seekable_stream_seek(seekable_substream->parent_stream,
+			real_offset = camel_lite_seekable_stream_seek(seekable_substream->parent_stream,
 								 offset,
 								 CAMEL_STREAM_END);
 			if (real_offset != -1) {

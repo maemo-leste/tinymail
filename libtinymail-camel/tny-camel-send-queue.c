@@ -1220,21 +1220,21 @@ create_maildir (TnySendQueue *self, const gchar *name)
 
 	full_path = g_strdup_printf ("maildir://%s/sendqueue/%s/maildir", session->storage_path, aname);
 
-	mdstore = camel_session_get_store(session, full_path, &ex);
+	mdstore = camel_lite_session_get_store(session, full_path, &ex);
 
-	if (!camel_exception_is_set (&ex) && mdstore)
+	if (!camel_lite_exception_is_set (&ex) && mdstore)
 	{
 		CamelFolder *cfolder = NULL;
 
-		cfolder = camel_store_get_folder (mdstore, name, CAMEL_STORE_FOLDER_CREATE, &ex);
-		if (!camel_exception_is_set (&ex) && cfolder)
+		cfolder = camel_lite_store_get_folder (mdstore, name, CAMEL_STORE_FOLDER_CREATE, &ex);
+		if (!camel_lite_exception_is_set (&ex) && cfolder)
 		{
 			CamelFolderInfo *iter;
 
-			iter = camel_store_get_folder_info (mdstore, name, 
+			iter = camel_lite_store_get_folder_info (mdstore, name, 
 					CAMEL_STORE_FOLDER_INFO_FAST|CAMEL_STORE_FOLDER_INFO_NO_VIRTUAL,&ex);
 
-			if (!camel_exception_is_set (&ex) && iter)
+			if (!camel_lite_exception_is_set (&ex) && iter)
 			{
 				TnyCamelFolder *folder = TNY_CAMEL_FOLDER (_tny_camel_folder_new ());
 				TnyCamelFolderPriv *fpriv = TNY_CAMEL_FOLDER_GET_PRIVATE (folder);
@@ -1260,19 +1260,19 @@ create_maildir (TnySendQueue *self, const gchar *name)
 				return TNY_FOLDER (folder);
 
 			} else if (iter && CAMEL_IS_STORE (mdstore))
-				camel_store_free_folder_info (mdstore, iter);
+				camel_lite_store_free_folder_info (mdstore, iter);
 
 		} else 
 		{
 			g_critical (_("Can't create folder \"%s\" in %s"), name, full_path);
 			if (cfolder && CAMEL_IS_OBJECT (cfolder))
-				camel_object_unref (CAMEL_OBJECT (cfolder));
+				camel_lite_object_unref (CAMEL_OBJECT (cfolder));
 		}
 	} else 
 	{
 		g_critical (_("Can't create store on %s"), full_path);
 		if (store && CAMEL_IS_OBJECT (mdstore))
-			camel_object_unref (CAMEL_OBJECT (mdstore));
+			camel_lite_object_unref (CAMEL_OBJECT (mdstore));
 	}
 
 	g_free (full_path);
@@ -1644,7 +1644,7 @@ tny_camel_send_queue_get_type (void)
 	{
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

@@ -30,7 +30,7 @@
 #include <camel/camel-offline-journal.h>
 #include <camel/camel-mime-message.h>
 
-#define CAMEL_TYPE_IMAP4_JOURNAL            (camel_imap4_journal_get_type ())
+#define CAMEL_TYPE_IMAP4_JOURNAL            (camel_lite_imap4_journal_get_type ())
 #define CAMEL_IMAP4_JOURNAL(obj)            (CAMEL_CHECK_CAST ((obj), CAMEL_TYPE_IMAP4_JOURNAL, CamelIMAP4Journal))
 #define CAMEL_IMAP4_JOURNAL_CLASS(klass)    (CAMEL_CHECK_CLASS_CAST ((klass), CAMEL_TYPE_IMAP4_JOURNAL, CamelIMAP4JournalClass))
 #define CAMEL_IS_IMAP4_JOURNAL(obj)         (CAMEL_CHECK_TYPE ((obj), CAMEL_TYPE_IMAP4_JOURNAL))
@@ -71,14 +71,14 @@ struct _CamelIMAP4JournalClass {
 };
 
 
-CamelType camel_imap4_journal_get_type (void);
+CamelType camel_lite_imap4_journal_get_type (void);
 
-CamelOfflineJournal *camel_imap4_journal_new (struct _CamelIMAP4Folder *folder, const char *filename);
+CamelOfflineJournal *camel_lite_imap4_journal_new (struct _CamelIMAP4Folder *folder, const char *filename);
 
-void camel_imap4_journal_readd_failed (CamelIMAP4Journal *journal);
+void camel_lite_imap4_journal_readd_failed (CamelIMAP4Journal *journal);
 
 /* interfaces for adding a journal entry */
-void camel_imap4_journal_append (CamelIMAP4Journal *journal, CamelMimeMessage *message, const CamelMessageInfo *mi,
+void camel_lite_imap4_journal_append (CamelIMAP4Journal *journal, CamelMimeMessage *message, const CamelMessageInfo *mi,
 				 char **appended_uid, CamelException *ex);
 
 G_END_DECLS

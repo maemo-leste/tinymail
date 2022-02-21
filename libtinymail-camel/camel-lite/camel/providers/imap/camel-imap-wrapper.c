@@ -56,24 +56,24 @@ static CamelDataWrapperClass *parent_class = NULL;
 static ssize_t write_to_stream (CamelDataWrapper *imap_wrapper, CamelStream *stream);
 
 static void
-camel_imap_wrapper_class_init (CamelImapWrapperClass *camel_imap_wrapper_class)
+camel_lite_imap_wrapper_class_init (CamelImapWrapperClass *camel_lite_imap_wrapper_class)
 {
-	CamelDataWrapperClass *camel_data_wrapper_class =
-		CAMEL_DATA_WRAPPER_CLASS (camel_imap_wrapper_class);
+	CamelDataWrapperClass *camel_lite_data_wrapper_class =
+		CAMEL_DATA_WRAPPER_CLASS (camel_lite_imap_wrapper_class);
 
-	parent_class = CAMEL_DATA_WRAPPER_CLASS (camel_type_get_global_classfuncs (camel_data_wrapper_get_type ()));
+	parent_class = CAMEL_DATA_WRAPPER_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_data_wrapper_get_type ()));
 
 	/* virtual method override */
-	camel_data_wrapper_class->write_to_stream = write_to_stream;
+	camel_lite_data_wrapper_class->write_to_stream = write_to_stream;
 }
 
 static void
-camel_imap_wrapper_finalize (CamelObject *object)
+camel_lite_imap_wrapper_finalize (CamelObject *object)
 {
 	CamelImapWrapper *imap_wrapper = CAMEL_IMAP_WRAPPER (object);
 
 	if (imap_wrapper->folder)
-		camel_object_unref (CAMEL_OBJECT (imap_wrapper->folder));
+		camel_lite_object_unref (CAMEL_OBJECT (imap_wrapper->folder));
 	if (imap_wrapper->uid)
 		g_free (imap_wrapper->uid);
 	if (imap_wrapper->part)
@@ -85,7 +85,7 @@ camel_imap_wrapper_finalize (CamelObject *object)
 }
 
 static void
-camel_imap_wrapper_init (gpointer object, gpointer klass)
+camel_lite_imap_wrapper_init (gpointer object, gpointer klass)
 {
 	CamelImapWrapper *imap_wrapper = CAMEL_IMAP_WRAPPER (object);
 
@@ -94,20 +94,20 @@ camel_imap_wrapper_init (gpointer object, gpointer klass)
 }
 
 CamelType
-camel_imap_wrapper_get_type (void)
+camel_lite_imap_wrapper_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (
+		type = camel_lite_type_register (
 			CAMEL_DATA_WRAPPER_TYPE,
-			"CamelImapWrapper",
+			"CamelLiteImapWrapper",
 			sizeof (CamelImapWrapper),
 			sizeof (CamelImapWrapperClass),
-			(CamelObjectClassInitFunc) camel_imap_wrapper_class_init,
+			(CamelObjectClassInitFunc) camel_lite_imap_wrapper_class_init,
 			NULL,
-			(CamelObjectInitFunc) camel_imap_wrapper_init,
-			(CamelObjectFinalizeFunc) camel_imap_wrapper_finalize);
+			(CamelObjectInitFunc) camel_lite_imap_wrapper_init,
+			(CamelObjectFinalizeFunc) camel_lite_imap_wrapper_finalize);
 	}
 
 	return type;
@@ -119,11 +119,11 @@ imap_wrapper_hydrate (CamelImapWrapper *imap_wrapper, CamelStream *stream)
 {
 	CamelDataWrapper *data_wrapper = (CamelDataWrapper *) imap_wrapper;
 
-	camel_object_ref (stream);
+	camel_lite_object_ref (stream);
 	data_wrapper->stream = stream;
 	data_wrapper->offline = FALSE;
 
-	camel_object_unref (imap_wrapper->folder);
+	camel_lite_object_unref (imap_wrapper->folder);
 	imap_wrapper->folder = NULL;
 	g_free (imap_wrapper->uid);
 	imap_wrapper->uid = NULL;
@@ -142,7 +142,7 @@ write_to_stream (CamelDataWrapper *data_wrapper, CamelStream *stream)
 		CamelStream *datastream;
 
 		/* TNY TODO: partial message retrieval exception */
-		datastream = camel_imap_folder_fetch_data (
+		datastream = camel_lite_imap_folder_fetch_data (
 			imap_wrapper->folder, imap_wrapper->uid,
 			imap_wrapper->part_spec, FALSE, CAMEL_FOLDER_RECEIVE_FULL, -1, NULL);
 		if (!datastream) {
@@ -157,7 +157,7 @@ write_to_stream (CamelDataWrapper *data_wrapper, CamelStream *stream)
 		}
 
 		imap_wrapper_hydrate (imap_wrapper, datastream);
-		camel_object_unref (datastream);
+		camel_lite_object_unref (datastream);
 	}
 	CAMEL_IMAP_WRAPPER_UNLOCK (imap_wrapper, lock);
 
@@ -166,7 +166,7 @@ write_to_stream (CamelDataWrapper *data_wrapper, CamelStream *stream)
 
 
 CamelDataWrapper *
-camel_imap_wrapper_new (CamelImapFolder *imap_folder,
+camel_lite_imap_wrapper_new (CamelImapFolder *imap_folder,
 			CamelContentType *type, CamelTransferEncoding encoding,
 			const char *uid, const char *part_spec,
 			CamelMimePart *part)
@@ -174,14 +174,14 @@ camel_imap_wrapper_new (CamelImapFolder *imap_folder,
 	CamelImapWrapper *imap_wrapper;
 	CamelStream *stream;
 
-	imap_wrapper = (CamelImapWrapper *)camel_object_new(camel_imap_wrapper_get_type());
+	imap_wrapper = (CamelImapWrapper *)camel_lite_object_new(camel_lite_imap_wrapper_get_type());
 
-	camel_data_wrapper_set_mime_type_field (CAMEL_DATA_WRAPPER (imap_wrapper), type);
+	camel_lite_data_wrapper_set_mime_type_field (CAMEL_DATA_WRAPPER (imap_wrapper), type);
 	((CamelDataWrapper *)imap_wrapper)->offline = TRUE;
 	((CamelDataWrapper *)imap_wrapper)->encoding = encoding;
 
 	imap_wrapper->folder = imap_folder;
-	camel_object_ref (imap_folder);
+	camel_lite_object_ref (imap_folder);
 	imap_wrapper->uid = g_strdup (uid);
 	imap_wrapper->part_spec = g_strdup (part_spec);
 
@@ -190,11 +190,11 @@ camel_imap_wrapper_new (CamelImapFolder *imap_folder,
 
 	/* Try the cache. */
 	/* TNY TODO: Partial message retrieval exception */
-	stream = camel_imap_folder_fetch_data (imap_folder, uid, part_spec,
+	stream = camel_lite_imap_folder_fetch_data (imap_folder, uid, part_spec,
 					       TRUE, CAMEL_FOLDER_RECEIVE_FULL, -1, NULL);
 	if (stream) {
 		imap_wrapper_hydrate (imap_wrapper, stream);
-		camel_object_unref (stream);
+		camel_lite_object_unref (stream);
 	}
 
 	return (CamelDataWrapper *)imap_wrapper;

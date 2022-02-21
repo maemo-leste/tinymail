@@ -24,25 +24,25 @@
 #include <camel/camel-exception.h>
 #include <camel/camel-object.h>
 
-#define CAMEL_INDEX(obj)         CAMEL_CHECK_CAST (obj, camel_index_get_type (), CamelIndex)
-#define CAMEL_INDEX_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_index_get_type (), CamelIndexClass)
-#define CAMEL_IS_INDEX(obj)      CAMEL_CHECK_TYPE (obj, camel_index_get_type ())
+#define CAMEL_INDEX(obj)         CAMEL_CHECK_CAST (obj, camel_lite_index_get_type (), CamelIndex)
+#define CAMEL_INDEX_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_index_get_type (), CamelIndexClass)
+#define CAMEL_IS_INDEX(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_index_get_type ())
 
 G_BEGIN_DECLS
 
 typedef struct _CamelIndex      CamelIndex;
 typedef struct _CamelIndexClass CamelIndexClass;
 
-#define CAMEL_INDEX_NAME(obj)         CAMEL_CHECK_CAST (obj, camel_index_name_get_type (), CamelIndexName)
-#define CAMEL_INDEX_NAME_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_index_name_get_type (), CamelIndexNameClass)
-#define CAMEL_IS_INDEX_NAME(obj)      CAMEL_CHECK_TYPE (obj, camel_index_name_get_type ())
+#define CAMEL_INDEX_NAME(obj)         CAMEL_CHECK_CAST (obj, camel_lite_index_name_get_type (), CamelIndexName)
+#define CAMEL_INDEX_NAME_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_index_name_get_type (), CamelIndexNameClass)
+#define CAMEL_IS_INDEX_NAME(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_index_name_get_type ())
 
 typedef struct _CamelIndexName      CamelIndexName;
 typedef struct _CamelIndexNameClass CamelIndexNameClass;
 
-#define CAMEL_INDEX_CURSOR(obj)         CAMEL_CHECK_CAST (obj, camel_index_cursor_get_type (), CamelIndexCursor)
-#define CAMEL_INDEX_CURSOR_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_index_cursor_get_type (), CamelIndexCursorClass)
-#define CAMEL_IS_INDEX_CURSOR(obj)      CAMEL_CHECK_TYPE (obj, camel_index_cursor_get_type ())
+#define CAMEL_INDEX_CURSOR(obj)         CAMEL_CHECK_CAST (obj, camel_lite_index_cursor_get_type (), CamelIndexCursor)
+#define CAMEL_INDEX_CURSOR_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_index_cursor_get_type (), CamelIndexCursorClass)
+#define CAMEL_IS_INDEX_CURSOR(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_index_cursor_get_type ())
 
 typedef struct _CamelIndexCursor      CamelIndexCursor;
 typedef struct _CamelIndexCursorClass CamelIndexCursorClass;
@@ -66,12 +66,12 @@ struct _CamelIndexCursorClass {
 	void         (*reset) (CamelIndexCursor *idc);
 };
 
-CamelType	           camel_index_cursor_get_type(void);
+CamelType	           camel_lite_index_cursor_get_type(void);
 
-CamelIndexCursor  *camel_index_cursor_new(CamelIndex *idx, const char *name);
+CamelIndexCursor  *camel_lite_index_cursor_new(CamelIndex *idx, const char *name);
 
-const char        *camel_index_cursor_next(CamelIndexCursor *idc);
-void               camel_index_cursor_reset(CamelIndexCursor *idc);
+const char        *camel_lite_index_cursor_next(CamelIndexCursor *idc);
+void               camel_lite_index_cursor_reset(CamelIndexCursor *idc);
 
 /* ********************************************************************** */
 
@@ -96,12 +96,12 @@ struct _CamelIndexNameClass {
 	size_t (*add_buffer)(CamelIndexName *name, const char *buffer, size_t len);
 };
 
-CamelType	           camel_index_name_get_type	(void);
+CamelType	           camel_lite_index_name_get_type	(void);
 
-CamelIndexName    *camel_index_name_new(CamelIndex *idx, const char *name);
+CamelIndexName    *camel_lite_index_name_new(CamelIndex *idx, const char *name);
 
-void               camel_index_name_add_word(CamelIndexName *name, const char *word);
-size_t             camel_index_name_add_buffer(CamelIndexName *name, const char *buffer, size_t len);
+void               camel_lite_index_name_add_word(CamelIndexName *name, const char *word);
+size_t             camel_lite_index_name_add_buffer(CamelIndexName *name, const char *buffer, size_t len);
 
 /* ********************************************************************** */
 
@@ -142,27 +142,27 @@ struct _CamelIndexClass {
 /* flags, stored in 'state', set with set_state */
 #define CAMEL_INDEX_DELETED (1<<0)
 
-CamelType	           camel_index_get_type	(void);
+CamelType	           camel_lite_index_get_type	(void);
 
-CamelIndex        *camel_index_new(const char *path, int flags);
-void               camel_index_construct(CamelIndex *, const char *path, int flags);
-int		   camel_index_rename(CamelIndex *, const char *path);
+CamelIndex        *camel_lite_index_new(const char *path, int flags);
+void               camel_lite_index_construct(CamelIndex *, const char *path, int flags);
+int		   camel_lite_index_rename(CamelIndex *, const char *path);
 
-void               camel_index_set_normalise(CamelIndex *idx, CamelIndexNorm func, void *data);
+void               camel_lite_index_set_normalise(CamelIndex *idx, CamelIndexNorm func, void *data);
 
-int                camel_index_sync(CamelIndex *idx);
-int                camel_index_compress(CamelIndex *idx);
-int		   camel_index_delete(CamelIndex *idx);
+int                camel_lite_index_sync(CamelIndex *idx);
+int                camel_lite_index_compress(CamelIndex *idx);
+int		   camel_lite_index_delete(CamelIndex *idx);
 
-int                camel_index_has_name(CamelIndex *idx, const char *name);
-CamelIndexName    *camel_index_add_name(CamelIndex *idx, const char *name);
-int                camel_index_write_name(CamelIndex *idx, CamelIndexName *idn);
-CamelIndexCursor  *camel_index_find_name(CamelIndex *idx, const char *name);
-void               camel_index_delete_name(CamelIndex *idx, const char *name);
-CamelIndexCursor  *camel_index_find(CamelIndex *idx, const char *word);
+int                camel_lite_index_has_name(CamelIndex *idx, const char *name);
+CamelIndexName    *camel_lite_index_add_name(CamelIndex *idx, const char *name);
+int                camel_lite_index_write_name(CamelIndex *idx, CamelIndexName *idn);
+CamelIndexCursor  *camel_lite_index_find_name(CamelIndex *idx, const char *name);
+void               camel_lite_index_delete_name(CamelIndex *idx, const char *name);
+CamelIndexCursor  *camel_lite_index_find(CamelIndex *idx, const char *word);
 
-CamelIndexCursor  *camel_index_words(CamelIndex *idx);
-CamelIndexCursor  *camel_index_names(CamelIndex *idx);
+CamelIndexCursor  *camel_lite_index_words(CamelIndex *idx);
+CamelIndexCursor  *camel_lite_index_names(CamelIndex *idx);
 
 G_END_DECLS
 

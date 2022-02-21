@@ -24,9 +24,9 @@
 
 #include <camel/camel-address.h>
 
-#define CAMEL_NNTP_ADDRESS(obj)         CAMEL_CHECK_CAST (obj, camel_nntp_address_get_type (), CamelNNTPAddress)
-#define CAMEL_NNTP_ADDRESS_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_nntp_address_get_type (), CamelNNTPAddressClass)
-#define CAMEL_IS_NNTP_ADDRESS(obj)      CAMEL_CHECK_TYPE (obj, camel_nntp_address_get_type ())
+#define CAMEL_NNTP_ADDRESS(obj)         CAMEL_CHECK_CAST (obj, camel_lite_nntp_address_get_type (), CamelNNTPAddress)
+#define CAMEL_NNTP_ADDRESS_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_nntp_address_get_type (), CamelNNTPAddressClass)
+#define CAMEL_IS_NNTP_ADDRESS(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_nntp_address_get_type ())
 
 G_BEGIN_DECLS
 
@@ -43,11 +43,11 @@ struct _CamelNNTPAddressClass {
 	CamelAddressClass parent_class;
 };
 
-CamelType		camel_nntp_address_get_type	(void);
-CamelNNTPAddress   *camel_nntp_address_new	(void);
+CamelType		camel_lite_nntp_address_get_type	(void);
+CamelNNTPAddress   *camel_lite_nntp_address_new	(void);
 
-int			camel_nntp_address_add	(CamelNNTPAddress *, const char *);
-gboolean		camel_nntp_address_get	(const CamelNNTPAddress *, int, const char **);
+int			camel_lite_nntp_address_add	(CamelNNTPAddress *, const char *);
+gboolean		camel_lite_nntp_address_get	(const CamelNNTPAddress *, int, const char **);
 
 G_END_DECLS
 

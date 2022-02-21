@@ -113,13 +113,13 @@ reconnect_thread (gpointer user_data)
 	apriv->service->reconnecting = TRUE;
 	if (apriv->service->reconnecter)
 		apriv->service->reconnecter (apriv->service, FALSE, apriv->service->data);
-	camel_service_disconnect (apriv->service, FALSE, &ex);
-	if (camel_exception_is_set (&ex))
-		camel_exception_clear (&ex);
-	camel_service_connect (apriv->service, &ex);
+	camel_lite_service_disconnect (apriv->service, FALSE, &ex);
+	if (camel_lite_exception_is_set (&ex))
+		camel_lite_exception_clear (&ex);
+	camel_lite_service_connect (apriv->service, &ex);
 	if (apriv->service->reconnection)
 	{
-		if (!camel_exception_is_set (&ex))
+		if (!camel_lite_exception_is_set (&ex))
 			apriv->service->reconnection (apriv->service, TRUE, apriv->service->data);
 		else
 			apriv->service->reconnection (apriv->service, FALSE, apriv->service->data);
@@ -189,11 +189,11 @@ _tny_camel_account_refresh (TnyCamelAccount *self, gboolean recon_if)
 
 		proto = g_strdup_printf ("%s://", apriv->proto); 
 
-		if (camel_exception_is_set (apriv->ex))
-			camel_exception_clear (apriv->ex);
+		if (camel_lite_exception_is_set (apriv->ex))
+			camel_lite_exception_clear (apriv->ex);
 
 		if (!apriv->service) {
-			url = camel_url_new (proto, apriv->ex);
+			url = camel_lite_url_new (proto, apriv->ex);
 			urlneedfree = TRUE;
 		} else
 			url = apriv->service->url;
@@ -203,14 +203,14 @@ _tny_camel_account_refresh (TnyCamelAccount *self, gboolean recon_if)
 		if (!url)
 			goto fail;
 
-		camel_url_set_protocol (url, apriv->proto); 
+		camel_lite_url_set_protocol (url, apriv->proto); 
 		 if (apriv->user)
-			camel_url_set_user (url, apriv->user);
-		camel_url_set_host (url, apriv->host);
+			camel_lite_url_set_user (url, apriv->user);
+		camel_lite_url_set_host (url, apriv->host);
 		if (apriv->port != -1)
-			camel_url_set_port (url, (int)apriv->port);
+			camel_lite_url_set_port (url, (int)apriv->port);
 		if (apriv->mech)
-			camel_url_set_authmech (url, apriv->mech);
+			camel_lite_url_set_authmech (url, apriv->mech);
 
 		while (options)
 		{
@@ -225,22 +225,22 @@ _tny_camel_account_refresh (TnyCamelAccount *self, gboolean recon_if)
 				option = dup;
 				value = g_strdup ("1");
 			}
-			camel_url_set_param (url, option, value);
+			camel_lite_url_set_param (url, option, value);
 			g_free (value);
 			g_free (dup);
 			options = g_list_next (options);
 		}
 		if (G_LIKELY (apriv->url_string))
 			g_free (apriv->url_string);
-		apriv->url_string = camel_url_to_string (url, 0);
+		apriv->url_string = camel_lite_url_to_string (url, 0);
 
 		if (urlneedfree)
-			camel_url_free (url);
+			camel_lite_url_free (url);
 	} else if (apriv->url_string) {
 		CamelException uex = CAMEL_EXCEPTION_INITIALISER;
-		CamelURL *url = camel_url_new (apriv->url_string, &uex);
-		if (camel_exception_is_set (&uex))
-			camel_exception_clear (&uex);
+		CamelURL *url = camel_lite_url_new (apriv->url_string, &uex);
+		if (camel_lite_exception_is_set (&uex))
+			camel_lite_exception_clear (&uex);
 
 		if (url) {
 			if (url->params)
@@ -278,7 +278,7 @@ _tny_camel_account_refresh (TnyCamelAccount *self, gboolean recon_if)
 				apriv->mech = NULL;
 
 
-			camel_url_free (url);
+			camel_lite_url_free (url);
 		}
 
 	}
@@ -334,38 +334,38 @@ tny_camel_account_matches_url_string_default (TnyAccount *self, const gchar *url
 	gboolean retval = TRUE;
 
 	if (url_string)
-		in = camel_url_new (url_string, &ex);
+		in = camel_lite_url_new (url_string, &ex);
 	else
 		return FALSE;
 
-	if (camel_exception_is_set (&ex) || !in)
+	if (camel_lite_exception_is_set (&ex) || !in)
 		return FALSE;
 
 	if (priv->url_string)
-		org = camel_url_new (priv->url_string, &ex);
+		org = camel_lite_url_new (priv->url_string, &ex);
 	else {
 		gchar *proto;
 		if (priv->proto == NULL)
 			return FALSE;
 		proto = g_strdup_printf ("%s://", priv->proto); 
-		org = camel_url_new (proto, &ex);
+		org = camel_lite_url_new (proto, &ex);
 		g_free (proto);
-		if (camel_exception_is_set (&ex) || !org)
+		if (camel_lite_exception_is_set (&ex) || !org)
 			return FALSE;
-		camel_url_set_protocol (org, priv->proto); 
+		camel_lite_url_set_protocol (org, priv->proto); 
 		if (priv->user)
-			camel_url_set_user (org, priv->user);
-		camel_url_set_host (org, priv->host);
+			camel_lite_url_set_user (org, priv->user);
+		camel_lite_url_set_host (org, priv->host);
 		if (priv->port != -1)
-			camel_url_set_port (org, (int)priv->port);
+			camel_lite_url_set_port (org, (int)priv->port);
 	}
 
-	if (camel_exception_is_set (&ex) || !org)
+	if (camel_lite_exception_is_set (&ex) || !org)
 	{
 		if (in)
-			camel_url_free (in);
+			camel_lite_url_free (in);
 		if (org)
-			camel_url_free (org);
+			camel_lite_url_free (org);
 		return FALSE;
 	}
 
@@ -408,10 +408,10 @@ tny_camel_account_matches_url_string_default (TnyAccount *self, const gchar *url
 	}
 
 	if (org)
-		camel_url_free (org);
+		camel_lite_url_free (org);
 
 	if (in)
-		camel_url_free (in);
+		camel_lite_url_free (in);
 
 	return retval;
 }
@@ -624,9 +624,9 @@ _tny_camel_account_try_connect (TnyCamelAccount *self, gboolean for_online, GErr
 	TnyCamelAccountPriv *priv = TNY_CAMEL_ACCOUNT_GET_PRIVATE (self);
 
 	TNY_CAMEL_ACCOUNT_GET_CLASS (self)->prepare(TNY_CAMEL_ACCOUNT (self), for_online, TRUE);
-	if (camel_exception_is_set (priv->ex)) {
+	if (camel_lite_exception_is_set (priv->ex)) {
 		_tny_camel_exception_to_tny_error (priv->ex, err);
-		camel_exception_clear (priv->ex);
+		camel_lite_exception_clear (priv->ex);
 	}
 	return;
 }
@@ -750,10 +750,10 @@ static void
 tny_camel_account_stop_camel_operation_priv (TnyCamelAccountPriv *priv)
 {
 	if (priv->cancel) {
-		camel_operation_unregister (priv->cancel);
-		camel_operation_end (priv->cancel);
+		camel_lite_operation_unregister (priv->cancel);
+		camel_lite_operation_end (priv->cancel);
 		if (priv->cancel)
-			camel_operation_unref (priv->cancel);
+			camel_lite_operation_unref (priv->cancel);
 	}
 
 	priv->cancel = NULL;
@@ -778,13 +778,13 @@ _tny_camel_account_start_camel_operation_n (TnyCamelAccount *self, CamelOperatio
 
 	if (priv->cancel) {
 		_tny_camel_account_actual_uncancel (self);
-		camel_operation_unregister (priv->cancel);
+		camel_lite_operation_unregister (priv->cancel);
 	}
 
-	priv->cancel = camel_operation_new (func, user_data);
+	priv->cancel = camel_lite_operation_new (func, user_data);
 
-	camel_operation_register (priv->cancel);
-	camel_operation_start (priv->cancel, (char*)what);
+	camel_lite_operation_register (priv->cancel);
+	camel_lite_operation_start (priv->cancel, (char*)what);
 
 	g_static_rec_mutex_unlock (priv->cancel_lock);
 
@@ -900,7 +900,7 @@ tny_camel_account_stop_operation_default (TnyAccount *self, gboolean *canceled)
 		priv->csyncop = NULL;
 
 		if (canceled)
-			*canceled = camel_operation_cancel_check (priv->cancel);
+			*canceled = camel_lite_operation_cancel_check (priv->cancel);
 
 		_tny_camel_account_stop_camel_operation (TNY_CAMEL_ACCOUNT (self));
 	} else
@@ -941,7 +941,7 @@ tny_camel_account_set_session (TnyCamelAccount *self, TnySessionCamel *session)
 
 	if (!priv->session)
 	{
-		camel_object_ref (session);
+		camel_lite_object_ref (session);
 		priv->session = session;
 		_tny_session_camel_register_account (session, self);
 
@@ -1362,7 +1362,7 @@ tny_camel_account_cancel (TnyAccount *self)
 static gpointer
 camel_cancel_hack_thread (gpointer data)
 {
-	camel_operation_cancel (NULL);
+	camel_lite_operation_cancel (NULL);
 
 	g_thread_exit (NULL);
 	return NULL;
@@ -1376,9 +1376,9 @@ _tny_camel_account_actual_cancel (TnyCamelAccount *self)
 
 	g_static_rec_mutex_lock (priv->cancel_lock);
 	if (priv->cancel)
-		camel_operation_cancel (priv->cancel);
+		camel_lite_operation_cancel (priv->cancel);
 	if (priv->getmsg_cancel)
-		camel_operation_cancel (priv->getmsg_cancel);
+		camel_lite_operation_cancel (priv->getmsg_cancel);
 	g_static_rec_mutex_unlock (priv->cancel_lock);
 
 	return;
@@ -1392,7 +1392,7 @@ _tny_camel_account_actual_uncancel (TnyCamelAccount *self)
 
 	g_static_rec_mutex_lock (priv->cancel_lock);
 	if (priv->cancel)
-		camel_operation_uncancel (priv->cancel); 
+		camel_lite_operation_uncancel (priv->cancel); 
 	g_static_rec_mutex_unlock (priv->cancel_lock);
 
 	return;
@@ -1412,7 +1412,7 @@ tny_camel_account_cancel_default (TnyAccount *self)
 
 		g_static_rec_mutex_lock (apriv->cancel_lock);
 		if (apriv->getmsg_cancel)
-			camel_operation_cancel (apriv->getmsg_cancel);
+			camel_lite_operation_cancel (apriv->getmsg_cancel);
 		g_static_rec_mutex_unlock (apriv->cancel_lock);
 
 	} else {
@@ -1516,8 +1516,8 @@ tny_camel_account_instance_init (GTypeInstance *instance, gpointer g_class)
 	priv->url_string = NULL;
 	priv->status = TNY_CONNECTION_STATUS_INIT;
 
-	priv->ex = camel_exception_new ();
-	camel_exception_init (priv->ex);
+	priv->ex = camel_lite_exception_new ();
+	camel_lite_exception_init (priv->ex);
 
 	priv->custom_url_string = FALSE;
 	priv->inuse_spin = FALSE;
@@ -1571,7 +1571,7 @@ static void
 set_online_happened_destroy (gpointer user_data)
 {
 	SetOnlInfo *info = (SetOnlInfo *) user_data;
-	camel_object_unref (info->session);
+	camel_lite_object_unref (info->session);
 	g_object_unref (info->account);
 	g_slice_free (SetOnlInfo, info);
 	return;
@@ -1583,7 +1583,7 @@ set_online_happened (TnySessionCamel *session, TnyCamelAccount *account, gboolea
 	SetOnlInfo *info = g_slice_new (SetOnlInfo);
 
 	info->session = session;
-	camel_object_ref (info->session);
+	camel_lite_object_ref (info->session);
 	info->account = TNY_ACCOUNT (g_object_ref (account));
 	info->online = online;
 
@@ -1608,10 +1608,10 @@ _tny_camel_account_set_online (TnyCamelAccount *self, gboolean online, GError **
 
 	if (!priv->service || !CAMEL_IS_SERVICE (priv->service))
 	{
-		if (camel_exception_is_set (priv->ex))
+		if (camel_lite_exception_is_set (priv->ex))
 		{
 			_tny_camel_exception_to_tny_error (priv->ex, err);
-			camel_exception_clear (priv->ex);
+			camel_lite_exception_clear (priv->ex);
 		} else {
 			g_set_error (err, TNY_ERROR_DOMAIN,
 				TNY_SERVICE_ERROR_CONNECT,
@@ -1623,19 +1623,19 @@ _tny_camel_account_set_online (TnyCamelAccount *self, gboolean online, GError **
 		return;
 	}
 
-	camel_object_ref (priv->service);
+	camel_lite_object_ref (priv->service);
 
 	if (CAMEL_IS_DISCO_STORE (priv->service)) {
 		if (online) {
-			camel_disco_store_set_status (CAMEL_DISCO_STORE (priv->service),
+			camel_lite_disco_store_set_status (CAMEL_DISCO_STORE (priv->service),
 					CAMEL_DISCO_STORE_ONLINE, &ex);
 
-			if (!camel_exception_is_set (&ex))
-				camel_service_connect (CAMEL_SERVICE (priv->service), &ex);
+			if (!camel_lite_exception_is_set (&ex))
+				camel_lite_service_connect (CAMEL_SERVICE (priv->service), &ex);
 
 			if (TNY_IS_CAMEL_STORE_ACCOUNT (self)) 
 			{
-				if (!camel_exception_is_set (&ex))
+				if (!camel_lite_exception_is_set (&ex))
 					priv->status = TNY_CONNECTION_STATUS_CONNECTED;
 				else
 					priv->status = TNY_CONNECTION_STATUS_CONNECTED_BROKEN;
@@ -1643,22 +1643,22 @@ _tny_camel_account_set_online (TnyCamelAccount *self, gboolean online, GError **
 				_tny_camel_store_account_emit_conchg_signal (TNY_CAMEL_STORE_ACCOUNT (self));
 			}
 
-			if (!camel_exception_is_set (&ex)) {
+			if (!camel_lite_exception_is_set (&ex)) {
 				if (TNY_IS_CAMEL_STORE_ACCOUNT (self))
-					camel_store_restore (CAMEL_STORE (priv->service)); 
+					camel_lite_store_restore (CAMEL_STORE (priv->service)); 
 				set_online_happened (priv->session, self, TRUE);
 			} 
 
 			goto done;
 
-		} else if (camel_disco_store_can_work_offline (CAMEL_DISCO_STORE (priv->service))) {
+		} else if (camel_lite_disco_store_can_work_offline (CAMEL_DISCO_STORE (priv->service))) {
 			
-			camel_disco_store_set_status (CAMEL_DISCO_STORE (priv->service),
+			camel_lite_disco_store_set_status (CAMEL_DISCO_STORE (priv->service),
 					CAMEL_DISCO_STORE_OFFLINE, &ex);
 
 			if (TNY_IS_CAMEL_STORE_ACCOUNT (self)) 
 			{
-				if (!camel_exception_is_set (&ex))
+				if (!camel_lite_exception_is_set (&ex))
 					priv->status = TNY_CONNECTION_STATUS_DISCONNECTED;
 				else
 					priv->status = TNY_CONNECTION_STATUS_DISCONNECTED_BROKEN;
@@ -1672,12 +1672,12 @@ _tny_camel_account_set_online (TnyCamelAccount *self, gboolean online, GError **
 		
 		if (online) {
 			
-			camel_offline_store_set_network_state (CAMEL_OFFLINE_STORE (priv->service),
+			camel_lite_offline_store_set_network_state (CAMEL_OFFLINE_STORE (priv->service),
 					CAMEL_OFFLINE_STORE_NETWORK_AVAIL, &ex);
 
 			if (TNY_IS_CAMEL_STORE_ACCOUNT (self)) 
 			{
-				if (!camel_exception_is_set (&ex))
+				if (!camel_lite_exception_is_set (&ex))
 					priv->status = TNY_CONNECTION_STATUS_CONNECTED;
 				else
 					priv->status = TNY_CONNECTION_STATUS_CONNECTED_BROKEN;
@@ -1685,17 +1685,17 @@ _tny_camel_account_set_online (TnyCamelAccount *self, gboolean online, GError **
 				_tny_camel_store_account_emit_conchg_signal (TNY_CAMEL_STORE_ACCOUNT (self));
 			}
 
-			if (!camel_exception_is_set (&ex))
+			if (!camel_lite_exception_is_set (&ex))
 				set_online_happened (priv->session, self, TRUE);
 
 			goto done;
 		} else {
-			camel_offline_store_set_network_state (CAMEL_OFFLINE_STORE (priv->service),
+			camel_lite_offline_store_set_network_state (CAMEL_OFFLINE_STORE (priv->service),
 					CAMEL_OFFLINE_STORE_NETWORK_UNAVAIL, &ex);
 
 			if (TNY_IS_CAMEL_STORE_ACCOUNT (self)) 
 			{
-				if (!camel_exception_is_set (&ex))
+				if (!camel_lite_exception_is_set (&ex))
 					priv->status = TNY_CONNECTION_STATUS_DISCONNECTED;
 				else
 					priv->status = TNY_CONNECTION_STATUS_DISCONNECTED_BROKEN;
@@ -1708,12 +1708,12 @@ _tny_camel_account_set_online (TnyCamelAccount *self, gboolean online, GError **
 	}
 
 	if (!online) {
-		camel_service_disconnect (CAMEL_SERVICE (priv->service),
+		camel_lite_service_disconnect (CAMEL_SERVICE (priv->service),
 			  TRUE, &ex);
 
 		if (TNY_IS_CAMEL_STORE_ACCOUNT (self)) 
 		{
-			if (!camel_exception_is_set (&ex))
+			if (!camel_lite_exception_is_set (&ex))
 				priv->status = TNY_CONNECTION_STATUS_DISCONNECTED;
 			else
 				priv->status = TNY_CONNECTION_STATUS_DISCONNECTED_BROKEN;
@@ -1721,19 +1721,19 @@ _tny_camel_account_set_online (TnyCamelAccount *self, gboolean online, GError **
 			_tny_camel_store_account_emit_conchg_signal (TNY_CAMEL_STORE_ACCOUNT (self));
 		}
 
-		if (!camel_exception_is_set (&ex))
+		if (!camel_lite_exception_is_set (&ex))
 			set_online_happened (priv->session, self, FALSE);
 	}
 
 done:
 
-	if (camel_exception_is_set (&ex))
+	if (camel_lite_exception_is_set (&ex))
 	{
 		_tny_camel_exception_to_tny_error (&ex, err);
-		camel_exception_clear (&ex);
+		camel_lite_exception_clear (&ex);
 	}
 
-	camel_object_unref (priv->service);
+	camel_lite_object_unref (priv->service);
 
 	return;
 }
@@ -1842,7 +1842,7 @@ tny_camel_account_set_online_default (TnyCamelAccount *self, gboolean online, Tn
 	if (TNY_IS_CAMEL_STORE_ACCOUNT (self)) {
 		priv->retry_connect = TRUE;
 		if (online)
-			camel_session_set_online ((CamelSession *) session, TRUE); 
+			camel_lite_session_set_online ((CamelSession *) session, TRUE); 
 		_tny_camel_store_account_queue_going_online (
 			TNY_CAMEL_STORE_ACCOUNT (self), session, online, 
 			callback, user_data);
@@ -1960,7 +1960,7 @@ on_supauth_destroy_func (gpointer user_data)
 
 	/* Thread reference */
 	g_object_unref (info->self);
-	camel_object_ref (info->session);
+	camel_lite_object_ref (info->session);
 
 	/* Result reference */
 	if (info->result)
@@ -2006,7 +2006,7 @@ tny_camel_account_get_supported_secure_authentication_async_thread (
 	/* Prepare, so service is set for query_auth_types */
 	TNY_CAMEL_ACCOUNT_GET_CLASS(self)->prepare (self, FALSE, TRUE);
 
-	authtypes = camel_service_query_auth_types (priv->service, &ex);
+	authtypes = camel_lite_service_query_auth_types (priv->service, &ex);
 	
 	/* Result reference */
 	result = tny_simple_list_new ();
@@ -2028,9 +2028,9 @@ tny_camel_account_get_supported_secure_authentication_async_thread (
 	info->result = result;
 
 	info->err = NULL;
-	if (camel_exception_is_set (&ex)) {
+	if (camel_lite_exception_is_set (&ex)) {
 		_tny_camel_exception_to_tny_error (&ex, &info->err);
-		camel_exception_clear (&ex);
+		camel_lite_exception_clear (&ex);
 	}
 
 	g_static_rec_mutex_unlock (priv->service_lock);
@@ -2103,7 +2103,7 @@ tny_camel_account_get_supported_secure_authentication (TnyCamelAccount *self, Tn
 
 	/* thread reference */
 	g_object_ref (self);
-	camel_object_ref (info->session);
+	camel_lite_object_ref (info->session);
 
 
 	if (TNY_IS_CAMEL_STORE_ACCOUNT (self)) 
@@ -2136,21 +2136,21 @@ tny_camel_account_finalize (GObject *object)
 		priv->service->disconnecting = NULL;
 		priv->service->reconnecter = NULL;
 		priv->service->reconnection = NULL;
-		camel_service_disconnect (CAMEL_SERVICE (priv->service), FALSE, &ex);
+		camel_lite_service_disconnect (CAMEL_SERVICE (priv->service), FALSE, &ex);
 	}
 
 	if (priv->session) {
 		_tny_session_camel_unregister_account (priv->session, (TnyCamelAccount*) object);    
-		camel_object_unref (priv->session);
+		camel_lite_object_unref (priv->session);
 	}
 	_tny_camel_account_start_camel_operation (self, NULL, NULL, NULL);
 	_tny_camel_account_stop_camel_operation (self);
 
 	g_static_rec_mutex_lock (priv->cancel_lock);
 	if (G_UNLIKELY (priv->cancel))
-		camel_operation_unref (priv->cancel);
+		camel_lite_operation_unref (priv->cancel);
 	if (G_UNLIKELY (priv->getmsg_cancel))
-		camel_operation_unref (priv->getmsg_cancel);
+		camel_lite_operation_unref (priv->getmsg_cancel);
 	g_static_rec_mutex_unlock (priv->cancel_lock);
 	
 	if (priv->csyncop) {
@@ -2180,7 +2180,7 @@ tny_camel_account_finalize (GObject *object)
 			/* known leak to enforce creating a new service */
 			priv->service->url->user = g_strdup ("non existing dummy user");
 		}
-		camel_object_unref (CAMEL_OBJECT (priv->service));
+		camel_lite_object_unref (CAMEL_OBJECT (priv->service));
 		priv->service = NULL;
 	}
 
@@ -2209,7 +2209,7 @@ tny_camel_account_finalize (GObject *object)
 		g_free (priv->url_string);
 
 	if (priv->delete_this && strlen (priv->delete_this) > 0)
-		camel_rm (priv->delete_this);
+		camel_lite_rm (priv->delete_this);
 	if (priv->delete_this)
 		g_free (priv->delete_this);
 	priv->delete_this = NULL;
@@ -2219,7 +2219,7 @@ tny_camel_account_finalize (GObject *object)
 	g_object_unref (priv->queue);
 	g_object_unref (priv->con_strat);
 
-	camel_exception_free (priv->ex);
+	camel_lite_exception_free (priv->ex);
 
 	/* g_static_rec_mutex_free (priv->service_lock); */
 	g_free (priv->service_lock);
@@ -2396,7 +2396,7 @@ tny_camel_account_get_type (void)
 	{
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

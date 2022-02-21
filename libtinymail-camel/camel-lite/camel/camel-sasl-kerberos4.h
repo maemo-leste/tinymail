@@ -26,7 +26,7 @@
 #include <sys/types.h>
 #include <camel/camel-sasl.h>
 
-#define CAMEL_SASL_KERBEROS4_TYPE     (camel_sasl_kerberos4_get_type ())
+#define CAMEL_SASL_KERBEROS4_TYPE     (camel_lite_sasl_kerberos4_get_type ())
 #define CAMEL_SASL_KERBEROS4(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SASL_KERBEROS4_TYPE, CamelSaslKerberos4))
 #define CAMEL_SASL_KERBEROS4_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SASL_KERBEROS4_TYPE, CamelSaslKerberos4Class))
 #define CAMEL_IS_SASL_KERBEROS4(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SASL_KERBEROS4_TYPE))
@@ -47,9 +47,9 @@ typedef struct _CamelSaslKerberos4Class {
 
 
 /* Standard Camel function */
-CamelType camel_sasl_kerberos4_get_type (void);
+CamelType camel_lite_sasl_kerberos4_get_type (void);
 
-extern CamelServiceAuthType camel_sasl_kerberos4_authtype;
+extern CamelServiceAuthType camel_lite_sasl_kerberos4_authtype;
 
 G_END_DECLS
 

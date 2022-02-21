@@ -164,7 +164,7 @@ tny_camel_pop_folder_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

@@ -25,7 +25,7 @@
 
 #include <camel/camel-offline-store.h>
 
-#define CAMEL_TYPE_IMAP4_STORE            (camel_imap4_store_get_type ())
+#define CAMEL_TYPE_IMAP4_STORE            (camel_lite_imap4_store_get_type ())
 #define CAMEL_IMAP4_STORE(obj)            (CAMEL_CHECK_CAST ((obj), CAMEL_TYPE_IMAP4_STORE, CamelIMAP4Store))
 #define CAMEL_IMAP4_STORE_CLASS(klass)    (CAMEL_CHECK_CLASS_CAST ((klass), CAMEL_TYPE_IMAP4_STORE, CamelIMAP4StoreClass))
 #define CAMEL_IS_IMAP4_STORE(obj)         (CAMEL_CHECK_TYPE ((obj), CAMEL_TYPE_IMAP4_STORE))
@@ -53,7 +53,7 @@ struct _CamelIMAP4StoreClass {
 };
 
 
-CamelType camel_imap4_store_get_type (void);
+CamelType camel_lite_imap4_store_get_type (void);
 
 G_END_DECLS
 

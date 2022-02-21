@@ -48,7 +48,7 @@ struct _uid_state {
 
 
 /**
- * camel_uid_cache_new:
+ * camel_lite_uid_cache_new:
  * @filename: path to load the cache from
  *
  * Creates a new UID cache, initialized from @filename. If @filename
@@ -58,7 +58,7 @@ struct _uid_state {
  * Return value: a new UID cache, or %NULL
  **/
 CamelUIDCache *
-camel_uid_cache_new (const char *filename)
+camel_lite_uid_cache_new (const char *filename)
 {
 	CamelUIDCache *cache;
 	struct stat st;
@@ -83,7 +83,7 @@ camel_uid_cache_new (const char *filename)
 
 	buf = g_malloc (st.st_size + 1);
 
-	if (st.st_size > 0 && camel_read (fd, buf, st.st_size) == -1) {
+	if (st.st_size > 0 && camel_lite_read (fd, buf, st.st_size) == -1) {
 		close (fd);
 		g_free (buf);
 		return NULL;
@@ -129,8 +129,8 @@ maybe_write_uid (gpointer key, gpointer value, gpointer data)
 		return;
 
 	if (state && state->level == cache->level && state->save) {
-		if (camel_write (cache->fd, key, strlen (key)) == -1 ||
-		    camel_write (cache->fd, "\n", 1) == -1) {
+		if (camel_lite_write (cache->fd, key, strlen (key)) == -1 ||
+		    camel_lite_write (cache->fd, "\n", 1) == -1) {
 			cache->fd = -1;
 		} else {
 			cache->size += strlen (key) + 1;
@@ -144,7 +144,7 @@ maybe_write_uid (gpointer key, gpointer value, gpointer data)
 
 
 /**
- * camel_uid_cache_save:
+ * camel_lite_uid_cache_save:
  * @cache: a CamelUIDCache
  *
  * Attempts to save @cache back to disk.
@@ -152,7 +152,7 @@ maybe_write_uid (gpointer key, gpointer value, gpointer data)
  * Return value: success or failure
  **/
 gboolean
-camel_uid_cache_save (CamelUIDCache *cache)
+camel_lite_uid_cache_save (CamelUIDCache *cache)
 {
 	char *filename;
 	int errnosav;
@@ -237,13 +237,13 @@ free_uid (gpointer key, gpointer value, gpointer data)
 
 
 /**
- * camel_uid_cache_destroy:
+ * camel_lite_uid_cache_destroy:
  * @cache: a CamelUIDCache
  *
  * Destroys @cache and frees its data.
  **/
 void
-camel_uid_cache_destroy (CamelUIDCache *cache)
+camel_lite_uid_cache_destroy (CamelUIDCache *cache)
 {
 	g_hash_table_foreach (cache->uids, free_uid, NULL);
 	g_hash_table_destroy (cache->uids);
@@ -253,7 +253,7 @@ camel_uid_cache_destroy (CamelUIDCache *cache)
 
 
 /**
- * camel_uid_cache_get_new_uids:
+ * camel_lite_uid_cache_get_new_uids:
  * @cache: a CamelUIDCache
  * @uids: an array of UIDs
  *
@@ -261,10 +261,10 @@ camel_uid_cache_destroy (CamelUIDCache *cache)
  * removes UIDs from @cache that aren't in @uids.
  *
  * Return value: an array of new UIDs, which must be freed with
- * camel_uid_cache_free_uids().
+ * camel_lite_uid_cache_free_uids().
  **/
 GPtrArray *
-camel_uid_cache_get_new_uids (CamelUIDCache *cache, GPtrArray *uids)
+camel_lite_uid_cache_get_new_uids (CamelUIDCache *cache, GPtrArray *uids)
 {
 	GPtrArray *new_uids;
 	gpointer old_uid;
@@ -296,14 +296,14 @@ camel_uid_cache_get_new_uids (CamelUIDCache *cache, GPtrArray *uids)
 
 
 /**
- * camel_uid_cache_save_uid:
+ * camel_lite_uid_cache_save_uid:
  * @cache: a CamelUIDCache
  * @uid: a uid to save
  *
  * Marks a uid for saving.
  **/
 void
-camel_uid_cache_save_uid (CamelUIDCache *cache, const char *uid)
+camel_lite_uid_cache_save_uid (CamelUIDCache *cache, const char *uid)
 {
 	struct _uid_state *state;
 	gpointer old_uid;
@@ -324,13 +324,13 @@ camel_uid_cache_save_uid (CamelUIDCache *cache, const char *uid)
 
 
 /**
- * camel_uid_cache_free_uids:
- * @uids: an array returned from camel_uid_cache_get_new_uids()
+ * camel_lite_uid_cache_free_uids:
+ * @uids: an array returned from camel_lite_uid_cache_get_new_uids()
  *
  * Frees the array of UIDs.
  **/
 void
-camel_uid_cache_free_uids (GPtrArray *uids)
+camel_lite_uid_cache_free_uids (GPtrArray *uids)
 {
 	int i;
 

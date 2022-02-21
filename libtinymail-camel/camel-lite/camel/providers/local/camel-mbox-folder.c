@@ -75,18 +75,18 @@ static CamelLocalSummary *mbox_create_summary(CamelLocalFolder *lf, const char *
 static void mbox_finalise(CamelObject * object);
 
 static void
-camel_mbox_folder_class_init(CamelMboxFolderClass * camel_mbox_folder_class)
+camel_lite_mbox_folder_class_init(CamelMboxFolderClass * camel_lite_mbox_folder_class)
 {
-	CamelFolderClass *camel_folder_class = CAMEL_FOLDER_CLASS(camel_mbox_folder_class);
-	CamelLocalFolderClass *lclass = (CamelLocalFolderClass *)camel_mbox_folder_class;
+	CamelFolderClass *camel_lite_folder_class = CAMEL_FOLDER_CLASS(camel_lite_mbox_folder_class);
+	CamelLocalFolderClass *lclass = (CamelLocalFolderClass *)camel_lite_mbox_folder_class;
 
-	parent_class = (CamelLocalFolderClass *)camel_type_get_global_classfuncs(camel_local_folder_get_type());
+	parent_class = (CamelLocalFolderClass *)camel_lite_type_get_global_classfuncs(camel_lite_local_folder_get_type());
 
 	/* virtual method definition */
 
 	/* virtual method overload */
-	camel_folder_class->append_message = mbox_append_message;
-	camel_folder_class->get_message = mbox_get_message;
+	camel_lite_folder_class->append_message = mbox_append_message;
+	camel_lite_folder_class->get_message = mbox_get_message;
 
 	lclass->create_summary = mbox_create_summary;
 	lclass->lock = mbox_lock;
@@ -110,32 +110,32 @@ mbox_finalise(CamelObject * object)
 	g_assert(mbox_folder->lockfd == -1);
 }
 
-CamelType camel_mbox_folder_get_type(void)
+CamelType camel_lite_mbox_folder_get_type(void)
 {
-	static CamelType camel_mbox_folder_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_mbox_folder_type = CAMEL_INVALID_TYPE;
 
-	if (camel_mbox_folder_type == CAMEL_INVALID_TYPE) {
-		camel_mbox_folder_type = camel_type_register(CAMEL_LOCAL_FOLDER_TYPE, "CamelMboxFolder",
+	if (camel_lite_mbox_folder_type == CAMEL_INVALID_TYPE) {
+		camel_lite_mbox_folder_type = camel_lite_type_register(CAMEL_LOCAL_FOLDER_TYPE, "CamelLiteMboxFolder",
 							     sizeof(CamelMboxFolder),
 							     sizeof(CamelMboxFolderClass),
-							     (CamelObjectClassInitFunc) camel_mbox_folder_class_init,
+							     (CamelObjectClassInitFunc) camel_lite_mbox_folder_class_init,
 							     NULL,
 							     (CamelObjectInitFunc) mbox_init,
 							     (CamelObjectFinalizeFunc) mbox_finalise);
 	}
 
-	return camel_mbox_folder_type;
+	return camel_lite_mbox_folder_type;
 }
 
 CamelFolder *
-camel_mbox_folder_new(CamelStore *parent_store, const char *full_name, guint32 flags, CamelException *ex)
+camel_lite_mbox_folder_new(CamelStore *parent_store, const char *full_name, guint32 flags, CamelException *ex)
 {
 	CamelFolder *folder;
 
-	d(printf("Creating mbox folder: %s in %s\n", full_name, camel_local_store_get_toplevel_dir((CamelLocalStore *)parent_store)));
+	d(printf("Creating mbox folder: %s in %s\n", full_name, camel_lite_local_store_get_toplevel_dir((CamelLocalStore *)parent_store)));
 
-	folder = (CamelFolder *)camel_object_new(CAMEL_MBOX_FOLDER_TYPE);
-	folder = (CamelFolder *)camel_local_folder_construct((CamelLocalFolder *)folder,
+	folder = (CamelFolder *)camel_lite_object_new(CAMEL_MBOX_FOLDER_TYPE);
+	folder = (CamelFolder *)camel_lite_local_folder_construct((CamelLocalFolder *)folder,
 							     parent_store, full_name, flags, ex);
 
 	return folder;
@@ -143,7 +143,7 @@ camel_mbox_folder_new(CamelStore *parent_store, const char *full_name, guint32 f
 
 static CamelLocalSummary *mbox_create_summary(CamelLocalFolder *lf, const char *path, const char *folder, CamelIndex *index)
 {
-	return (CamelLocalSummary *)camel_mbox_summary_new((CamelFolder *)lf, path, folder, index);
+	return (CamelLocalSummary *)camel_lite_mbox_summary_new((CamelFolder *)lf, path, folder, index);
 }
 
 static int mbox_lock(CamelLocalFolder *lf, CamelLockType type, CamelException *ex)
@@ -156,13 +156,13 @@ static int mbox_lock(CamelLocalFolder *lf, CamelLockType type, CamelException *e
 
 	mf->lockfd = open(lf->folder_path, O_RDWR, 0);
 	if (mf->lockfd == -1) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Cannot create folder lock on %s: %s"),
 				      lf->folder_path, g_strerror (errno));
 		return -1;
 	}
 
-	if (camel_lock_folder(lf->folder_path, mf->lockfd, type, ex) == -1) {
+	if (camel_lite_lock_folder(lf->folder_path, mf->lockfd, type, ex) == -1) {
 		close(mf->lockfd);
 		mf->lockfd = -1;
 		return -1;
@@ -177,7 +177,7 @@ static void mbox_unlock(CamelLocalFolder *lf)
 	CamelMboxFolder *mf = (CamelMboxFolder *)lf;
 
 	g_assert(mf->lockfd != -1);
-	camel_unlock_folder(lf->folder_path, mf->lockfd);
+	camel_lite_unlock_folder(lf->folder_path, mf->lockfd);
 	close(mf->lockfd);
 	mf->lockfd = -1;
 #endif
@@ -198,26 +198,26 @@ mbox_append_message(CamelFolder *folder, CamelMimeMessage * message, const Camel
 	char *xev;
 #endif
 	/* If we can't lock, dont do anything */
-	if (camel_local_folder_lock(lf, CAMEL_LOCK_WRITE, ex) == -1)
+	if (camel_lite_local_folder_lock(lf, CAMEL_LOCK_WRITE, ex) == -1)
 		return;
 
 	d(printf("Appending message\n"));
 
 	/* first, check the summary is correct (updates folder_size too) */
-	retval = camel_local_summary_check ((CamelLocalSummary *)folder->summary, lf->changes, ex);
+	retval = camel_lite_local_summary_check ((CamelLocalSummary *)folder->summary, lf->changes, ex);
 	if (retval == -1)
 		goto fail;
 
 	/* add it to the summary/assign the uid, etc */
-	mi = camel_local_summary_add((CamelLocalSummary *)folder->summary, message, info, lf->changes, ex);
+	mi = camel_lite_local_summary_add((CamelLocalSummary *)folder->summary, message, info, lf->changes, ex);
 	if (mi == NULL)
 		goto fail;
 
-	d(printf("Appending message: uid is %s\n", camel_message_info_uid(mi)));
+	d(printf("Appending message: uid is %s\n", camel_lite_message_info_uid(mi)));
 
-	output_stream = camel_stream_fs_new_with_name(lf->folder_path, O_WRONLY | O_APPEND | O_LARGEFILE, 0666);
+	output_stream = camel_lite_stream_fs_new_with_name(lf->folder_path, O_WRONLY | O_APPEND | O_LARGEFILE, 0666);
 	if (output_stream == NULL) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Cannot open mailbox: %s: %s\n"),
 				      lf->folder_path, g_strerror (errno));
 		goto fail;
@@ -226,34 +226,34 @@ mbox_append_message(CamelFolder *folder, CamelMimeMessage * message, const Camel
 	/* and we need to set the frompos/XEV explicitly */
 	((CamelMboxMessageInfo *)mi)->frompos = mbs->folder_size;
 #if 0
-	xev = camel_local_summary_encode_x_evolution((CamelLocalSummary *)folder->summary, mi);
+	xev = camel_lite_local_summary_encode_x_evolution((CamelLocalSummary *)folder->summary, mi);
 	if (xev) {
 		/* the x-ev header should match the 'current' flags, no problem, so store as much */
-		camel_medium_set_header((CamelMedium *)message, "X-Evolution", xev);
+		camel_lite_medium_set_header((CamelMedium *)message, "X-Evolution", xev);
 		mi->flags &= ~ CAMEL_MESSAGE_FOLDER_NOXEV|CAMEL_MESSAGE_FOLDER_FLAGGED;
 		g_free(xev);
 	}
 #endif
 
 	/* we must write this to the non-filtered stream ... */
-	fromline = camel_mime_message_build_mbox_from(message);
-	if (camel_stream_write(output_stream, fromline, strlen(fromline)) == -1)
+	fromline = camel_lite_mime_message_build_mbox_from(message);
+	if (camel_lite_stream_write(output_stream, fromline, strlen(fromline)) == -1)
 		goto fail_write;
 
 	/* and write the content to the filtering stream, that translates '\nFrom' into '\n>From' */
-	filter_stream = (CamelStream *) camel_stream_filter_new_with_stream(output_stream);
-	filter_from = (CamelMimeFilter *) camel_mime_filter_from_new();
-	camel_stream_filter_add((CamelStreamFilter *) filter_stream, filter_from);
-	camel_object_unref (filter_from);
+	filter_stream = (CamelStream *) camel_lite_stream_filter_new_with_stream(output_stream);
+	filter_from = (CamelMimeFilter *) camel_lite_mime_filter_from_new();
+	camel_lite_stream_filter_add((CamelStreamFilter *) filter_stream, filter_from);
+	camel_lite_object_unref (filter_from);
 
-	if (camel_data_wrapper_write_to_stream ((CamelDataWrapper *) message, filter_stream) == -1 ||
-	    camel_stream_write (filter_stream, "\n", 1) == -1 ||
-	    camel_stream_flush (filter_stream) == -1)
+	if (camel_lite_data_wrapper_write_to_stream ((CamelDataWrapper *) message, filter_stream) == -1 ||
+	    camel_lite_stream_write (filter_stream, "\n", 1) == -1 ||
+	    camel_lite_stream_flush (filter_stream) == -1)
 		goto fail_write;
 
 	/* filter stream ref's the output stream itself, so we need to unref it too */
-	camel_object_unref (filter_stream);
-	camel_object_unref (output_stream);
+	camel_lite_object_unref (filter_stream);
+	camel_lite_object_unref (output_stream);
 	g_free(fromline);
 
 	/* now we 'fudge' the summary  to tell it its uptodate, because its idea of uptodate has just changed */
@@ -264,24 +264,24 @@ mbox_append_message(CamelFolder *folder, CamelMimeMessage * message, const Camel
 	}
 
 	/* unlock as soon as we can */
-	camel_local_folder_unlock(lf);
+	camel_lite_local_folder_unlock(lf);
 
-	if (camel_folder_change_info_changed(lf->changes)) {
-		camel_object_trigger_event((CamelObject *)folder, "folder_changed", lf->changes);
-		camel_folder_change_info_clear(lf->changes);
+	if (camel_lite_folder_change_info_changed(lf->changes)) {
+		camel_lite_object_trigger_event((CamelObject *)folder, "folder_changed", lf->changes);
+		camel_lite_folder_change_info_clear(lf->changes);
 	}
 
 	if (appended_uid)
-		*appended_uid = g_strdup(camel_message_info_uid(mi));
+		*appended_uid = g_strdup(camel_lite_message_info_uid(mi));
 
 	return;
 
 fail_write:
 	if (errno == EINTR)
-		camel_exception_set (ex, CAMEL_EXCEPTION_USER_CANCEL,
+		camel_lite_exception_set (ex, CAMEL_EXCEPTION_USER_CANCEL,
 				     _("Mail append canceled"));
 	else
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Cannot append message to mbox file: %s: %s"),
 				      lf->folder_path, g_strerror (errno));
 
@@ -291,16 +291,16 @@ fail_write:
 			retval = ftruncate (((CamelStreamFs *) output_stream)->fd, mbs->folder_size);
 		} while (retval == -1 && errno == EINTR);
 
-		camel_object_unref (output_stream);
+		camel_lite_object_unref (output_stream);
 	}
 
 	if (filter_stream)
-		camel_object_unref (filter_stream);
+		camel_lite_object_unref (filter_stream);
 
 	g_free(fromline);
 
 	/* remove the summary info so we are not out-of-sync with the mbox */
-	camel_folder_summary_remove_uid (CAMEL_FOLDER_SUMMARY (mbs), camel_message_info_uid (mi));
+	camel_lite_folder_summary_remove_uid (CAMEL_FOLDER_SUMMARY (mbs), camel_lite_message_info_uid (mi));
 
 	/* and tell the summary it's up-to-date */
 	if (g_stat (lf->folder_path, &st) == 0) {
@@ -310,12 +310,12 @@ fail_write:
 
 fail:
 	/* make sure we unlock the folder - before we start triggering events into appland */
-	camel_local_folder_unlock(lf);
+	camel_lite_local_folder_unlock(lf);
 
 	/* cascade the changes through, anyway, if there are any outstanding */
-	if (camel_folder_change_info_changed(lf->changes)) {
-		camel_object_trigger_event((CamelObject *)folder, "folder_changed", lf->changes);
-		camel_folder_change_info_clear(lf->changes);
+	if (camel_lite_folder_change_info_changed(lf->changes)) {
+		camel_lite_object_trigger_event((CamelObject *)folder, "folder_changed", lf->changes);
+		camel_lite_folder_change_info_clear(lf->changes);
 	}
 }
 
@@ -337,21 +337,21 @@ mbox_get_message(CamelFolder *folder, const gchar * uid, CamelFolderReceiveType 
 	 */
 
 	/* lock the folder first, burn if we can't, need write lock for summary check */
-	if (camel_local_folder_lock(lf, CAMEL_LOCK_WRITE, ex) == -1)
+	if (camel_lite_local_folder_lock(lf, CAMEL_LOCK_WRITE, ex) == -1)
 		return NULL;
 
 	/* check for new messages always */
-	if (camel_local_summary_check((CamelLocalSummary *)folder->summary, lf->changes, ex) == -1) {
-		camel_local_folder_unlock(lf);
+	if (camel_lite_local_summary_check((CamelLocalSummary *)folder->summary, lf->changes, ex) == -1) {
+		camel_lite_local_folder_unlock(lf);
 		return NULL;
 	}
 
 retry:
 	/* get the message summary info */
-	info = (CamelMboxMessageInfo *) camel_folder_summary_uid(folder->summary, uid);
+	info = (CamelMboxMessageInfo *) camel_lite_folder_summary_uid(folder->summary, uid);
 
 	if (info == NULL) {
-		camel_exception_setv(ex, CAMEL_EXCEPTION_FOLDER_INVALID_UID,
+		camel_lite_exception_setv(ex, CAMEL_EXCEPTION_FOLDER_INVALID_UID,
 				     _("Cannot get message: %s from folder %s\n  %s"),
 				     uid, lf->folder_path, _("No such message"));
 		goto fail;
@@ -361,74 +361,74 @@ retry:
 	g_assert(info->frompos != -1);
 
 	frompos = info->frompos;
-	camel_message_info_free((CamelMessageInfo *)info);
+	camel_lite_message_info_free((CamelMessageInfo *)info);
 
-	/* we use an fd instead of a normal stream here - the reason is subtle, camel_mime_part will cache
+	/* we use an fd instead of a normal stream here - the reason is subtle, camel_lite_mime_part will cache
 	   the whole message in memory if the stream is non-seekable (which it is when built from a parser
 	   with no stream).  This means we dont have to lock the mbox for the life of the message, but only
 	   while it is being created. */
 
 	fd = g_open(lf->folder_path, O_LARGEFILE | O_RDONLY | O_BINARY, 0);
 	if (fd == -1) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Cannot get message: %s from folder %s\n  %s"),
 				      uid, lf->folder_path, g_strerror (errno));
 		goto fail;
 	}
 
 	/* we use a parser to verify the message is correct, and in the correct position */
-	parser = camel_mime_parser_new();
-	camel_mime_parser_init_with_fd(parser, fd);
-	camel_mime_parser_scan_from(parser, TRUE);
+	parser = camel_lite_mime_parser_new();
+	camel_lite_mime_parser_init_with_fd(parser, fd);
+	camel_lite_mime_parser_scan_from(parser, TRUE);
 
-	camel_mime_parser_seek(parser, frompos, SEEK_SET);
-	if (camel_mime_parser_step(parser, NULL, NULL) != CAMEL_MIME_PARSER_STATE_FROM
-	    || camel_mime_parser_tell_start_from(parser) != frompos) {
+	camel_lite_mime_parser_seek(parser, frompos, SEEK_SET);
+	if (camel_lite_mime_parser_step(parser, NULL, NULL) != CAMEL_MIME_PARSER_STATE_FROM
+	    || camel_lite_mime_parser_tell_start_from(parser) != frompos) {
 
 		g_warning("Summary doesn't match the folder contents!  eek!\n"
 			  "  expecting offset %ld got %ld, state = %d", (long int)frompos,
-			  (long int)camel_mime_parser_tell_start_from(parser),
-			  camel_mime_parser_state(parser));
+			  (long int)camel_lite_mime_parser_tell_start_from(parser),
+			  camel_lite_mime_parser_state(parser));
 
-		camel_object_unref((CamelObject *)parser);
+		camel_lite_object_unref((CamelObject *)parser);
 		parser = NULL;
 
 		if (!retried) {
 			retried = TRUE;
-			camel_local_summary_check_force((CamelLocalSummary *)folder->summary);
-			retval = camel_local_summary_check((CamelLocalSummary *)folder->summary, lf->changes, ex);
+			camel_lite_local_summary_check_force((CamelLocalSummary *)folder->summary);
+			retval = camel_lite_local_summary_check((CamelLocalSummary *)folder->summary, lf->changes, ex);
 			if (retval != -1)
 				goto retry;
 		}
 
-		camel_exception_setv(ex, CAMEL_EXCEPTION_FOLDER_INVALID,
+		camel_lite_exception_setv(ex, CAMEL_EXCEPTION_FOLDER_INVALID,
 				     _("Cannot get message: %s from folder %s\n  %s"), uid, lf->folder_path,
-				     _("The folder appears to be ircamel_recoverably corrupted."));
+				     _("The folder appears to be ircamel_lite_recoverably corrupted."));
 		goto fail;
 	}
 
-	message = camel_mime_message_new();
-	if (camel_mime_part_construct_from_parser((CamelMimePart *)message, parser) == -1) {
-		camel_exception_setv(ex, errno==EINTR?CAMEL_EXCEPTION_USER_CANCEL:CAMEL_EXCEPTION_SYSTEM,
+	message = camel_lite_mime_message_new();
+	if (camel_lite_mime_part_construct_from_parser((CamelMimePart *)message, parser) == -1) {
+		camel_lite_exception_setv(ex, errno==EINTR?CAMEL_EXCEPTION_USER_CANCEL:CAMEL_EXCEPTION_SYSTEM,
 				     _("Cannot get message: %s from folder %s\n  %s"), uid, lf->folder_path,
 				     _("Message construction failed."));
-		camel_object_unref((CamelObject *)message);
+		camel_lite_object_unref((CamelObject *)message);
 		message = NULL;
 		goto fail;
 	}
 
-	camel_medium_remove_header((CamelMedium *)message, "X-Evolution");
+	camel_lite_medium_remove_header((CamelMedium *)message, "X-Evolution");
 fail:
 	/* and unlock now we're finished with it */
-	camel_local_folder_unlock(lf);
+	camel_lite_local_folder_unlock(lf);
 
 	if (parser)
-		camel_object_unref((CamelObject *)parser);
+		camel_lite_object_unref((CamelObject *)parser);
 
 	/* use the opportunity to notify of changes (particularly if we had a rebuild) */
-	if (camel_folder_change_info_changed(lf->changes)) {
-		camel_object_trigger_event((CamelObject *)folder, "folder_changed", lf->changes);
-		camel_folder_change_info_clear(lf->changes);
+	if (camel_lite_folder_change_info_changed(lf->changes)) {
+		camel_lite_object_trigger_event((CamelObject *)folder, "folder_changed", lf->changes);
+		camel_lite_folder_change_info_clear(lf->changes);
 	}
 
 	return message;

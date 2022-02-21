@@ -31,7 +31,7 @@
 
 G_BEGIN_DECLS
 
-void camel_mime_part_construct_content_from_parser(CamelMimePart *, CamelMimeParser *mp);
+void camel_lite_mime_part_construct_content_from_parser(CamelMimePart *, CamelMimeParser *mp);
 
 G_END_DECLS
 

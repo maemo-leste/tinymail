@@ -25,9 +25,9 @@
 
 #include <camel/camel-stream.h>
 
-#define CAMEL_STREAM_PROCESS(obj)         CAMEL_CHECK_CAST (obj, camel_stream_process_get_type (), CamelStreamProcess)
-#define CAMEL_STREAM_PROCESS_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_stream_process_get_type (), CamelStreamProcessClass)
-#define CAMEL_IS_STREAM_PROCESS(obj)      CAMEL_CHECK_TYPE (obj, camel_stream_process_get_type ())
+#define CAMEL_STREAM_PROCESS(obj)         CAMEL_CHECK_CAST (obj, camel_lite_stream_process_get_type (), CamelStreamProcess)
+#define CAMEL_STREAM_PROCESS_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_stream_process_get_type (), CamelStreamProcessClass)
+#define CAMEL_IS_STREAM_PROCESS(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_stream_process_get_type ())
 
 G_BEGIN_DECLS
 
@@ -45,9 +45,9 @@ struct _CamelStreamProcessClass {
 	CamelStreamClass parent_class;
 };
 
-CamelType		camel_stream_process_get_type	(void);
-CamelStream            *camel_stream_process_new		(void);
-int camel_stream_process_connect(CamelStreamProcess *, const char *, const char **);
+CamelType		camel_lite_stream_process_get_type	(void);
+CamelStream            *camel_lite_stream_process_new		(void);
+int camel_lite_stream_process_connect(CamelStreamProcess *, const char *, const char **);
 
 G_END_DECLS
 

@@ -25,9 +25,9 @@
 
 #include <camel/camel-stream.h>
 
-#define CAMEL_STREAM_NULL(obj)         CAMEL_CHECK_CAST (obj, camel_stream_null_get_type (), CamelStreamNull)
-#define CAMEL_STREAM_NULL_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_stream_null_get_type (), CamelStreamNullClass)
-#define CAMEL_IS_STREAM_NULL(obj)      CAMEL_CHECK_TYPE (obj, camel_stream_null_get_type ())
+#define CAMEL_STREAM_NULL(obj)         CAMEL_CHECK_CAST (obj, camel_lite_stream_null_get_type (), CamelStreamNull)
+#define CAMEL_STREAM_NULL_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_stream_null_get_type (), CamelStreamNullClass)
+#define CAMEL_IS_STREAM_NULL(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_stream_null_get_type ())
 
 G_BEGIN_DECLS
 
@@ -43,9 +43,9 @@ struct _CamelStreamNullClass {
 	CamelStreamClass parent_class;
 };
 
-CamelType			camel_stream_null_get_type	(void);
+CamelType			camel_lite_stream_null_get_type	(void);
 
-CamelStream            *camel_stream_null_new		(void);
+CamelStream            *camel_lite_stream_null_new		(void);
 
 G_END_DECLS
 

@@ -25,7 +25,7 @@
 
 #include <camel/camel-stream.h>
 
-#define CAMEL_TYPE_IMAP4_STREAM     (camel_imap4_stream_get_type ())
+#define CAMEL_TYPE_IMAP4_STREAM     (camel_lite_imap4_stream_get_type ())
 #define CAMEL_IMAP4_STREAM(obj)     (CAMEL_CHECK_CAST ((obj), CAMEL_TYPE_IMAP4_STREAM, CamelIMAP4Stream))
 #define CAMEL_IMAP4_STREAM_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_TYPE_IMAP4_STREAM, CamelIMAP4StreamClass))
 #define CAMEL_IS_IMAP4_STREAM(o)    (CAMEL_CHECK_TYPE((o), CAMEL_TYPE_IMAP4_STREAM))
@@ -57,7 +57,7 @@ enum {
 	CAMEL_IMAP4_TOKEN_RBRACKET      = ']',
 };
 
-typedef struct _camel_imap4_token_t {
+typedef struct _camel_lite_imap4_token_t {
 	int token;
 	union {
 		char *atom;
@@ -66,7 +66,7 @@ typedef struct _camel_imap4_token_t {
 		size_t literal;
 		guint32 number;
 	} v;
-} camel_imap4_token_t;
+} camel_lite_imap4_token_t;
 
 enum {
 	CAMEL_IMAP4_STREAM_MODE_TOKEN   = 0,
@@ -96,7 +96,7 @@ struct _CamelIMAP4Stream {
 	unsigned char *tokenptr;
 	unsigned int tokenleft;
 
-	camel_imap4_token_t unget;
+	camel_lite_imap4_token_t unget;
 };
 
 struct _CamelIMAP4StreamClass {
@@ -107,15 +107,15 @@ struct _CamelIMAP4StreamClass {
 
 
 /* Standard Camel function */
-CamelType camel_imap4_stream_get_type (void);
+CamelType camel_lite_imap4_stream_get_type (void);
 
-CamelStream *camel_imap4_stream_new (CamelStream *stream);
+CamelStream *camel_lite_imap4_stream_new (CamelStream *stream);
 
-int camel_imap4_stream_next_token (CamelIMAP4Stream *stream, camel_imap4_token_t *token);
-int camel_imap4_stream_unget_token (CamelIMAP4Stream *stream, camel_imap4_token_t *token);
+int camel_lite_imap4_stream_next_token (CamelIMAP4Stream *stream, camel_lite_imap4_token_t *token);
+int camel_lite_imap4_stream_unget_token (CamelIMAP4Stream *stream, camel_lite_imap4_token_t *token);
 
-int camel_imap4_stream_line (CamelIMAP4Stream *stream, unsigned char **line, size_t *len);
-int camel_imap4_stream_literal (CamelIMAP4Stream *stream, unsigned char **literal, size_t *len);
+int camel_lite_imap4_stream_line (CamelIMAP4Stream *stream, unsigned char **line, size_t *len);
+int camel_lite_imap4_stream_literal (CamelIMAP4Stream *stream, unsigned char **literal, size_t *len);
 
 G_END_DECLS
 

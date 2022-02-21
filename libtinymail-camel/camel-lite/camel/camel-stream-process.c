@@ -42,7 +42,7 @@
 #include "camel-file-utils.h"
 #include "camel-stream-process.h"
 
-extern int camel_verbose_debug;
+extern int camel_lite_verbose_debug;
 
 static CamelObjectClass *parent_class = NULL;
 
@@ -56,7 +56,7 @@ static int       stream_close      (CamelStream *stream);
 static int       stream_flush      (CamelStream *stream);
 
 static void
-camel_stream_process_finalise (CamelObject *object)
+camel_lite_stream_process_finalise (CamelObject *object)
 {
 	/* Ensure we clean up after ourselves -- kill
 	   the child process and reap it. */
@@ -64,21 +64,21 @@ camel_stream_process_finalise (CamelObject *object)
 }
 
 static void
-camel_stream_process_class_init (CamelStreamProcessClass *camel_stream_process_class)
+camel_lite_stream_process_class_init (CamelStreamProcessClass *camel_lite_stream_process_class)
 {
-	CamelStreamClass *camel_stream_class = (CamelStreamClass *) camel_stream_process_class;
+	CamelStreamClass *camel_lite_stream_class = (CamelStreamClass *) camel_lite_stream_process_class;
 
-	parent_class = camel_type_get_global_classfuncs (CAMEL_OBJECT_TYPE);
+	parent_class = camel_lite_type_get_global_classfuncs (CAMEL_OBJECT_TYPE);
 
 	/* virtual method definition */
-	camel_stream_class->read = stream_read;
-	camel_stream_class->write = stream_write;
-	camel_stream_class->close = stream_close;
-	camel_stream_class->flush = stream_flush;
+	camel_lite_stream_class->read = stream_read;
+	camel_lite_stream_class->write = stream_write;
+	camel_lite_stream_class->close = stream_close;
+	camel_lite_stream_class->flush = stream_flush;
 }
 
 static void
-camel_stream_process_init (gpointer object, gpointer klass)
+camel_lite_stream_process_init (gpointer object, gpointer klass)
 {
         CamelStreamProcess *stream = CAMEL_STREAM_PROCESS (object);
 
@@ -88,35 +88,35 @@ camel_stream_process_init (gpointer object, gpointer klass)
 
 
 CamelType
-camel_stream_process_get_type (void)
+camel_lite_stream_process_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type =  camel_type_register (camel_stream_get_type (),
-					     "CamelStreamProcess",
+		type =  camel_lite_type_register (camel_lite_stream_get_type (),
+					     "CamelLiteStreamProcess",
 					     sizeof (CamelStreamProcess),
 					     sizeof (CamelStreamProcessClass),
-					     (CamelObjectClassInitFunc) camel_stream_process_class_init,
+					     (CamelObjectClassInitFunc) camel_lite_stream_process_class_init,
 					     NULL,
-					     (CamelObjectInitFunc) camel_stream_process_init,
-					     (CamelObjectFinalizeFunc) camel_stream_process_finalise);
+					     (CamelObjectInitFunc) camel_lite_stream_process_init,
+					     (CamelObjectFinalizeFunc) camel_lite_stream_process_finalise);
 	}
 
 	return type;
 }
 
 /**
- * camel_stream_process_new:
+ * camel_lite_stream_process_new:
  *
  * Returns a PROCESS stream.
  *
  * Return value: the stream
  **/
 CamelStream *
-camel_stream_process_new (void)
+camel_lite_stream_process_new (void)
 {
-	return (CamelStream *) camel_object_new (camel_stream_process_get_type ());
+	return (CamelStream *) camel_lite_object_new (camel_lite_stream_process_get_type ());
 }
 
 
@@ -125,7 +125,7 @@ stream_read (CamelStream *stream, char *buffer, size_t n)
 {
 	CamelStreamProcess *stream_process = CAMEL_STREAM_PROCESS (stream);
 
-	return camel_read (stream_process->sockfd, buffer, n);
+	return camel_lite_read (stream_process->sockfd, buffer, n);
 }
 
 static ssize_t
@@ -133,7 +133,7 @@ stream_write (CamelStream *stream, const char *buffer, size_t n)
 {
 	CamelStreamProcess *stream_process = CAMEL_STREAM_PROCESS (stream);
 
-	return camel_write (stream_process->sockfd, buffer, n);
+	return camel_lite_write (stream_process->sockfd, buffer, n);
 }
 
 static int
@@ -147,7 +147,7 @@ stream_close (CamelStream *object)
 {
 	CamelStreamProcess *stream = CAMEL_STREAM_PROCESS (object);
 
-	if (camel_verbose_debug)
+	if (camel_lite_verbose_debug)
 		fprintf (stderr, "Process stream close. sockfd %d, childpid %d\n",
 			 stream->sockfd, stream->childpid);
 
@@ -160,20 +160,20 @@ stream_close (CamelStream *object)
 		int ret, i;
 		for (i = 0; i < 4; i++) {
 			ret = waitpid (stream->childpid, NULL, WNOHANG);
-			if (camel_verbose_debug)
+			if (camel_lite_verbose_debug)
 				fprintf (stderr, "waitpid() for pid %d returned %d (errno %d)\n",
 					 stream->childpid, ret, ret == -1 ? errno : 0);
 			if (ret == stream->childpid || errno == ECHILD)
 				break;
 			switch (i) {
 			case 0:
-				if (camel_verbose_debug)
+				if (camel_lite_verbose_debug)
 					fprintf (stderr, "Sending SIGTERM to pid %d\n",
 						 stream->childpid);
 				kill (stream->childpid, SIGTERM);
 				break;
 			case 2:
-				if (camel_verbose_debug)
+				if (camel_lite_verbose_debug)
 					fprintf (stderr, "Sending SIGKILL to pid %d\n",
 						 stream->childpid);
 				kill (stream->childpid, SIGKILL);
@@ -230,14 +230,14 @@ do_exec_command (int fd, const char *command, char **env)
 
 	execl ("/bin/sh", "/bin/sh", "-c", command, NULL);
 
-	if (camel_verbose_debug)
+	if (camel_lite_verbose_debug)
 		fprintf (stderr, "exec failed %d\n", errno);
 
 	exit (1);
 }
 
 int
-camel_stream_process_connect (CamelStreamProcess *stream, const char *command, const char **env)
+camel_lite_stream_process_connect (CamelStreamProcess *stream, const char *command, const char **env)
 {
 	int sockfds[2];
 

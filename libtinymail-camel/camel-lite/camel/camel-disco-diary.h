@@ -28,7 +28,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#define CAMEL_DISCO_DIARY_TYPE     (camel_disco_diary_get_type ())
+#define CAMEL_DISCO_DIARY_TYPE     (camel_lite_disco_diary_get_type ())
 #define CAMEL_DISCO_DIARY(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_DISCO_DIARY_TYPE, CamelDiscoDiary))
 #define CAMEL_DISCO_DIARY_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_DISCO_DIARY_TYPE, CamelDiscoDiaryClass))
 #define CAMEL_IS_DISCO_DIARY(o)    (CAMEL_CHECK_TYPE((o), CAMEL_DISCO_DIARY_TYPE))
@@ -66,27 +66,27 @@ typedef struct {
 
 
 /* public methods */
-CamelDiscoDiary *camel_disco_diary_new    (CamelDiscoStore *store,
+CamelDiscoDiary *camel_lite_disco_diary_new    (CamelDiscoStore *store,
 					   const char *filename,
 					   CamelException *ex);
 
-gboolean         camel_disco_diary_empty  (CamelDiscoDiary *diary);
+gboolean         camel_lite_disco_diary_empty  (CamelDiscoDiary *diary);
 
-void             camel_disco_diary_log    (CamelDiscoDiary *diary,
+void             camel_lite_disco_diary_log    (CamelDiscoDiary *diary,
 					   CamelDiscoDiaryAction action,
 					   ...);
-void             camel_disco_diary_replay (CamelDiscoDiary *diary,
+void             camel_lite_disco_diary_replay (CamelDiscoDiary *diary,
 					   CamelException *ex);
 
 /* Temporary->Permanent UID map stuff */
-void        camel_disco_diary_uidmap_add    (CamelDiscoDiary *diary,
+void        camel_lite_disco_diary_uidmap_add    (CamelDiscoDiary *diary,
 					     const char *old_uid,
 					     const char *new_uid);
-const char *camel_disco_diary_uidmap_lookup (CamelDiscoDiary *diary,
+const char *camel_lite_disco_diary_uidmap_lookup (CamelDiscoDiary *diary,
 					     const char *uid);
 
 /* Standard Camel function */
-CamelType camel_disco_diary_get_type (void);
+CamelType camel_lite_disco_diary_get_type (void);
 
 G_END_DECLS
 

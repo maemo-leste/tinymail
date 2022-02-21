@@ -26,7 +26,7 @@
 
 #include <camel/camel-mime-filter.h>
 
-#define CAMEL_TYPE_MIME_FILTER_YENC            (camel_mime_filter_yenc_get_type ())
+#define CAMEL_TYPE_MIME_FILTER_YENC            (camel_lite_mime_filter_yenc_get_type ())
 #define CAMEL_MIME_FILTER_YENC(obj)            (CAMEL_CHECK_CAST ((obj), CAMEL_TYPE_MIME_FILTER_YENC, CamelMimeFilterYenc))
 #define CAMEL_MIME_FILTER_YENC_CLASS(klass)    (CAMEL_CHECK_CLASS_CAST ((klass), CAMEL_TYPE_MIME_FILTER_YENC, CamelMimeFilterYencClass))
 #define CAMEL_IS_MIME_FILTER_YENC(obj)         (CAMEL_CHECK_TYPE ((obj), CAMEL_TYPE_MIME_FILTER_YENC))
@@ -48,7 +48,7 @@ typedef enum {
 
 /* first 8 bits are reserved for saving a byte */
 
-/* reserved for use only within camel_mime_ydecode_step */
+/* reserved for use only within camel_lite_mime_ydecode_step */
 #define CAMEL_MIME_YDECODE_STATE_EOLN     (1 << 8)
 #define CAMEL_MIME_YDECODE_STATE_ESCAPE   (1 << 9)
 
@@ -80,23 +80,23 @@ struct _CamelMimeFilterYencClass {
 };
 
 
-CamelType camel_mime_filter_yenc_get_type (void);
+CamelType camel_lite_mime_filter_yenc_get_type (void);
 
-CamelMimeFilter *camel_mime_filter_yenc_new (CamelMimeFilterYencDirection direction);
+CamelMimeFilter *camel_lite_mime_filter_yenc_new (CamelMimeFilterYencDirection direction);
 
-void camel_mime_filter_yenc_set_state (CamelMimeFilterYenc *yenc, int state);
-void camel_mime_filter_yenc_set_crc (CamelMimeFilterYenc *yenc, guint32 crc);
+void camel_lite_mime_filter_yenc_set_state (CamelMimeFilterYenc *yenc, int state);
+void camel_lite_mime_filter_yenc_set_crc (CamelMimeFilterYenc *yenc, guint32 crc);
 
-/*int     camel_mime_filter_yenc_get_part (CamelMimeFilterYenc *yenc);*/
-guint32 camel_mime_filter_yenc_get_pcrc (CamelMimeFilterYenc *yenc);
-guint32 camel_mime_filter_yenc_get_crc (CamelMimeFilterYenc *yenc);
+/*int     camel_lite_mime_filter_yenc_get_part (CamelMimeFilterYenc *yenc);*/
+guint32 camel_lite_mime_filter_yenc_get_pcrc (CamelMimeFilterYenc *yenc);
+guint32 camel_lite_mime_filter_yenc_get_crc (CamelMimeFilterYenc *yenc);
 
 
-size_t camel_ydecode_step  (const unsigned char *in, size_t inlen, unsigned char *out,
+size_t camel_lite_ydecode_step  (const unsigned char *in, size_t inlen, unsigned char *out,
 			    int *state, guint32 *pcrc, guint32 *crc);
-size_t camel_yencode_step  (const unsigned char *in, size_t inlen, unsigned char *out,
+size_t camel_lite_yencode_step  (const unsigned char *in, size_t inlen, unsigned char *out,
 			    int *state, guint32 *pcrc, guint32 *crc);
-size_t camel_yencode_close (const unsigned char *in, size_t inlen, unsigned char *out,
+size_t camel_lite_yencode_close (const unsigned char *in, size_t inlen, unsigned char *out,
 			    int *state, guint32 *pcrc, guint32 *crc);
 
 G_END_DECLS

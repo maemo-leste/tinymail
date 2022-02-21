@@ -32,7 +32,7 @@
 #include "camel-sasl-login.h"
 #include "camel-service.h"
 
-CamelServiceAuthType camel_sasl_login_authtype = {
+CamelServiceAuthType camel_lite_sasl_login_authtype = {
 	N_("Login"),
 
 	N_("This option will connect to the server using a "
@@ -59,18 +59,18 @@ struct _CamelSaslLoginPrivate {
 };
 
 static void
-camel_sasl_login_class_init (CamelSaslLoginClass *camel_sasl_login_class)
+camel_lite_sasl_login_class_init (CamelSaslLoginClass *camel_lite_sasl_login_class)
 {
-	CamelSaslClass *camel_sasl_class = CAMEL_SASL_CLASS (camel_sasl_login_class);
+	CamelSaslClass *camel_lite_sasl_class = CAMEL_SASL_CLASS (camel_lite_sasl_login_class);
 
-	parent_class = CAMEL_SASL_CLASS (camel_type_get_global_classfuncs (camel_sasl_get_type ()));
+	parent_class = CAMEL_SASL_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_sasl_get_type ()));
 
 	/* virtual method overload */
-	camel_sasl_class->challenge = login_challenge;
+	camel_lite_sasl_class->challenge = login_challenge;
 }
 
 static void
-camel_sasl_login_init (gpointer object, gpointer klass)
+camel_lite_sasl_login_init (gpointer object, gpointer klass)
 {
 	CamelSaslLogin *sasl_login = CAMEL_SASL_LOGIN (object);
 
@@ -78,7 +78,7 @@ camel_sasl_login_init (gpointer object, gpointer klass)
 }
 
 static void
-camel_sasl_login_finalize (CamelObject *object)
+camel_lite_sasl_login_finalize (CamelObject *object)
 {
 	CamelSaslLogin *sasl = CAMEL_SASL_LOGIN (object);
 
@@ -87,19 +87,19 @@ camel_sasl_login_finalize (CamelObject *object)
 
 
 CamelType
-camel_sasl_login_get_type (void)
+camel_lite_sasl_login_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_sasl_get_type (),
-					    "CamelSaslLogin",
+		type = camel_lite_type_register (camel_lite_sasl_get_type (),
+					    "CamelLiteSaslLogin",
 					    sizeof (CamelSaslLogin),
 					    sizeof (CamelSaslLoginClass),
-					    (CamelObjectClassInitFunc) camel_sasl_login_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_sasl_login_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_sasl_login_init,
-					    (CamelObjectFinalizeFunc) camel_sasl_login_finalize);
+					    (CamelObjectInitFunc) camel_lite_sasl_login_init,
+					    (CamelObjectFinalizeFunc) camel_lite_sasl_login_finalize);
 	}
 
 	return type;
@@ -130,8 +130,8 @@ login_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 		sasl->authenticated = TRUE;
 		break;
 	default:
-		if (!camel_exception_is_set (ex)) {
-			camel_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+		if (!camel_lite_exception_is_set (ex)) {
+			camel_lite_exception_set (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					     _("Unknown authentication state."));
 		}
 	}

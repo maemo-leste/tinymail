@@ -28,7 +28,7 @@
 
 G_BEGIN_DECLS
 
-enum camel_arg_t {
+enum camel_lite_arg_t {
 	CAMEL_ARG_END = 0,
 	CAMEL_ARG_IGNORE = 1,	/* override/ignore an arg in-place */
 
@@ -92,13 +92,13 @@ struct _CamelArgGetV {
 	CamelArgGet argv[CAMEL_ARGV_MAX];
 };
 
-#define camel_argv_start(tv, last) va_start((tv)->ap, last)
-#define camel_argv_end(tv) va_end((tv)->ap)
-int camel_argv_build(CamelArgV *tv);
-int camel_arggetv_build(CamelArgGetV *tv);
+#define camel_lite_argv_start(tv, last) va_start((tv)->ap, last)
+#define camel_lite_argv_end(tv) va_end((tv)->ap)
+int camel_lite_argv_build(CamelArgV *tv);
+int camel_lite_arggetv_build(CamelArgGetV *tv);
 
 /* set an arg ignored */
-#define camel_argv_ignore(tv, i) ((tv)->argv[i].tag = ((tv)->argv[i].tag & CAMEL_ARG_TYPE) | CAMEL_ARG_IGNORE)
+#define camel_lite_argv_ignore(tv, i) ((tv)->argv[i].tag = ((tv)->argv[i].tag & CAMEL_ARG_TYPE) | CAMEL_ARG_IGNORE)
 
 /* 'self-describing' property list */
 typedef struct _CamelProperty CamelProperty;

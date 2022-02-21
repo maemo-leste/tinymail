@@ -29,13 +29,13 @@
 #include "camel-list-utils.h"
 
 /**
- * camel_dlist_init:
+ * camel_lite_dlist_init:
  * @v:
  *
  * Initialise a double-linked list header.  All list headers must be
  * initialised before use.
  **/
-void camel_dlist_init(CamelDList *v)
+void camel_lite_dlist_init(CamelDList *v)
 {
         v->head = (CamelDListNode *)&v->tail;
         v->tail = NULL;
@@ -43,7 +43,7 @@ void camel_dlist_init(CamelDList *v)
 }
 
 /**
- * camel_dlist_addhead:
+ * camel_lite_dlist_addhead:
  * @l: An initialised list header.
  * @n: A node, the next and prev pointers will be overwritten.
  *
@@ -51,7 +51,7 @@ void camel_dlist_init(CamelDList *v)
  *
  * Return value: @n.
  **/
-CamelDListNode *camel_dlist_addhead(CamelDList *l, CamelDListNode *n)
+CamelDListNode *camel_lite_dlist_addhead(CamelDList *l, CamelDListNode *n)
 {
         n->next = l->head;
         n->prev = (CamelDListNode *)&l->head;
@@ -61,7 +61,7 @@ CamelDListNode *camel_dlist_addhead(CamelDList *l, CamelDListNode *n)
 }
 
 /**
- * camel_dlist_addtail:
+ * camel_lite_dlist_addtail:
  * @l: An intialised list header.
  * @n: A node, the next and prev pointers will be overwritten.
  *
@@ -69,7 +69,7 @@ CamelDListNode *camel_dlist_addhead(CamelDList *l, CamelDListNode *n)
  *
  * Return value: @n.
  **/
-CamelDListNode *camel_dlist_addtail(CamelDList *l, CamelDListNode *n)
+CamelDListNode *camel_lite_dlist_addtail(CamelDList *l, CamelDListNode *n)
 {
         n->next = (CamelDListNode *)&l->tail;
         n->prev = l->tailpred;
@@ -79,14 +79,14 @@ CamelDListNode *camel_dlist_addtail(CamelDList *l, CamelDListNode *n)
 }
 
 /**
- * camel_dlist_remove:
+ * camel_lite_dlist_remove:
  * @n: A node which is part of a list.
  *
  * Remove @n from the list it's in.  @n must belong to a list.
  *
  * Return value: @n.
  **/
-CamelDListNode *camel_dlist_remove(CamelDListNode *n)
+CamelDListNode *camel_lite_dlist_remove(CamelDListNode *n)
 {
         n->next->prev = n->prev;
         n->prev->next = n->next;
@@ -94,7 +94,7 @@ CamelDListNode *camel_dlist_remove(CamelDListNode *n)
 }
 
 /**
- * camel_dlist_remhead:
+ * camel_lite_dlist_remhead:
  * @l: An initialised list, maybe containing items.
  *
  * Remove the head node (start) of the list.
@@ -102,7 +102,7 @@ CamelDListNode *camel_dlist_remove(CamelDListNode *n)
  * xReturn value: The previously first-node in the list, or NULLif @l
  * is an empty list.
  **/
-CamelDListNode *camel_dlist_remhead(CamelDList *l)
+CamelDListNode *camel_lite_dlist_remhead(CamelDList *l)
 {
 	CamelDListNode *n, *nn;
 
@@ -117,7 +117,7 @@ CamelDListNode *camel_dlist_remhead(CamelDList *l)
 }
 
 /**
- * camel_dlist_remtail:
+ * camel_lite_dlist_remtail:
  * @l: An initialised list, maybe containing items.
  *
  * Remove the last node in the list.
@@ -125,7 +125,7 @@ CamelDListNode *camel_dlist_remhead(CamelDList *l)
  * Return value: The previously last-node in the list, or NULL if @l
  * is an empty list.
  **/
-CamelDListNode *camel_dlist_remtail(CamelDList *l)
+CamelDListNode *camel_lite_dlist_remtail(CamelDList *l)
 {
 	CamelDListNode *n, *np;
 
@@ -140,27 +140,27 @@ CamelDListNode *camel_dlist_remtail(CamelDList *l)
 }
 
 /**
- * camel_dlist_empty:
+ * camel_lite_dlist_empty:
  * @l: An initialised list header.
  *
  * Returns %TRUE if @l is an empty list.
  *
  * Return value: %TRUE if @l is an empty list, %FALSE otherwise.
  **/
-int camel_dlist_empty(CamelDList *l)
+int camel_lite_dlist_empty(CamelDList *l)
 {
 	return (l->head == (CamelDListNode *)&l->tail);
 }
 
 /**
- * camel_dlist_length:
+ * camel_lite_dlist_length:
  * @l: An initialised list header.
  *
  * Returns the number of nodes in the list @l.
  *
  * Return value: The number of nodes.
  **/
-int camel_dlist_length(CamelDList *l)
+int camel_lite_dlist_length(CamelDList *l)
 {
 	CamelDListNode *n, *nn;
 	int count = 0;
@@ -178,12 +178,12 @@ int camel_dlist_length(CamelDList *l)
 
 /* This is just for orthogonal completeness */
 
-void camel_slist_init(CamelSList *v)
+void camel_lite_slist_init(CamelSList *v)
 {
 	v->head = NULL;
 }
 
-CamelSListNode *camel_slist_addhead(CamelSList *l, CamelSListNode *n)
+CamelSListNode *camel_lite_slist_addhead(CamelSList *l, CamelSListNode *n)
 {
         n->next = l->head;
 	l->head = n;
@@ -191,7 +191,7 @@ CamelSListNode *camel_slist_addhead(CamelSList *l, CamelSListNode *n)
 	return n;
 }
 
-CamelSListNode *camel_slist_addtail(CamelSList *l, CamelSListNode *n)
+CamelSListNode *camel_lite_slist_addtail(CamelSList *l, CamelSListNode *n)
 {
 	CamelSListNode *p;
 
@@ -204,7 +204,7 @@ CamelSListNode *camel_slist_addtail(CamelSList *l, CamelSListNode *n)
         return n;
 }
 
-CamelSListNode *camel_slist_remove(CamelSList *l, CamelSListNode *n)
+CamelSListNode *camel_lite_slist_remove(CamelSList *l, CamelSListNode *n)
 {
 	CamelSListNode *p, *q;
 
@@ -222,7 +222,7 @@ CamelSListNode *camel_slist_remove(CamelSList *l, CamelSListNode *n)
 	return NULL;
 }
 
-CamelSListNode *camel_slist_remhead(CamelSList *l)
+CamelSListNode *camel_lite_slist_remhead(CamelSList *l)
 {
 	CamelSListNode *n;
 
@@ -233,7 +233,7 @@ CamelSListNode *camel_slist_remhead(CamelSList *l)
 	return n;
 }
 
-CamelSListNode *camel_slist_remtail(CamelSList *l)
+CamelSListNode *camel_lite_slist_remtail(CamelSList *l)
 {
 	CamelSListNode *n, *p;
 
@@ -250,12 +250,12 @@ CamelSListNode *camel_slist_remtail(CamelSList *l)
 	return n;
 }
 
-int camel_slist_empty(CamelSList *l)
+int camel_lite_slist_empty(CamelSList *l)
 {
 	return (l->head == NULL);
 }
 
-int camel_slist_length(CamelSList *l)
+int camel_lite_slist_length(CamelSList *l)
 {
 	CamelSListNode *n;
 	int count = 0;

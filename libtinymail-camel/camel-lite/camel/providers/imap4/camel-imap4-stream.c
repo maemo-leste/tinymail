@@ -35,13 +35,13 @@
 #include "camel-imap4-specials.h"
 #include "camel-imap4-stream.h"
 
-#define d(x) (camel_debug ("imap4:stream") ? (x) : 0)
+#define d(x) (camel_lite_debug ("imap4:stream") ? (x) : 0)
 
 #define IMAP4_TOKEN_LEN  128
 
-static void camel_imap4_stream_class_init (CamelIMAP4StreamClass *klass);
-static void camel_imap4_stream_init (CamelIMAP4Stream *stream, CamelIMAP4StreamClass *klass);
-static void camel_imap4_stream_finalize (CamelObject *object);
+static void camel_lite_imap4_stream_class_init (CamelIMAP4StreamClass *klass);
+static void camel_lite_imap4_stream_init (CamelIMAP4Stream *stream, CamelIMAP4StreamClass *klass);
+static void camel_lite_imap4_stream_finalize (CamelObject *object);
 
 static ssize_t stream_read (CamelStream *stream, char *buffer, size_t n);
 static ssize_t stream_write (CamelStream *stream, const char *buffer, size_t n);
@@ -54,30 +54,30 @@ static CamelStreamClass *parent_class = NULL;
 
 
 CamelType
-camel_imap4_stream_get_type (void)
+camel_lite_imap4_stream_get_type (void)
 {
 	static CamelType type = 0;
 
 	if (!type) {
-		type = camel_type_register (CAMEL_STREAM_TYPE,
-					    "CamelIMAP4Stream",
+		type = camel_lite_type_register (CAMEL_STREAM_TYPE,
+					    "CamelLiteIMAP4Stream",
 					    sizeof (CamelIMAP4Stream),
 					    sizeof (CamelIMAP4StreamClass),
-					    (CamelObjectClassInitFunc) camel_imap4_stream_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_imap4_stream_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_imap4_stream_init,
-					    (CamelObjectFinalizeFunc) camel_imap4_stream_finalize);
+					    (CamelObjectInitFunc) camel_lite_imap4_stream_init,
+					    (CamelObjectFinalizeFunc) camel_lite_imap4_stream_finalize);
 	}
 
 	return type;
 }
 
 static void
-camel_imap4_stream_class_init (CamelIMAP4StreamClass *klass)
+camel_lite_imap4_stream_class_init (CamelIMAP4StreamClass *klass)
 {
 	CamelStreamClass *stream_class = (CamelStreamClass *) klass;
 
-	parent_class = (CamelStreamClass *) camel_type_get_global_classfuncs (CAMEL_STREAM_TYPE);
+	parent_class = (CamelStreamClass *) camel_lite_type_get_global_classfuncs (CAMEL_STREAM_TYPE);
 
 	/* virtual method overload */
 	stream_class->read = stream_read;
@@ -88,7 +88,7 @@ camel_imap4_stream_class_init (CamelIMAP4StreamClass *klass)
 }
 
 static void
-camel_imap4_stream_init (CamelIMAP4Stream *imap4, CamelIMAP4StreamClass *klass)
+camel_lite_imap4_stream_init (CamelIMAP4Stream *imap4, CamelIMAP4StreamClass *klass)
 {
 	imap4->stream = NULL;
 
@@ -109,12 +109,12 @@ camel_imap4_stream_init (CamelIMAP4Stream *imap4, CamelIMAP4StreamClass *klass)
 }
 
 static void
-camel_imap4_stream_finalize (CamelObject *object)
+camel_lite_imap4_stream_finalize (CamelObject *object)
 {
 	CamelIMAP4Stream *imap4 = (CamelIMAP4Stream *) object;
 
 	if (imap4->stream)
-		camel_object_unref (imap4->stream);
+		camel_lite_object_unref (imap4->stream);
 
 	g_free (imap4->tokenbuf);
 }
@@ -161,7 +161,7 @@ imap4_fill (CamelIMAP4Stream *imap4)
 	imap4->inend = inbuf;
 	inend = imap4->realbuf + IMAP4_READ_PRELEN + IMAP4_READ_BUFLEN - 1;
 
-	if ((nread = camel_stream_read (imap4->stream, inbuf, inend - inbuf)) == -1)
+	if ((nread = camel_lite_stream_read (imap4->stream, inbuf, inend - inbuf)) == -1)
 		return -1;
 	else if (nread == 0)
 		imap4->disconnected = TRUE;
@@ -190,7 +190,7 @@ stream_read (CamelStream *stream, char *buffer, size_t n)
 	}
 
 	if (nread < n) {
-		if ((len = camel_stream_read (imap4->stream, buffer + nread, n - nread)) == 0)
+		if ((len = camel_lite_stream_read (imap4->stream, buffer + nread, n - nread)) == 0)
 			imap4->disconnected = TRUE;
 		else if (len == -1)
 			return -1;
@@ -221,7 +221,7 @@ stream_write (CamelStream *stream, const char *buffer, size_t n)
 		return -1;
 	}
 
-	if ((nwritten = camel_stream_write (imap4->stream, buffer, n)) == 0)
+	if ((nwritten = camel_lite_stream_write (imap4->stream, buffer, n)) == 0)
 		imap4->disconnected = TRUE;
 
 	return nwritten;
@@ -232,7 +232,7 @@ stream_flush (CamelStream *stream)
 {
 	CamelIMAP4Stream *imap4 = (CamelIMAP4Stream *) stream;
 
-	return camel_stream_flush (imap4->stream);
+	return camel_lite_stream_flush (imap4->stream);
 }
 
 static int
@@ -240,10 +240,10 @@ stream_close (CamelStream *stream)
 {
 	CamelIMAP4Stream *imap4 = (CamelIMAP4Stream *) stream;
 
-	if (camel_stream_close (imap4->stream) == -1)
+	if (camel_lite_stream_close (imap4->stream) == -1)
 		return -1;
 
-	camel_object_unref (imap4->stream);
+	camel_lite_object_unref (imap4->stream);
 	imap4->stream = NULL;
 
 	imap4->disconnected = TRUE;
@@ -262,7 +262,7 @@ stream_eos (CamelStream *stream)
 	if (imap4->disconnected && imap4->inptr == imap4->inend)
 		return TRUE;
 
-	if (camel_stream_eos (imap4->stream))
+	if (camel_lite_stream_eos (imap4->stream))
 		return TRUE;
 
 	return FALSE;
@@ -270,20 +270,20 @@ stream_eos (CamelStream *stream)
 
 
 /**
- * camel_imap4_stream_new:
+ * camel_lite_imap4_stream_new:
  * @stream: tcp stream
  *
  * Returns a new imap4 stream
  **/
 CamelStream *
-camel_imap4_stream_new (CamelStream *stream)
+camel_lite_imap4_stream_new (CamelStream *stream)
 {
 	CamelIMAP4Stream *imap4;
 
 	g_return_val_if_fail (CAMEL_IS_STREAM (stream), NULL);
 
-	imap4 = (CamelIMAP4Stream *) camel_object_new (CAMEL_TYPE_IMAP4_STREAM);
-	camel_object_ref (stream);
+	imap4 = (CamelIMAP4Stream *) camel_lite_object_new (CAMEL_TYPE_IMAP4_STREAM);
+	camel_lite_object_ref (stream);
 	imap4->stream = stream;
 
 	return (CamelStream *) imap4;
@@ -319,7 +319,7 @@ camel_imap4_stream_new (CamelStream *stream)
 
 
 /**
- * camel_imap4_stream_next_token:
+ * camel_lite_imap4_stream_next_token:
  * @stream: imap4 stream
  * @token: imap4 token
  *
@@ -328,7 +328,7 @@ camel_imap4_stream_new (CamelStream *stream)
  * Returns 0 on success or -1 on fail.
  **/
 int
-camel_imap4_stream_next_token (CamelIMAP4Stream *stream, camel_imap4_token_t *token)
+camel_lite_imap4_stream_next_token (CamelIMAP4Stream *stream, camel_lite_imap4_token_t *token)
 {
 	register unsigned char *inptr;
 	unsigned char *inend, *start, *p;
@@ -342,7 +342,7 @@ camel_imap4_stream_next_token (CamelIMAP4Stream *stream, camel_imap4_token_t *to
 	g_return_val_if_fail (token != NULL, -1);
 
 	if (stream->have_unget) {
-		memcpy (token, &stream->unget, sizeof (camel_imap4_token_t));
+		memcpy (token, &stream->unget, sizeof (camel_lite_imap4_token_t));
 		stream->have_unget = FALSE;
 		return 0;
 	}
@@ -421,7 +421,7 @@ camel_imap4_stream_next_token (CamelIMAP4Stream *stream, camel_imap4_token_t *to
 				/* special character token */
 				token->token = *inptr++;
 
-				if (camel_debug ("imap4:stream")) {
+				if (camel_lite_debug ("imap4:stream")) {
 					if (token->token != '\n')
 						fprintf (stderr, "token: %c\n", token->token);
 					else
@@ -586,7 +586,7 @@ camel_imap4_stream_next_token (CamelIMAP4Stream *stream, camel_imap4_token_t *to
 
 
 /**
- * camel_imap4_stream_unget_token:
+ * camel_lite_imap4_stream_unget_token:
  * @stream: imap4 stream
  * @token: token to 'unget'
  *
@@ -598,13 +598,13 @@ camel_imap4_stream_next_token (CamelIMAP4Stream *stream, camel_imap4_token_t *to
  * Returns 0 on success or -1 on fail.
  **/
 int
-camel_imap4_stream_unget_token (CamelIMAP4Stream *stream, camel_imap4_token_t *token)
+camel_lite_imap4_stream_unget_token (CamelIMAP4Stream *stream, camel_lite_imap4_token_t *token)
 {
 	if (stream->have_unget)
 		return -1;
 
 	if (token->token != CAMEL_IMAP4_TOKEN_NO_DATA) {
-		memcpy (&stream->unget, token, sizeof (camel_imap4_token_t));
+		memcpy (&stream->unget, token, sizeof (camel_lite_imap4_token_t));
 		stream->have_unget = TRUE;
 	}
 
@@ -613,7 +613,7 @@ camel_imap4_stream_unget_token (CamelIMAP4Stream *stream, camel_imap4_token_t *t
 
 
 /**
- * camel_imap4_stream_line:
+ * camel_lite_imap4_stream_line:
  * @stream: imap4 stream
  * @line: line pointer
  * @len: line length
@@ -626,7 +626,7 @@ camel_imap4_stream_unget_token (CamelIMAP4Stream *stream, camel_imap4_token_t *t
  * read is incomplete.
  **/
 int
-camel_imap4_stream_line (CamelIMAP4Stream *stream, unsigned char **line, size_t *len)
+camel_lite_imap4_stream_line (CamelIMAP4Stream *stream, unsigned char **line, size_t *len)
 {
 	register unsigned char *inptr;
 	unsigned char *inend;
@@ -674,7 +674,7 @@ camel_imap4_stream_line (CamelIMAP4Stream *stream, unsigned char **line, size_t 
 
 
 /**
- * camel_imap4_stream_literal:
+ * camel_lite_imap4_stream_literal:
  * @stream: IMAP stream
  * @literal: literal pointer
  * @len: literal length
@@ -687,7 +687,7 @@ camel_imap4_stream_line (CamelIMAP4Stream *stream, unsigned char **line, size_t 
  * has been reached or -1 on fail.
  **/
 int
-camel_imap4_stream_literal (CamelIMAP4Stream *stream, unsigned char **literal, size_t *len)
+camel_lite_imap4_stream_literal (CamelIMAP4Stream *stream, unsigned char **literal, size_t *len)
 {
 	unsigned char *inptr, *inend;
 	size_t nread;

@@ -50,7 +50,7 @@
 
 
 /**
- * camel_file_util_encode_fixed_int32:
+ * camel_lite_file_util_encode_fixed_int32:
  * @out: file to output to
  * @value: value to output
  *
@@ -60,7 +60,7 @@
  * Return value: 0 on success, -1 on error.
  **/
 int
-camel_file_util_encode_fixed_int32 (FILE *out, gint32 value)
+camel_lite_file_util_encode_fixed_int32 (FILE *out, gint32 value)
 {
 	guint32 save;
 
@@ -71,7 +71,7 @@ camel_file_util_encode_fixed_int32 (FILE *out, gint32 value)
 }
 
 void
-camel_file_util_read_counts (const gchar *spath, CamelFolderInfo *fi)
+camel_lite_file_util_read_counts (const gchar *spath, CamelFolderInfo *fi)
 {
 	/* This code reads the beginning of the summary.mmap file for
 	 * the length and unread-count of the folder. It makes it
@@ -109,7 +109,7 @@ camel_file_util_read_counts (const gchar *spath, CamelFolderInfo *fi)
 
 
 void
-camel_file_util_read_counts_2 (const gchar *spath,
+camel_lite_file_util_read_counts_2 (const gchar *spath,
 	guint32 *version, guint32 *flags,
 	guint32 *nextuid, time_t *time, guint32 *saved_count,
 	guint32 *unread_count, guint32 *deleted_count,
@@ -161,7 +161,7 @@ camel_file_util_read_counts_2 (const gchar *spath,
 }
 
 /**
- * camel_file_util_decode_fixed_int32:
+ * camel_lite_file_util_decode_fixed_int32:
  * @in: file to read from
  * @dest: pointer to a variable to store the value in
  *
@@ -170,7 +170,7 @@ camel_file_util_read_counts_2 (const gchar *spath,
  * Return value: 0 on success, -1 on error.
  **/
 int
-camel_file_util_decode_fixed_int32 (FILE *in, gint32 *dest)
+camel_lite_file_util_decode_fixed_int32 (FILE *in, gint32 *dest)
 {
 	guint32 save;
 
@@ -184,7 +184,7 @@ camel_file_util_decode_fixed_int32 (FILE *in, gint32 *dest)
 
 
 /**
- * camel_file_util_encode_uint32:
+ * camel_lite_file_util_encode_uint32:
  * @out: file to output to
  * @value: value to output
  *
@@ -193,14 +193,14 @@ camel_file_util_decode_fixed_int32 (FILE *in, gint32 *dest)
  * Return value: 0 on success, -1 on error.
  **/
 int
-camel_file_util_encode_uint32 (FILE *out, guint32 value)
+camel_lite_file_util_encode_uint32 (FILE *out, guint32 value)
 {
-	return camel_file_util_encode_fixed_int32 (out, value);
+	return camel_lite_file_util_encode_fixed_int32 (out, value);
 }
 
 
 /**
- * camel_file_util_decode_uint32:
+ * camel_lite_file_util_decode_uint32:
  * @in: file to read from
  * @dest: pointer to a variable to store the value in
  *
@@ -210,14 +210,14 @@ camel_file_util_encode_uint32 (FILE *out, guint32 value)
  * decoded value.
  **/
 int
-camel_file_util_decode_uint32 (FILE *in, guint32 *dest)
+camel_lite_file_util_decode_uint32 (FILE *in, guint32 *dest)
 {
-	return camel_file_util_decode_fixed_int32 (in, (gint32*)dest);
+	return camel_lite_file_util_decode_fixed_int32 (in, (gint32*)dest);
 }
 
 
 unsigned char*
-camel_file_util_mmap_decode_uint32 (unsigned char *start, guint32 *dest, gboolean is_string)
+camel_lite_file_util_mmap_decode_uint32 (unsigned char *start, guint32 *dest, gboolean is_string)
 {
 	guint32 value = 0;
 	value = g_ntohl(get_unaligned_u32(start)); start += 4;
@@ -231,29 +231,29 @@ camel_file_util_mmap_decode_uint32 (unsigned char *start, guint32 *dest, gboolea
 
 #define CFU_ENCODE_T(type)						  \
 int									  \
-camel_file_util_encode_##type(FILE *out, type value)			  \
+camel_lite_file_util_encode_##type(FILE *out, type value)			  \
 {									  \
-	return camel_file_util_encode_fixed_int32 (out, (guint32) value); \
+	return camel_lite_file_util_encode_fixed_int32 (out, (guint32) value); \
 }
 
 #define CFU_DECODE_T(type)						  \
 int									  \
-camel_file_util_decode_##type(FILE *in, type *dest)			  \
+camel_lite_file_util_decode_##type(FILE *in, type *dest)			  \
 {									  \
-	return camel_file_util_decode_fixed_int32 (in, (gint32*) dest);  \
+	return camel_lite_file_util_decode_fixed_int32 (in, (gint32*) dest);  \
 }
 
 
 #define MMAP_DECODE_T(type)						    \
 unsigned char*								    \
-camel_file_util_mmap_decode_##type(unsigned char *start, type *dest)	    \
+camel_lite_file_util_mmap_decode_##type(unsigned char *start, type *dest)	    \
 {									    \
-	return camel_file_util_mmap_decode_uint32 (start, (guint32*) dest, FALSE); \
+	return camel_lite_file_util_mmap_decode_uint32 (start, (guint32*) dest, FALSE); \
 }
 
 
 /**
- * camel_file_util_encode_time_t:
+ * camel_lite_file_util_encode_time_t:
  * @out: file to output to
  * @value: value to output
  *
@@ -264,7 +264,7 @@ camel_file_util_mmap_decode_##type(unsigned char *start, type *dest)	    \
 CFU_ENCODE_T(time_t)
 
 /**
- * camel_file_util_decode_time_t:
+ * camel_lite_file_util_decode_time_t:
  * @in: file to read from
  * @dest: pointer to a variable to store the value in
  *
@@ -276,7 +276,7 @@ CFU_DECODE_T(time_t)
 MMAP_DECODE_T(time_t)
 
 /**
- * camel_file_util_encode_off_t:
+ * camel_lite_file_util_encode_off_t:
  * @out: file to output to
  * @value: value to output
  *
@@ -288,7 +288,7 @@ CFU_ENCODE_T(off_t)
 
 
 /**
- * camel_file_util_decode_off_t:
+ * camel_lite_file_util_decode_off_t:
  * @in: file to read from
  * @dest: pointer to a variable to put the value in
  *
@@ -300,7 +300,7 @@ CFU_DECODE_T(off_t)
 MMAP_DECODE_T(off_t)
 
 /**
- * camel_file_util_encode_size_t:
+ * camel_lite_file_util_encode_size_t:
  * @out: file to output to
  * @value: value to output
  *
@@ -312,7 +312,7 @@ CFU_ENCODE_T(size_t)
 
 
 /**
- * camel_file_util_decode_size_t:
+ * camel_lite_file_util_decode_size_t:
  * @in: file to read from
  * @dest: pointer to a variable to put the value in
  *
@@ -325,7 +325,7 @@ MMAP_DECODE_T(size_t)
 
 
 /**
- * camel_file_util_encode_string:
+ * camel_lite_file_util_encode_string:
  * @out: file to output to
  * @str: value to output
  *
@@ -334,12 +334,12 @@ MMAP_DECODE_T(size_t)
  * Return value: 0 on success, -1 on error.
  **/
 int
-camel_file_util_encode_string (FILE *out, const char *str)
+camel_lite_file_util_encode_string (FILE *out, const char *str)
 {
 	register int lena, len;
 
 	if (str == NULL) {
-		if (camel_file_util_encode_uint32 (out, 0) == -1)
+		if (camel_lite_file_util_encode_uint32 (out, 0) == -1)
 			return -1;
 
 		return 0;
@@ -353,7 +353,7 @@ camel_file_util_encode_string (FILE *out, const char *str)
 	if (lena % G_MEM_ALIGN)
 		lena += G_MEM_ALIGN - (lena % G_MEM_ALIGN);
 
-	if (camel_file_util_encode_uint32 (out, lena) == -1)
+	if (camel_lite_file_util_encode_uint32 (out, lena) == -1)
 		return -1;
 
 	if (fwrite (str, len, 1, out) == 1) {
@@ -369,7 +369,7 @@ camel_file_util_encode_string (FILE *out, const char *str)
 
 
 /**
- * camel_file_util_decode_string:
+ * camel_lite_file_util_decode_string:
  * @in: file to read from
  * @str: pointer to a variable to store the value in
  *
@@ -378,12 +378,12 @@ camel_file_util_encode_string (FILE *out, const char *str)
  * Return value: %0 on success, %-1 on error.
  **/
 int
-camel_file_util_decode_string (FILE *in, char **str)
+camel_lite_file_util_decode_string (FILE *in, char **str)
 {
 	guint32 len;
 	register char *ret;
 
-	if (camel_file_util_decode_uint32 (in, &len) == -1) {
+	if (camel_lite_file_util_decode_uint32 (in, &len) == -1) {
 		*str = NULL;
 		return -1;
 	}
@@ -407,19 +407,19 @@ camel_file_util_decode_string (FILE *in, char **str)
 }
 
 /**
- * camel_file_util_encode_fixed_string:
+ * camel_lite_file_util_encode_fixed_string:
  * @out: file to output to
  * @str: value to output
  * @len: total-len of str to store
  *
  * Encode a normal string and save it in the output file.
- * Unlike @camel_file_util_encode_string, it pads the
+ * Unlike @camel_lite_file_util_encode_string, it pads the
  * @str with "NULL" bytes, if @len is > strlen(str)
  *
  * Return value: 0 on success, -1 on error.
  **/
 int
-camel_file_util_encode_fixed_string (FILE *out, const char *str, size_t len)
+camel_lite_file_util_encode_fixed_string (FILE *out, const char *str, size_t len)
 {
 	char *buff = (char *) alloca (len);
 
@@ -442,7 +442,7 @@ camel_file_util_encode_fixed_string (FILE *out, const char *str, size_t len)
 
 
 /**
- * camel_file_util_decode_fixed_string:
+ * camel_lite_file_util_decode_fixed_string:
  * @in: file to read from
  * @str: pointer to a variable to store the value in
  * @len: total-len to decode.
@@ -452,7 +452,7 @@ camel_file_util_encode_fixed_string (FILE *out, const char *str, size_t len)
  * Return value: 0 on success, -1 on error.
  **/
 int
-camel_file_util_decode_fixed_string (FILE *in, char **str, size_t len)
+camel_lite_file_util_decode_fixed_string (FILE *in, char **str, size_t len)
 {
 	register char *ret;
 
@@ -474,7 +474,7 @@ camel_file_util_decode_fixed_string (FILE *in, char **str, size_t len)
 }
 
 /**
- * camel_file_util_safe_filename:
+ * camel_lite_file_util_safe_filename:
  * @name: string to 'flattened' into a safe filename
  *
  * 'Flattens' @name into a safe filename string by hex encoding any
@@ -483,7 +483,7 @@ camel_file_util_decode_fixed_string (FILE *in, char **str, size_t len)
  * Returns a safe filename string.
  **/
 char *
-camel_file_util_safe_filename (const char *name)
+camel_lite_file_util_safe_filename (const char *name)
 {
 #ifdef G_OS_WIN32
 	const char *unsafe_chars = "/?()'*<>:\"\\|";
@@ -494,14 +494,14 @@ camel_file_util_safe_filename (const char *name)
 	if (name == NULL)
 		return NULL;
 
-	return camel_url_encode(name, unsafe_chars);
+	return camel_lite_url_encode(name, unsafe_chars);
 }
 
 
 /* FIXME: poll() might be more efficient and more portable? */
 
 /**
- * camel_read:
+ * camel_lite_read:
  * @fd: file descriptor
  * @buf: buffer to fill
  * @n: number of bytes to read into @buf
@@ -515,17 +515,17 @@ camel_file_util_safe_filename (const char *name)
  * be set appropriately.
  **/
 ssize_t
-camel_read (int fd, char *buf, size_t n)
+camel_lite_read (int fd, char *buf, size_t n)
 {
 	ssize_t nread;
 	int cancel_fd;
 
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
 #ifndef G_OS_WIN32
-	cancel_fd = camel_operation_cancel_fd (NULL);
+	cancel_fd = camel_lite_operation_cancel_fd (NULL);
 #else
 	cancel_fd = -1;
 #endif
@@ -578,17 +578,17 @@ camel_read (int fd, char *buf, size_t n)
 }
 
 static ssize_t
-camel_write_shared (int fd, const char *buf, size_t n, gboolean write_in_chunks)
+camel_lite_write_shared (int fd, const char *buf, size_t n, gboolean write_in_chunks)
 {
 	ssize_t w, written = 0;
 	int cancel_fd;
 
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
 #ifndef G_OS_WIN32
-	cancel_fd = camel_operation_cancel_fd (NULL);
+	cancel_fd = camel_lite_operation_cancel_fd (NULL);
 #else
 	cancel_fd = -1;
 #endif
@@ -677,7 +677,7 @@ camel_write_shared (int fd, const char *buf, size_t n, gboolean write_in_chunks)
 
 
 /**
- * camel_write:
+ * camel_lite_write:
  * @fd: file descriptor
  * @buf: buffer to write
  * @n: number of bytes of @buf to write
@@ -691,13 +691,13 @@ camel_write_shared (int fd, const char *buf, size_t n, gboolean write_in_chunks)
  * be set appropriately.
  **/
 ssize_t
-camel_write (int fd, const char *buf, size_t n)
+camel_lite_write (int fd, const char *buf, size_t n)
 {
-	return camel_write_shared (fd, buf, n, FALSE);
+	return camel_lite_write_shared (fd, buf, n, FALSE);
 }
 
 ssize_t
-camel_read_nb (int fd, char *buf, size_t n)
+camel_lite_read_nb (int fd, char *buf, size_t n)
 {
 	ssize_t nread;
 
@@ -739,7 +739,7 @@ camel_read_nb (int fd, char *buf, size_t n)
 
 
 /**
- * camel_read_socket:
+ * camel_lite_read_socket:
  * @fd: a socket
  * @buf: buffer to fill
  * @n: number of bytes to read into @buf
@@ -750,22 +750,22 @@ camel_read_nb (int fd, char *buf, size_t n)
  *
  * Returns number of bytes read or -1 on fail. On failure, errno will
  * be set appropriately. If the socket is nonblocking
- * camel_read_socket() will retry the read until it gets something.
+ * camel_lite_read_socket() will retry the read until it gets something.
  **/
 ssize_t
-camel_read_socket (int fd, char *buf, size_t n)
+camel_lite_read_socket (int fd, char *buf, size_t n)
 {
 #ifndef G_OS_WIN32
-	return camel_read (fd, buf, n);
+	return camel_lite_read (fd, buf, n);
 #else
 	ssize_t nread;
 	int cancel_fd;
 
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
-	cancel_fd = camel_operation_cancel_fd (NULL);
+	cancel_fd = camel_lite_operation_cancel_fd (NULL);
 
 	if (cancel_fd == -1) {
 		int fdmax;
@@ -834,19 +834,19 @@ camel_read_socket (int fd, char *buf, size_t n)
 
 
 ssize_t
-camel_read_socket_nb (int fd, char *buf, size_t n)
+camel_lite_read_socket_nb (int fd, char *buf, size_t n)
 {
 #ifndef G_OS_WIN32
-	return camel_read_nb (fd, buf, n);
+	return camel_lite_read_nb (fd, buf, n);
 #else
 	ssize_t nread;
 	int cancel_fd;
 
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
-	cancel_fd = camel_operation_cancel_fd (NULL);
+	cancel_fd = camel_lite_operation_cancel_fd (NULL);
 
 	if (cancel_fd == -1) {
 
@@ -917,7 +917,7 @@ camel_read_socket_nb (int fd, char *buf, size_t n)
 
 
 /**
- * camel_write_socket:
+ * camel_lite_write_socket:
  * @fd: file descriptor
  * @buf: buffer to write
  * @n: number of bytes of @buf to write
@@ -930,20 +930,20 @@ camel_read_socket_nb (int fd, char *buf, size_t n)
  * be set appropriately.
  **/
 ssize_t
-camel_write_socket (int fd, const char *buf, size_t n)
+camel_lite_write_socket (int fd, const char *buf, size_t n)
 {
 #ifndef G_OS_WIN32
-	return camel_write_shared (fd, buf, n, TRUE);
+	return camel_lite_write_shared (fd, buf, n, TRUE);
 #else
 	ssize_t w, written = 0;
 	int cancel_fd;
 
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
 
-	cancel_fd = camel_operation_cancel_fd (NULL);
+	cancel_fd = camel_lite_operation_cancel_fd (NULL);
 	if (cancel_fd == -1) {
 
 		int fdmax;
@@ -1028,7 +1028,7 @@ camel_write_socket (int fd, const char *buf, size_t n)
 
 
 /**
- * camel_file_util_savename:
+ * camel_lite_file_util_savename:
  * @filename: a pathname
  *
  * Builds a pathname where the basename is of the form ".#" + the
@@ -1038,7 +1038,7 @@ camel_write_socket (int fd, const char *buf, size_t n)
  * Return value: The new pathname.  It must be free'd with g_free().
  **/
 char *
-camel_file_util_savename(const char *filename)
+camel_lite_file_util_savename(const char *filename)
 {
 	char *dirname, *retval;
 

@@ -24,7 +24,7 @@
 
 #include "camel-local-store.h"
 
-#define CAMEL_MBOX_STORE_TYPE     (camel_mbox_store_get_type ())
+#define CAMEL_MBOX_STORE_TYPE     (camel_lite_mbox_store_get_type ())
 #define CAMEL_MBOX_STORE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_MBOX_STORE_TYPE, CamelMboxStore))
 #define CAMEL_MBOX_STORE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_MBOX_STORE_TYPE, CamelMboxStoreClass))
 #define CAMEL_IS_MBOX_STORE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_MBOX_STORE_TYPE))
@@ -44,7 +44,7 @@ typedef struct {
 /* public methods */
 
 /* Standard Camel function */
-CamelType camel_mbox_store_get_type (void);
+CamelType camel_lite_mbox_store_get_type (void);
 
 G_END_DECLS
 

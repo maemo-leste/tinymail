@@ -25,22 +25,22 @@
 
 #include "camel-mbox-store.h"
 
-#define CAMEL_SPOOL_STORE_TYPE     (camel_spool_store_get_type ())
+#define CAMEL_SPOOL_STORE_TYPE     (camel_lite_spool_store_get_type ())
 #define CAMEL_SPOOL_STORE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SPOOL_STORE_TYPE, CamelSpoolStore))
 #define CAMEL_SPOOL_STORE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SPOOL_STORE_TYPE, CamelSpoolStoreClass))
 #define CAMEL_IS_SPOOL_STORE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SPOOL_STORE_TYPE))
 
 G_BEGIN_DECLS
 
-typedef enum _camel_spool_store_t {
+typedef enum _camel_lite_spool_store_t {
 	CAMEL_SPOOL_STORE_MBOX,	/* a single mbox */
 	CAMEL_SPOOL_STORE_ELM	/* elm/pine/etc tree of mbox files in folders */
-} camel_spool_store_t;
+} camel_lite_spool_store_t;
 
 typedef struct {
 	CamelMboxStore parent_object;
 
-	camel_spool_store_t type;
+	camel_lite_spool_store_t type;
 } CamelSpoolStore;
 
 
@@ -54,7 +54,7 @@ typedef struct {
 /* public methods */
 
 /* Standard Camel function */
-CamelType camel_spool_store_get_type (void);
+CamelType camel_lite_spool_store_get_type (void);
 
 G_END_DECLS
 

@@ -23,7 +23,7 @@
 
 #include <camel/camel-sasl.h>
 
-#define CAMEL_SASL_NTLM_TYPE     (camel_sasl_ntlm_get_type ())
+#define CAMEL_SASL_NTLM_TYPE     (camel_lite_sasl_ntlm_get_type ())
 #define CAMEL_SASL_NTLM(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SASL_NTLM_TYPE, CamelSaslNTLM))
 #define CAMEL_SASL_NTLM_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SASL_NTLM_TYPE, CamelSaslNTLMClass))
 #define CAMEL_IS_SASL_NTLM(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SASL_NTLM_TYPE))
@@ -43,9 +43,9 @@ typedef struct _CamelSaslNTLMClass {
 
 
 /* Standard Camel function */
-CamelType camel_sasl_ntlm_get_type (void);
+CamelType camel_lite_sasl_ntlm_get_type (void);
 
-extern CamelServiceAuthType camel_sasl_ntlm_authtype;
+extern CamelServiceAuthType camel_lite_sasl_ntlm_authtype;
 
 G_END_DECLS
 

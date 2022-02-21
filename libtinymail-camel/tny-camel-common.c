@@ -281,7 +281,7 @@ _string_to_camel_inet_addr (gchar *tok, CamelInternetAddress *target)
 			*lname-- = '\0';
 		name = g_strstrip (name);
 		remove_quotes (name);
-		camel_internet_address_add (target, name, email);
+		camel_lite_internet_address_add (target, name, email);
 	} else {
 		
 		char *name = (char*)tok;
@@ -294,7 +294,7 @@ _string_to_camel_inet_addr (gchar *tok, CamelInternetAddress *target)
 	
 		if (G_LIKELY (*lname == ' '))
 			*lname-- = '\0';
-		camel_internet_address_add (target, NULL, name);
+		camel_lite_internet_address_add (target, NULL, name);
 	}
 }
 
@@ -334,7 +334,7 @@ _tny_camel_exception_to_tny_error (CamelException *ex, GError **err)
 	if (!ex)
 		g_clear_error (err);
 
-	switch (camel_exception_get_id (ex)) {
+	switch (camel_lite_exception_get_id (ex)) {
 
 	case CAMEL_EXCEPTION_NONE:
 		g_clear_error (err);
@@ -345,57 +345,57 @@ _tny_camel_exception_to_tny_error (CamelException *ex, GError **err)
 		 * sending or NNTP authentication error*/
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_PROTOCOL,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_SYSTEM:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SYSTEM_ERROR_UNKNOWN,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_USER_CANCEL:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SYSTEM_ERROR_CANCEL,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	/* Usually fs space problems */
 	case CAMEL_EXCEPTION_SYSTEM_IO_WRITE:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_IO_ERROR_WRITE,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_SYSTEM_MEMORY:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SYSTEM_ERROR_MEMORY,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	/* Usually fs corruption problems */
 	case CAMEL_EXCEPTION_SYSTEM_IO_READ:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_IO_ERROR_READ,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_FOLDER_UID_NOT_AVAILABLE: /* message not available atm */
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_MESSAGE_NOT_AVAILABLE,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_FOLDER_INVALID_UID: /* message does not exist */
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_NO_SUCH_MESSAGE,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_SERVICE_NOT_SUPPORTED:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_UNSUPPORTED,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_FOLDER_NULL: /* never used */
@@ -406,52 +406,52 @@ _tny_camel_exception_to_tny_error (CamelException *ex, GError **err)
 	case CAMEL_EXCEPTION_FOLDER_SUMMARY_INVALID: /* destroyed and recreated on server */
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_UNKNOWN,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_FOLDER_RENAME: /* folder rename error */
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_FOLDER_RENAME,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_FOLDER_NON_EMPTY: /* folder delete error */
 	case CAMEL_EXCEPTION_FOLDER_DELETE:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_FOLDER_REMOVE,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_FOLDER_CREATE: /* folder create error */
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_FOLDER_CREATE,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_STORE_NO_FOLDER: /* Folder does not exist */
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_FOLDER_IS_UNKNOWN,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_SERVICE_PROTOCOL:
 		/* For example BAD from IMAP server */
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_PROTOCOL,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_STORE_NULL:
 	case CAMEL_EXCEPTION_STORE_INVALID: /* unused */
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_UNKNOWN,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_SERVICE_INVALID:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_PROTOCOL,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_SERVICE_NOT_CONNECTED:
@@ -459,38 +459,38 @@ _tny_camel_exception_to_tny_error (CamelException *ex, GError **err)
 		/* You must be working online */
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_UNAVAILABLE,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_SERVICE_CONNECT:
 	case CAMEL_EXCEPTION_SYSTEM_HOST_LOOKUP_FAILED:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_CONNECT,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_AUTHENTICATE,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_SERVICE_CERTIFICATE:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_CERTIFICATE,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 
 	case CAMEL_EXCEPTION_SERVICE_NULL:
 	case CAMEL_EXCEPTION_SERVICE_URL_INVALID:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SERVICE_ERROR_UNKNOWN,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 	default:
 		g_set_error (err, TNY_ERROR_DOMAIN,
 			TNY_SYSTEM_ERROR_UNKNOWN,
-			"%s", camel_exception_get_description (ex));
+			"%s", camel_lite_exception_get_description (ex));
 	break;
 	}
 
@@ -500,16 +500,16 @@ _tny_camel_exception_to_tny_error (CamelException *ex, GError **err)
 char *
 _tny_camel_decode_raw_header (CamelMimePart *part, const char *str, gboolean is_addr)
 {
-	struct _camel_header_raw *h = part->headers;
+	struct _camel_lite_header_raw *h = part->headers;
 	const char *content, *charset = NULL;
 	CamelContentType *ct = NULL;
 
 	if (!str)
 		return NULL;
 	
-	if ((content = camel_header_raw_find(&h, "Content-Type", NULL))
-	     && (ct = camel_content_type_decode(content))
-	     && (charset = camel_content_type_param(ct, "charset"))
+	if ((content = camel_lite_header_raw_find(&h, "Content-Type", NULL))
+	     && (ct = camel_lite_content_type_decode(content))
+	     && (charset = camel_lite_content_type_param(ct, "charset"))
 	     && (g_ascii_strcasecmp(charset, "us-ascii") == 0))
 		charset = NULL;
 
@@ -520,23 +520,23 @@ _tny_camel_decode_raw_header (CamelMimePart *part, const char *str, gboolean is_
 
 	if (is_addr) {
 		char *ret;
-		struct _camel_header_address *addr;
-		addr = camel_header_address_decode (str, charset);
+		struct _camel_lite_header_address *addr;
+		addr = camel_lite_header_address_decode (str, charset);
 		if (addr) {
-			ret = camel_header_address_list_format (addr);
-			camel_header_address_list_clear (&addr);
+			ret = camel_lite_header_address_list_format (addr);
+			camel_lite_header_address_list_clear (&addr);
 		} else {
 			ret = g_strdup (str);
 		}
 
 		if (ct)
-			camel_content_type_unref (ct);
+			camel_lite_content_type_unref (ct);
 
 		return ret;
 	}
 
 	if (ct)
-		camel_content_type_unref (ct);
+		camel_lite_content_type_unref (ct);
 
-	return camel_header_decode_string (str, charset);
+	return camel_lite_header_decode_string (str, charset);
 }

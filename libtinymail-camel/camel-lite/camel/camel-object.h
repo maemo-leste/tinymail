@@ -42,21 +42,21 @@ typedef struct _CamelObjectClass *CamelType;
 #define CAMEL_CHECK_CAST(obj, ctype, ptype)         ((ptype *) obj)
 #define CAMEL_CHECK_CLASS_CAST(klass, ctype, ptype) ((ptype *) klass)
 #else
-#define CAMEL_CHECK_CAST(obj, ctype, ptype)         ((ptype *) camel_object_cast ((CamelObject *)(obj), (CamelType)(ctype)))
-#define CAMEL_CHECK_CLASS_CAST(klass, ctype, ptype) ((ptype *) camel_object_class_cast ((CamelObjectClass *)(klass), (CamelType)(ctype) ))
+#define CAMEL_CHECK_CAST(obj, ctype, ptype)         ((ptype *) camel_lite_object_cast ((CamelObject *)(obj), (CamelType)(ctype)))
+#define CAMEL_CHECK_CLASS_CAST(klass, ctype, ptype) ((ptype *) camel_lite_object_class_cast ((CamelObjectClass *)(klass), (CamelType)(ctype) ))
 #endif
-#define CAMEL_CHECK_TYPE(obj, ctype)                (camel_object_is ((CamelObject *)(obj), (CamelType)(ctype) ))
-#define CAMEL_CHECK_CLASS_TYPE(klass, ctype)        (camel_object_class_is ((CamelObjectClass *)(klass), (CamelType)(ctype)))
+#define CAMEL_CHECK_TYPE(obj, ctype)                (camel_lite_object_is ((CamelObject *)(obj), (CamelType)(ctype) ))
+#define CAMEL_CHECK_CLASS_TYPE(klass, ctype)        (camel_lite_object_class_is ((CamelObjectClass *)(klass), (CamelType)(ctype)))
 
-extern CamelType camel_object_type;
+extern CamelType camel_lite_object_type;
 
-#define CAMEL_OBJECT_TYPE        (camel_object_type)
+#define CAMEL_OBJECT_TYPE        (camel_lite_object_type)
 
 /* we can't check casts till we've got the type, use the global type variable because its cheaper */
-#define CAMEL_OBJECT(obj)        (CAMEL_CHECK_CAST((obj), camel_object_type, CamelObject))
-#define CAMEL_OBJECT_CLASS(k)    (CAMEL_CHECK_CLASS_CAST ((k), camel_object_type, CamelObjectClass))
-#define CAMEL_IS_OBJECT(o)       (CAMEL_CHECK_TYPE((o), camel_object_type))
-#define CAMEL_IS_OBJECT_CLASS(k) (CAMEL_CHECK_CLASS_TYPE((k), camel_object_type))
+#define CAMEL_OBJECT(obj)        (CAMEL_CHECK_CAST((obj), camel_lite_object_type, CamelObject))
+#define CAMEL_OBJECT_CLASS(k)    (CAMEL_CHECK_CLASS_CAST ((k), camel_lite_object_type, CamelObjectClass))
+#define CAMEL_IS_OBJECT(o)       (CAMEL_CHECK_TYPE((o), camel_lite_object_type))
+#define CAMEL_IS_OBJECT_CLASS(k) (CAMEL_CHECK_CLASS_TYPE((k), camel_lite_object_type))
 
 #define CAMEL_OBJECT_GET_CLASS(o) ((CamelObjectClass *)(CAMEL_OBJECT(o))->klass)
 #define CAMEL_OBJECT_GET_TYPE(o)  ((CamelType)(CAMEL_OBJECT(o))->klass)
@@ -66,8 +66,8 @@ typedef struct _CamelObject CamelObject;
 typedef unsigned int CamelObjectHookID;
 typedef struct _CamelObjectMeta CamelObjectMeta;
 
-extern CamelType camel_interface_type;
-#define CAMEL_INTERFACE_TYPE (camel_interface_type)
+extern CamelType camel_lite_interface_type;
+#define CAMEL_INTERFACE_TYPE (camel_lite_interface_type)
 typedef struct _CamelInterface CamelInterface;
 
 typedef void (*CamelObjectClassInitFunc) (CamelObjectClass *);
@@ -176,8 +176,8 @@ struct _CamelInterface {
 };
 
 /* The type system .... it's pretty simple..... */
-void camel_type_init (void);
-CamelType camel_type_register(CamelType parent, const char * name, /*unsigned int ver, unsigned int rev,*/
+void camel_lite_type_init (void);
+CamelType camel_lite_type_register(CamelType parent, const char * name, /*unsigned int ver, unsigned int rev,*/
 			      size_t instance_size,
 			      size_t classfuncs_size,
 			      CamelObjectClassInitFunc class_init,
@@ -185,89 +185,89 @@ CamelType camel_type_register(CamelType parent, const char * name, /*unsigned in
 			      CamelObjectInitFunc instance_init,
 			      CamelObjectFinalizeFunc instance_finalize);
 
-CamelType camel_interface_register(CamelType parent, const char *name,
+CamelType camel_lite_interface_register(CamelType parent, const char *name,
 				   size_t classfuncs_size,
 				   CamelObjectClassInitFunc class_init,
 				   CamelObjectClassFinalizeFunc class_finalize);
 
 /* deprecated interface */
-#define camel_type_get_global_classfuncs(x) ((CamelObjectClass *)(x))
+#define camel_lite_type_get_global_classfuncs(x) ((CamelObjectClass *)(x))
 
 /* object class methods (types == classes now) */
-const char *camel_type_to_name (CamelType type);
-CamelType camel_name_to_type (const char *name);
-void camel_object_class_add_event (CamelObjectClass *klass, const char *name, CamelObjectEventPrepFunc prep);
-void camel_object_class_add_interface(CamelObjectClass *klass, CamelType itype);
+const char *camel_lite_type_to_name (CamelType type);
+CamelType camel_lite_name_to_type (const char *name);
+void camel_lite_object_class_add_event (CamelObjectClass *klass, const char *name, CamelObjectEventPrepFunc prep);
+void camel_lite_object_class_add_interface(CamelObjectClass *klass, CamelType itype);
 
-void camel_object_class_dump_tree (CamelType root);
+void camel_lite_object_class_dump_tree (CamelType root);
 
 /* casting */
-CamelObject *camel_object_cast(CamelObject *obj, CamelType ctype);
-gboolean camel_object_is(CamelObject *obj, CamelType ctype);
+CamelObject *camel_lite_object_cast(CamelObject *obj, CamelType ctype);
+gboolean camel_lite_object_is(CamelObject *obj, CamelType ctype);
 
-CamelObjectClass *camel_object_class_cast (CamelObjectClass *klass, CamelType ctype);
-gboolean camel_object_class_is (CamelObjectClass *klass, CamelType ctype);
+CamelObjectClass *camel_lite_object_class_cast (CamelObjectClass *klass, CamelType ctype);
+gboolean camel_lite_object_class_is (CamelObjectClass *klass, CamelType ctype);
 
-CamelObjectClass *camel_interface_cast(CamelObjectClass *klass, CamelType ctype);
-gboolean camel_interface_is(CamelObjectClass *k, CamelType ctype);
+CamelObjectClass *camel_lite_interface_cast(CamelObjectClass *klass, CamelType ctype);
+gboolean camel_lite_interface_is(CamelObjectClass *k, CamelType ctype);
 
-CamelType camel_object_get_type (void);
+CamelType camel_lite_object_get_type (void);
 
-CamelObject *camel_object_new (CamelType type);
-CamelObject *camel_object_new_name (const char *name);
+CamelObject *camel_lite_object_new (CamelType type);
+CamelObject *camel_lite_object_new_name (const char *name);
 
-void camel_object_ref(void *);
-void camel_object_unref(void *);
+void camel_lite_object_ref(void *);
+void camel_lite_object_unref(void *);
 
 #ifdef CAMEL_DEBUG
-#define camel_object_ref(o) (printf("%s (%s:%d):ref (%p)\n", __FUNCTION__, __FILE__, __LINE__, o), camel_object_ref(o))
-#define camel_object_unref(o) (printf("%s (%s:%d):unref (%p)\n", __FUNCTION__, __FILE__, __LINE__, o), camel_object_unref (o))
+#define camel_lite_object_ref(o) (printf("%s (%s:%d):ref (%p)\n", __FUNCTION__, __FILE__, __LINE__, o), camel_lite_object_ref(o))
+#define camel_lite_object_unref(o) (printf("%s (%s:%d):unref (%p)\n", __FUNCTION__, __FILE__, __LINE__, o), camel_lite_object_unref (o))
 #endif
 
 /* hooks */
-CamelObjectHookID camel_object_hook_event(void *obj, const char *name, CamelObjectEventHookFunc hook, void *data);
-void camel_object_remove_event(void *obj, CamelObjectHookID id);
-void camel_object_unhook_event(void *obj, const char *name, CamelObjectEventHookFunc hook, void *data);
-void camel_object_trigger_event(void *obj, const char *name, void *event_data);
+CamelObjectHookID camel_lite_object_hook_event(void *obj, const char *name, CamelObjectEventHookFunc hook, void *data);
+void camel_lite_object_remove_event(void *obj, CamelObjectHookID id);
+void camel_lite_object_unhook_event(void *obj, const char *name, CamelObjectEventHookFunc hook, void *data);
+void camel_lite_object_trigger_event(void *obj, const char *name, void *event_data);
 
 /* interfaces */
-void *camel_object_get_interface(void *vo, CamelType itype);
+void *camel_lite_object_get_interface(void *vo, CamelType itype);
 
 /* get/set methods */
-int camel_object_set(void *obj, struct _CamelException *ex, ...);
-int camel_object_setv(void *obj, struct _CamelException *ex, CamelArgV *);
-int camel_object_get(void *obj, struct _CamelException *ex, ...);
-int camel_object_getv(void *obj, struct _CamelException *ex, CamelArgGetV *);
+int camel_lite_object_set(void *obj, struct _CamelException *ex, ...);
+int camel_lite_object_setv(void *obj, struct _CamelException *ex, CamelArgV *);
+int camel_lite_object_get(void *obj, struct _CamelException *ex, ...);
+int camel_lite_object_getv(void *obj, struct _CamelException *ex, CamelArgGetV *);
 
 /* not very efficient one-time calls */
-void *camel_object_get_ptr(void *vo, CamelException *ex, int tag);
-int camel_object_get_int(void *vo, CamelException *ex, int tag);
+void *camel_lite_object_get_ptr(void *vo, CamelException *ex, int tag);
+int camel_lite_object_get_int(void *vo, CamelException *ex, int tag);
 
 /* meta-data for user-specific data */
-char *camel_object_meta_get(void *vo, const char * name);
-gboolean camel_object_meta_set(void *vo, const char * name, const char *value);
+char *camel_lite_object_meta_get(void *vo, const char * name);
+gboolean camel_lite_object_meta_set(void *vo, const char * name, const char *value);
 
 /* reads/writes the state from/to the CAMEL_OBJECT_STATE_FILE */
-int camel_object_state_read(void *vo);
-int camel_object_state_write(void *vo);
+int camel_lite_object_state_read(void *vo);
+int camel_lite_object_state_write(void *vo);
 
 /* free a retrieved object.  May be a noop for static data. */
-void camel_object_free(void *vo, guint32 tag, void *value);
+void camel_lite_object_free(void *vo, guint32 tag, void *value);
 
 /* for managing bags of weakly-ref'd 'child' objects */
 typedef struct _CamelObjectBag CamelObjectBag;
 typedef void *(*CamelCopyFunc)(const void *vo);
 
-CamelObjectBag *camel_object_bag_new(GHashFunc hash, GEqualFunc equal, CamelCopyFunc keycopy, GFreeFunc keyfree);
-void *camel_object_bag_get(CamelObjectBag *bag, const void *key);
-void *camel_object_bag_peek(CamelObjectBag *bag, const void *key);
-void *camel_object_bag_reserve(CamelObjectBag *bag, const void *key);
-void camel_object_bag_add(CamelObjectBag *bag, const void *key, void *o);
-void camel_object_bag_abort(CamelObjectBag *bag, const void *key);
-void camel_object_bag_rekey(CamelObjectBag *bag, void *o, const void *newkey);
-GPtrArray *camel_object_bag_list(CamelObjectBag *bag);
-void camel_object_bag_remove(CamelObjectBag *bag, void *o);
-void camel_object_bag_destroy(CamelObjectBag *bag);
+CamelObjectBag *camel_lite_object_bag_new(GHashFunc hash, GEqualFunc equal, CamelCopyFunc keycopy, GFreeFunc keyfree);
+void *camel_lite_object_bag_get(CamelObjectBag *bag, const void *key);
+void *camel_lite_object_bag_peek(CamelObjectBag *bag, const void *key);
+void *camel_lite_object_bag_reserve(CamelObjectBag *bag, const void *key);
+void camel_lite_object_bag_add(CamelObjectBag *bag, const void *key, void *o);
+void camel_lite_object_bag_abort(CamelObjectBag *bag, const void *key);
+void camel_lite_object_bag_rekey(CamelObjectBag *bag, void *o, const void *newkey);
+GPtrArray *camel_lite_object_bag_list(CamelObjectBag *bag);
+void camel_lite_object_bag_remove(CamelObjectBag *bag, void *o);
+void camel_lite_object_bag_destroy(CamelObjectBag *bag);
 
 #define CAMEL_MAKE_CLASS(type, tname, parent, pname)				\
 static CamelType type##_type;							\
@@ -278,7 +278,7 @@ type##_get_type(void)								\
 {										\
 	if (type##_type == 0) {							\
 		type##_parent_class = (pname##Class *)parent##_get_type();	\
-		type##_type = camel_type_register(				\
+		type##_type = camel_lite_type_register(				\
 			type##_parent_class, #tname "Class",			\
 			sizeof(tname),						\
 			sizeof(tname ## Class),					\
@@ -312,11 +312,11 @@ struct _CamelIterator {
 	/* subclasses adds new fields afterwards */
 };
 
-void *camel_iterator_new(CamelIteratorVTable *klass, size_t size);
-void camel_iterator_free(void *it);
-const void *camel_iterator_next(void *it, CamelException *ex);
-void camel_iterator_reset(void *it);
-int camel_iterator_length(void *it);
+void *camel_lite_iterator_new(CamelIteratorVTable *klass, size_t size);
+void camel_lite_iterator_free(void *it);
+const void *camel_lite_iterator_next(void *it, CamelException *ex);
+void camel_lite_iterator_reset(void *it);
+int camel_lite_iterator_length(void *it);
 
 G_END_DECLS
 

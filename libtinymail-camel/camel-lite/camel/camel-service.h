@@ -30,7 +30,7 @@
 #include <camel/camel-provider.h>
 #include <camel/camel-operation.h>
 
-#define CAMEL_SERVICE_TYPE     (camel_service_get_type ())
+#define CAMEL_SERVICE_TYPE     (camel_lite_service_get_type ())
 #define CAMEL_SERVICE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SERVICE_TYPE, CamelService))
 #define CAMEL_SERVICE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SERVICE_TYPE, CamelServiceClass))
 #define CAMEL_IS_SERVICE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SERVICE_TYPE))
@@ -117,38 +117,38 @@ typedef struct {
 } CamelServiceAuthType;
 
 /* public methods */
-void                camel_service_construct          (CamelService *service,
+void                camel_lite_service_construct          (CamelService *service,
 						      CamelSession *session,
 						      CamelProvider *provider,
 						      CamelURL *url,
 						      CamelException *ex);
-gboolean            camel_service_connect            (CamelService *service,
+gboolean            camel_lite_service_connect            (CamelService *service,
 						      CamelException *ex);
-gboolean            camel_service_disconnect         (CamelService *service,
+gboolean            camel_lite_service_disconnect         (CamelService *service,
 						      gboolean clean,
 						      CamelException *ex);
-void                camel_service_cancel_connect     (CamelService *service);
-char *              camel_service_get_url            (CamelService *service);
-char *              camel_service_get_name           (CamelService *service,
+void                camel_lite_service_cancel_connect     (CamelService *service);
+char *              camel_lite_service_get_url            (CamelService *service);
+char *              camel_lite_service_get_name           (CamelService *service,
 						      gboolean brief);
-char *              camel_service_get_path           (CamelService *service);
-CamelSession *      camel_service_get_session        (CamelService *service);
-CamelProvider *     camel_service_get_provider       (CamelService *service);
-GList *             camel_service_query_auth_types   (CamelService *service,
+char *              camel_lite_service_get_path           (CamelService *service);
+CamelSession *      camel_lite_service_get_session        (CamelService *service);
+CamelProvider *     camel_lite_service_get_provider       (CamelService *service);
+GList *             camel_lite_service_query_auth_types   (CamelService *service,
 						      CamelException *ex);
 
 
-gboolean            camel_service_connect_r           (CamelService *service,
+gboolean            camel_lite_service_connect_r           (CamelService *service,
 						      CamelException *ex);
-gboolean            camel_service_disconnect_r        (CamelService *service,
+gboolean            camel_lite_service_disconnect_r        (CamelService *service,
 						      gboolean clean,
 						      CamelException *ex);
 
-void                camel_service_can_idle            (CamelService *service,
+void                camel_lite_service_can_idle            (CamelService *service,
 						       gboolean can_idle);
 
 /* Standard Camel function */
-CamelType camel_service_get_type (void);
+CamelType camel_lite_service_get_type (void);
 
 G_END_DECLS
 

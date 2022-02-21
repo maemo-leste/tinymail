@@ -30,7 +30,7 @@
 #include <camel/camel-exception.h>
 #include <camel/camel-folder-summary.h>
 
-#define CAMEL_DATA_CACHE_TYPE     (camel_data_cache_get_type ())
+#define CAMEL_DATA_CACHE_TYPE     (camel_lite_data_cache_get_type ())
 #define CAMEL_DATA_CACHE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_DATA_CACHE_TYPE, CamelFolder))
 #define CAMEL_DATA_CACHE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_DATA_CACHE_TYPE, CamelFolderClass))
 #define CAMEL_IS_DATA_CACHE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_DATA_CACHE_TYPE))
@@ -68,44 +68,44 @@ struct _CamelDataCacheClass {
 };
 
 /* public methods */
-CamelDataCache *camel_data_cache_new(const char *path, guint32 flags, CamelException *ex);
+CamelDataCache *camel_lite_data_cache_new(const char *path, guint32 flags, CamelException *ex);
 
-void camel_data_cache_set_expire_age(CamelDataCache *cache, time_t when);
-void camel_data_cache_set_expire_access(CamelDataCache *cdc, time_t when);
+void camel_lite_data_cache_set_expire_age(CamelDataCache *cache, time_t when);
+void camel_lite_data_cache_set_expire_access(CamelDataCache *cdc, time_t when);
 
-int             camel_data_cache_rename(CamelDataCache *cache,
+int             camel_lite_data_cache_rename(CamelDataCache *cache,
 					const char *old, const char *new, CamelException *ex);
 
-CamelStream    *camel_data_cache_add(CamelDataCache *cache,
+CamelStream    *camel_lite_data_cache_add(CamelDataCache *cache,
 				     const char *path, const char *key, CamelException *ex);
-CamelStream    *camel_data_cache_get(CamelDataCache *cache,
+CamelStream    *camel_lite_data_cache_get(CamelDataCache *cache,
 				     const char *path, const char *key, CamelException *ex);
-gboolean       camel_data_cache_exists (CamelDataCache *cache,
+gboolean       camel_lite_data_cache_exists (CamelDataCache *cache,
 				     const char *path, const char *key, CamelException *ex);
 
-int             camel_data_cache_remove(CamelDataCache *cache,
+int             camel_lite_data_cache_remove(CamelDataCache *cache,
 					const char *path, const char *key, CamelException *ex);
 
-int             camel_data_cache_clear(CamelDataCache *cache,
+int             camel_lite_data_cache_clear(CamelDataCache *cache,
 				       const char *path, CamelException *ex);
 
 
-gboolean     camel_data_cache_is_partial (CamelDataCache *cache, const char *path,
+gboolean     camel_lite_data_cache_is_partial (CamelDataCache *cache, const char *path,
 					      const char *uid);
 
-void         camel_data_cache_set_partial (CamelDataCache *cache, const char *path,
+void         camel_lite_data_cache_set_partial (CamelDataCache *cache, const char *path,
 					      const char *uid, gboolean partial);
-gboolean     camel_data_cache_get_allow_external_images (CamelDataCache *cache, const char *path,
+gboolean     camel_lite_data_cache_get_allow_external_images (CamelDataCache *cache, const char *path,
 							 const char *uid);
-void         camel_data_cache_set_allow_external_images (CamelDataCache *cache, const char *path,
+void         camel_lite_data_cache_set_allow_external_images (CamelDataCache *cache, const char *path,
 							 const char *uid, gboolean allow);
-void         camel_data_cache_delete_attachments (CamelDataCache *cdc, const char *path,
+void         camel_lite_data_cache_delete_attachments (CamelDataCache *cdc, const char *path,
 					      const char *key);
 
-void camel_data_cache_set_flags (CamelDataCache *cdc, const char *path, CamelMessageInfoBase *mi);
+void camel_lite_data_cache_set_flags (CamelDataCache *cdc, const char *path, CamelMessageInfoBase *mi);
 
 /* Standard Camel function */
-CamelType camel_data_cache_get_type (void);
+CamelType camel_lite_data_cache_get_type (void);
 
 G_END_DECLS
 

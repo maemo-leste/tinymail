@@ -26,7 +26,7 @@
 
 #include <camel/camel-folder.h>
 
-#define CAMEL_OFFLINE_FOLDER_TYPE     (camel_offline_folder_get_type ())
+#define CAMEL_OFFLINE_FOLDER_TYPE     (camel_lite_offline_folder_get_type ())
 #define CAMEL_OFFLINE_FOLDER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_OFFLINE_FOLDER_TYPE, CamelOfflineFolder))
 #define CAMEL_OFFLINE_FOLDER_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_OFFLINE_FOLDER_TYPE, CamelOfflineFolderClass))
 #define CAMEL_IS_OFFLINE_FOLDER(o)    (CAMEL_CHECK_TYPE((o), CAMEL_OFFLINE_FOLDER_TYPE))
@@ -58,9 +58,9 @@ struct _CamelOfflineFolderClass {
 };
 
 
-CamelType camel_offline_folder_get_type (void);
+CamelType camel_lite_offline_folder_get_type (void);
 
-void camel_offline_folder_downsync (CamelOfflineFolder *folder, const char *expression, CamelException *ex);
+void camel_lite_offline_folder_downsync (CamelOfflineFolder *folder, const char *expression, CamelException *ex);
 
 G_END_DECLS
 

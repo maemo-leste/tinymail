@@ -25,7 +25,7 @@
 
 #include <camel/camel-mime-filter.h>
 
-#define CAMEL_MIME_FILTER_CANON_TYPE         (camel_mime_filter_canon_get_type ())
+#define CAMEL_MIME_FILTER_CANON_TYPE         (camel_lite_mime_filter_canon_get_type ())
 #define CAMEL_MIME_FILTER_CANON(obj)         CAMEL_CHECK_CAST (obj, CAMEL_MIME_FILTER_CANON_TYPE, CamelMimeFilterCanon)
 #define CAMEL_MIME_FILTER_CANON_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, CAMEL_MIME_FILTER_CANON_TYPE, CamelMimeFilterCanonClass)
 #define CAMEL_IS_MIME_FILTER_CANON(obj)      CAMEL_CHECK_TYPE (obj, CAMEL_MIME_FILTER_CANON_TYPE)
@@ -51,9 +51,9 @@ struct _CamelMimeFilterCanonClass {
 	CamelMimeFilterClass parent_class;
 };
 
-CamelType camel_mime_filter_canon_get_type (void);
+CamelType camel_lite_mime_filter_canon_get_type (void);
 
-CamelMimeFilter *camel_mime_filter_canon_new(guint32 flags);
+CamelMimeFilter *camel_lite_mime_filter_canon_new(guint32 flags);
 
 G_END_DECLS
 

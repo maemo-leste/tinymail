@@ -25,9 +25,9 @@
 #include <camel/camel-mime-filter.h>
 #include <iconv.h>
 
-#define CAMEL_MIME_FILTER_CHARSET(obj)         CAMEL_CHECK_CAST (obj, camel_mime_filter_charset_get_type (), CamelMimeFilterCharset)
-#define CAMEL_MIME_FILTER_CHARSET_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_mime_filter_charset_get_type (), CamelMimeFilterCharsetClass)
-#define CAMEL_IS_MIME_FILTER_CHARSET(obj)      CAMEL_CHECK_TYPE (obj, camel_mime_filter_charset_get_type ())
+#define CAMEL_MIME_FILTER_CHARSET(obj)         CAMEL_CHECK_CAST (obj, camel_lite_mime_filter_charset_get_type (), CamelMimeFilterCharset)
+#define CAMEL_MIME_FILTER_CHARSET_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_mime_filter_charset_get_type (), CamelMimeFilterCharsetClass)
+#define CAMEL_IS_MIME_FILTER_CHARSET(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_mime_filter_charset_get_type ())
 
 G_BEGIN_DECLS
 
@@ -47,10 +47,10 @@ struct _CamelMimeFilterCharsetClass {
 	CamelMimeFilterClass parent_class;
 };
 
-CamelType		camel_mime_filter_charset_get_type	(void);
-CamelMimeFilterCharset      *camel_mime_filter_charset_new	(void);
+CamelType		camel_lite_mime_filter_charset_get_type	(void);
+CamelMimeFilterCharset      *camel_lite_mime_filter_charset_new	(void);
 
-CamelMimeFilterCharset      *camel_mime_filter_charset_new_convert	(const char *from_charset, const char *to_charset);
+CamelMimeFilterCharset      *camel_lite_mime_filter_charset_new_convert	(const char *from_charset, const char *to_charset);
 
 G_END_DECLS
 

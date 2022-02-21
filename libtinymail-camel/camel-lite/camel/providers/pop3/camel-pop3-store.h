@@ -33,7 +33,7 @@
 #include "camel-pop3-logbook.h"
 #include <camel/camel-disco-store.h>
 
-#define CAMEL_POP3_STORE_TYPE     (camel_pop3_store_get_type ())
+#define CAMEL_POP3_STORE_TYPE     (camel_lite_pop3_store_get_type ())
 #define CAMEL_POP3_STORE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_POP3_STORE_TYPE, CamelPOP3Store))
 #define CAMEL_POP3_STORE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_POP3_STORE_TYPE, CamelPOP3StoreClass))
 #define CAMEL_IS_POP3_STORE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_POP3_STORE_TYPE))
@@ -69,17 +69,17 @@ typedef struct {
 
 
 /* public methods */
-void camel_pop3_store_expunge (CamelPOP3Store *store, CamelException *ex);
+void camel_lite_pop3_store_expunge (CamelPOP3Store *store, CamelException *ex);
 
 /* support functions */
 enum { CAMEL_POP3_OK, CAMEL_POP3_ERR, CAMEL_POP3_FAIL };
-int camel_pop3_command (CamelPOP3Store *store, char **ret, CamelException *ex, char *fmt, ...);
-char *camel_pop3_command_get_additional_data (CamelPOP3Store *store, int total, CamelException *ex);
+int camel_lite_pop3_command (CamelPOP3Store *store, char **ret, CamelException *ex, char *fmt, ...);
+char *camel_lite_pop3_command_get_additional_data (CamelPOP3Store *store, int total, CamelException *ex);
 
 /* Standard Camel function */
-CamelType camel_pop3_store_get_type (void);
+CamelType camel_lite_pop3_store_get_type (void);
 
-void camel_pop3_store_destroy_lists (CamelPOP3Store *pop3_store);
+void camel_lite_pop3_store_destroy_lists (CamelPOP3Store *pop3_store);
 
 G_END_DECLS
 

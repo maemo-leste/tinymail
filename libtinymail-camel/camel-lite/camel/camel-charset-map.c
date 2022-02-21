@@ -255,7 +255,7 @@ int main (int argc, char **argv)
 	for (k = 0; k < bytes; k++)
 		printf ("\tconst unsigned char *bits%d;\n", k);
 	
-	printf ("} camel_charmap[256] = {\n\t");
+	printf ("} camel_lite_charmap[256] = {\n\t");
 	for (i = 0; i < 256; i++) {
 		printf ("{ ");
 		for (k = 0; k < bytes; k++) {
@@ -276,7 +276,7 @@ int main (int argc, char **argv)
 	}
 	printf ("\n};\n\n");
 	
-	printf ("static const struct {\n\tconst char *name;\n\tunsigned int bit;\n} camel_charinfo[] = {\n");
+	printf ("static const struct {\n\tconst char *name;\n\tunsigned int bit;\n} camel_lite_charinfo[] = {\n");
 	for (j = 0; tables[j].name; j++)
 		printf ("\t{ \"%s\", 0x%08x },\n", tables[j].name, tables[j].bit);
 	printf ("};\n\n");
@@ -288,7 +288,7 @@ int main (int argc, char **argv)
 		else
 			printf ("\t");
 		
-		printf ("(camel_charmap[(x) >> 8].bits%d ? camel_charmap[(x) >> 8].bits%d[(x) & 0xff] << %d : 0)",
+		printf ("(camel_lite_charmap[(x) >> 8].bits%d ? camel_lite_charmap[(x) >> 8].bits%d[(x) & 0xff] << %d : 0)",
 			k, k, k * 8);
 		
 		if (k < bytes - 1)
@@ -308,14 +308,14 @@ int main (int argc, char **argv)
 #include <libedataserver/e-iconv.h>
 
 void
-camel_charset_init (CamelCharset *c)
+camel_lite_charset_init (CamelCharset *c)
 {
 	c->mask = (unsigned int) ~0;
 	c->level = 0;
 }
 
 void
-camel_charset_step (CamelCharset *cc, const char *in, int len)
+camel_lite_charset_step (CamelCharset *cc, const char *in, int len)
 {
 	const unsigned char *inptr = (const unsigned char *) in;
 	const unsigned char *inend = inptr + len;
@@ -327,7 +327,7 @@ camel_charset_step (CamelCharset *cc, const char *in, int len)
 	level = cc->level;
 
 	/* check what charset a given string will fit in */
-	while ((c = camel_utf8_getc_limit(&inptr, inend)) != 0xffff) {
+	while ((c = camel_lite_utf8_getc_limit(&inptr, inend)) != 0xffff) {
 		if (c < 0xffff) {
 			mask &= charset_mask(c);
 
@@ -348,18 +348,18 @@ camel_charset_step (CamelCharset *cc, const char *in, int len)
 
 /* gets the best charset from the mask of chars in it */
 static const char *
-camel_charset_best_mask(unsigned int mask)
+camel_lite_charset_best_mask(unsigned int mask)
 {
 	const char *locale_lang, *lang;
 	int i;
 
 	locale_lang = e_iconv_locale_language ();
-	for (i = 0; i < G_N_ELEMENTS (camel_charinfo); i++) {
-		if (camel_charinfo[i].bit & mask) {
-			lang = e_iconv_charset_language (camel_charinfo[i].name);
+	for (i = 0; i < G_N_ELEMENTS (camel_lite_charinfo); i++) {
+		if (camel_lite_charinfo[i].bit & mask) {
+			lang = e_iconv_charset_language (camel_lite_charinfo[i].name);
 
 			if (!locale_lang || (lang && !strncmp (locale_lang, lang, 2)))
-				return camel_charinfo[i].name;
+				return camel_lite_charinfo[i].name;
 		}
 	}
 
@@ -367,36 +367,36 @@ camel_charset_best_mask(unsigned int mask)
 }
 
 const char *
-camel_charset_best_name (CamelCharset *charset)
+camel_lite_charset_best_name (CamelCharset *charset)
 {
 	if (charset->level == 1)
 		return "ISO-8859-1";
 	else if (charset->level == 2)
-		return camel_charset_best_mask (charset->mask);
+		return camel_lite_charset_best_mask (charset->mask);
 	else
 		return NULL;
 }
 
 /* finds the minimum charset for this string NULL means US-ASCII */
 const char *
-camel_charset_best (const char *in, int len)
+camel_lite_charset_best (const char *in, int len)
 {
 	CamelCharset charset;
 
-	camel_charset_init (&charset);
-	camel_charset_step (&charset, in, len);
-	return camel_charset_best_name (&charset);
+	camel_lite_charset_init (&charset);
+	camel_lite_charset_step (&charset, in, len);
+	return camel_lite_charset_best_name (&charset);
 }
 
 
 /**
- * camel_charset_iso_to_windows:
+ * camel_lite_charset_iso_to_windows:
  * @isocharset: a canonicalised ISO charset
  *
  * Returns the equivalent Windows charset.
  **/
 const char *
-camel_charset_iso_to_windows (const char *isocharset)
+camel_lite_charset_iso_to_windows (const char *isocharset)
 {
 	/* According to http://czyborra.com/charsets/codepages.html,
 	 * the charset mapping is as follows:

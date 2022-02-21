@@ -55,49 +55,49 @@
 
 G_BEGIN_DECLS
 
-int camel_file_util_encode_fixed_int32 (FILE *out, gint32);
-int camel_file_util_decode_fixed_int32 (FILE *in, gint32 *);
-int camel_file_util_encode_uint32 (FILE *out, guint32);
-int camel_file_util_decode_uint32 (FILE *in, guint32 *);
+int camel_lite_file_util_encode_fixed_int32 (FILE *out, gint32);
+int camel_lite_file_util_decode_fixed_int32 (FILE *in, gint32 *);
+int camel_lite_file_util_encode_uint32 (FILE *out, guint32);
+int camel_lite_file_util_decode_uint32 (FILE *in, guint32 *);
 
-int camel_file_util_encode_time_t (FILE *out, time_t);
-int camel_file_util_decode_time_t (FILE *in, time_t *);
-int camel_file_util_encode_off_t (FILE *out, off_t);
-int camel_file_util_decode_off_t (FILE *in, off_t *);
-int camel_file_util_encode_size_t (FILE *out, size_t);
-int camel_file_util_decode_size_t (FILE *in, size_t *);
-int camel_file_util_encode_string (FILE *out, const char *);
-int camel_file_util_decode_string (FILE *in, char **);
-int camel_file_util_encode_fixed_string (FILE *out, const char *str, size_t len);
-int camel_file_util_decode_fixed_string (FILE *in, char **str, size_t len);
+int camel_lite_file_util_encode_time_t (FILE *out, time_t);
+int camel_lite_file_util_decode_time_t (FILE *in, time_t *);
+int camel_lite_file_util_encode_off_t (FILE *out, off_t);
+int camel_lite_file_util_decode_off_t (FILE *in, off_t *);
+int camel_lite_file_util_encode_size_t (FILE *out, size_t);
+int camel_lite_file_util_decode_size_t (FILE *in, size_t *);
+int camel_lite_file_util_encode_string (FILE *out, const char *);
+int camel_lite_file_util_decode_string (FILE *in, char **);
+int camel_lite_file_util_encode_fixed_string (FILE *out, const char *str, size_t len);
+int camel_lite_file_util_decode_fixed_string (FILE *in, char **str, size_t len);
 
 
-unsigned char* camel_file_util_mmap_decode_time_t(unsigned char *start, time_t *dest);
-unsigned char* camel_file_util_mmap_decode_off_t(unsigned char *start, off_t *dest);
-unsigned char* camel_file_util_mmap_decode_size_t(unsigned char *start, size_t *dest);
-unsigned char* camel_file_util_mmap_decode_uint32 (unsigned char *start, guint32 *dest, gboolean is_string);
+unsigned char* camel_lite_file_util_mmap_decode_time_t(unsigned char *start, time_t *dest);
+unsigned char* camel_lite_file_util_mmap_decode_off_t(unsigned char *start, off_t *dest);
+unsigned char* camel_lite_file_util_mmap_decode_size_t(unsigned char *start, size_t *dest);
+unsigned char* camel_lite_file_util_mmap_decode_uint32 (unsigned char *start, guint32 *dest, gboolean is_string);
 
-char *camel_file_util_safe_filename (const char *name);
+char *camel_lite_file_util_safe_filename (const char *name);
 
-/* Code that intends to be portable to Win32 should use camel_read()
- * and camel_write() only on file descriptors returned from open(),
- * creat(), pipe() or fileno(). On Win32 camel_read() and
- * camel_write() calls will not be cancellable. For sockets, use
- * camel_read_socket() and camel_write_socket(). These are cancellable
+/* Code that intends to be portable to Win32 should use camel_lite_read()
+ * and camel_lite_write() only on file descriptors returned from open(),
+ * creat(), pipe() or fileno(). On Win32 camel_lite_read() and
+ * camel_lite_write() calls will not be cancellable. For sockets, use
+ * camel_lite_read_socket() and camel_lite_write_socket(). These are cancellable
  * also on Win32.
  */
-ssize_t camel_read (int fd, char *buf, size_t n);
-ssize_t camel_write (int fd, const char *buf, size_t n);
+ssize_t camel_lite_read (int fd, char *buf, size_t n);
+ssize_t camel_lite_write (int fd, const char *buf, size_t n);
 
-ssize_t camel_write_socket (int fd, const char *buf, size_t n);
+ssize_t camel_lite_write_socket (int fd, const char *buf, size_t n);
 
-ssize_t camel_read_socket (int fd, char *buf, size_t n);
-ssize_t camel_read_socket_nb (int fd, char *buf, size_t n);
+ssize_t camel_lite_read_socket (int fd, char *buf, size_t n);
+ssize_t camel_lite_read_socket_nb (int fd, char *buf, size_t n);
 
-char *camel_file_util_savename(const char *filename);
-void camel_file_util_read_counts (const gchar *spath, CamelFolderInfo *fi);
+char *camel_lite_file_util_savename(const char *filename);
+void camel_lite_file_util_read_counts (const gchar *spath, CamelFolderInfo *fi);
 
-void camel_file_util_read_counts_2 (const gchar *spath,
+void camel_lite_file_util_read_counts_2 (const gchar *spath,
 	guint32 *version, guint32 *flags,
 	guint32 *nextuid, time_t *time, guint32 *saved_count,
 	guint32 *unread_count, guint32 *deleted_count,

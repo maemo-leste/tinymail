@@ -59,14 +59,14 @@ static void		 store_info_free(CamelStoreSummary *, CamelStoreInfo *);
 static const char *store_info_string(CamelStoreSummary *, const CamelStoreInfo *, int);
 static void store_info_set_string(CamelStoreSummary *, CamelStoreInfo *, int, const char *);
 
-static void camel_nntp_store_summary_class_init (CamelNNTPStoreSummaryClass *klass);
-static void camel_nntp_store_summary_init       (CamelNNTPStoreSummary *obj);
-static void camel_nntp_store_summary_finalise   (CamelObject *obj);
+static void camel_lite_nntp_store_summary_class_init (CamelNNTPStoreSummaryClass *klass);
+static void camel_lite_nntp_store_summary_init       (CamelNNTPStoreSummary *obj);
+static void camel_lite_nntp_store_summary_finalise   (CamelObject *obj);
 
-static CamelStoreSummaryClass *camel_nntp_store_summary_parent;
+static CamelStoreSummaryClass *camel_lite_nntp_store_summary_parent;
 
 static void
-camel_nntp_store_summary_class_init (CamelNNTPStoreSummaryClass *klass)
+camel_lite_nntp_store_summary_class_init (CamelNNTPStoreSummaryClass *klass)
 {
 	CamelStoreSummaryClass *ssklass = (CamelStoreSummaryClass *)klass;
 
@@ -83,7 +83,7 @@ camel_nntp_store_summary_class_init (CamelNNTPStoreSummaryClass *klass)
 }
 
 static void
-camel_nntp_store_summary_init (CamelNNTPStoreSummary *s)
+camel_lite_nntp_store_summary_init (CamelNNTPStoreSummary *s)
 {
 	/*struct _CamelNNTPStoreSummaryPrivate *p;
 
@@ -95,7 +95,7 @@ camel_nntp_store_summary_init (CamelNNTPStoreSummary *s)
 }
 
 static void
-camel_nntp_store_summary_finalise (CamelObject *obj)
+camel_lite_nntp_store_summary_finalise (CamelObject *obj)
 {
 	/*struct _CamelNNTPStoreSummaryPrivate *p;*/
 	/*CamelNNTPStoreSummary *s = (CamelNNTPStoreSummary *)obj;*/
@@ -105,39 +105,39 @@ camel_nntp_store_summary_finalise (CamelObject *obj)
 }
 
 CamelType
-camel_nntp_store_summary_get_type (void)
+camel_lite_nntp_store_summary_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		camel_nntp_store_summary_parent = (CamelStoreSummaryClass *)camel_store_summary_get_type();
-		type = camel_type_register((CamelType)camel_nntp_store_summary_parent, "CamelNNTPStoreSummary",
+		camel_lite_nntp_store_summary_parent = (CamelStoreSummaryClass *)camel_lite_store_summary_get_type();
+		type = camel_lite_type_register((CamelType)camel_lite_nntp_store_summary_parent, "CamelLiteNNTPStoreSummary",
 					   sizeof (CamelNNTPStoreSummary),
 					   sizeof (CamelNNTPStoreSummaryClass),
-					   (CamelObjectClassInitFunc) camel_nntp_store_summary_class_init,
+					   (CamelObjectClassInitFunc) camel_lite_nntp_store_summary_class_init,
 					   NULL,
-					   (CamelObjectInitFunc) camel_nntp_store_summary_init,
-					   (CamelObjectFinalizeFunc) camel_nntp_store_summary_finalise);
+					   (CamelObjectInitFunc) camel_lite_nntp_store_summary_init,
+					   (CamelObjectFinalizeFunc) camel_lite_nntp_store_summary_finalise);
 	}
 
 	return type;
 }
 
 /**
- * camel_nntp_store_summary_new:
+ * camel_lite_nntp_store_summary_new:
  *
  * Create a new CamelNNTPStoreSummary object.
  *
  * Return value: A new CamelNNTPStoreSummary widget.
  **/
 CamelNNTPStoreSummary *
-camel_nntp_store_summary_new (void)
+camel_lite_nntp_store_summary_new (void)
 {
-	return (CamelNNTPStoreSummary *) camel_object_new (camel_nntp_store_summary_get_type ());
+	return (CamelNNTPStoreSummary *) camel_lite_object_new (camel_lite_nntp_store_summary_get_type ());
 }
 
 /**
- * camel_nntp_store_summary_full_name:
+ * camel_lite_nntp_store_summary_full_name:
  * @s:
  * @path:
  *
@@ -148,21 +148,21 @@ camel_nntp_store_summary_new (void)
  *
  * Return value: The summary item, or NULL if the @full_name name
  * is not available.
- * It must be freed using camel_store_summary_info_free().
+ * It must be freed using camel_lite_store_summary_info_free().
  **/
 CamelNNTPStoreInfo *
-camel_nntp_store_summary_full_name(CamelNNTPStoreSummary *s, const char *full_name)
+camel_lite_nntp_store_summary_full_name(CamelNNTPStoreSummary *s, const char *full_name)
 {
 	int count, i;
 	CamelNNTPStoreInfo *info;
 
-	count = camel_store_summary_count ((CamelStoreSummary *) s);
+	count = camel_lite_store_summary_count ((CamelStoreSummary *) s);
 	for (i = 0; i < count; i++) {
-		info = (CamelNNTPStoreInfo *)camel_store_summary_index ((CamelStoreSummary *) s, i);
+		info = (CamelNNTPStoreInfo *)camel_lite_store_summary_index ((CamelStoreSummary *) s, i);
 		if (info) {
 			if (strcmp (info->full_name, full_name) == 0)
 				return info;
-			camel_store_summary_info_free ((CamelStoreSummary *) s, (CamelStoreInfo *)info);
+			camel_lite_store_summary_info_free ((CamelStoreSummary *) s, (CamelStoreInfo *)info);
 		}
 	}
 
@@ -170,7 +170,7 @@ camel_nntp_store_summary_full_name(CamelNNTPStoreSummary *s, const char *full_na
 }
 
 char *
-camel_nntp_store_summary_full_to_path (CamelNNTPStoreSummary *s, const char *full_name, char dir_sep)
+camel_lite_nntp_store_summary_full_to_path (CamelNNTPStoreSummary *s, const char *full_name, char dir_sep)
 {
 	char *path, *p;
 	int c;
@@ -191,7 +191,7 @@ camel_nntp_store_summary_full_to_path (CamelNNTPStoreSummary *s, const char *ful
 	} else
 		path = (char *) full_name;
 
-	return camel_utf7_utf8 (path);
+	return camel_lite_utf7_utf8 (path);
 }
 
 static guint32
@@ -206,7 +206,7 @@ hexnib (guint32 c)
 }
 
 char *
-camel_nntp_store_summary_path_to_full (CamelNNTPStoreSummary *s, const char *path, char dir_sep)
+camel_lite_nntp_store_summary_path_to_full (CamelNNTPStoreSummary *s, const char *path, char dir_sep)
 {
 	char *full, *f;
 	guint32 c, v = 0;
@@ -219,7 +219,7 @@ camel_nntp_store_summary_path_to_full (CamelNNTPStoreSummary *s, const char *pat
 	subpath = g_alloca (strlen (path) + 1);
 	strcpy (subpath, path);
 	do {
-		si = camel_store_summary_path ((CamelStoreSummary *) s, subpath);
+		si = camel_lite_store_summary_path ((CamelStoreSummary *) s, subpath);
 		if (si == NULL) {
 			last = strrchr (subpath, '/');
 			if (last)
@@ -229,8 +229,8 @@ camel_nntp_store_summary_path_to_full (CamelNNTPStoreSummary *s, const char *pat
 
 	/* path is already present, use the raw version we have */
 	if (si && strlen (subpath) == strlen (path)) {
-		f = g_strdup (camel_nntp_store_info_full_name (s, si));
-		camel_store_summary_info_free ((CamelStoreSummary *) s, si);
+		f = g_strdup (camel_lite_nntp_store_info_full_name (s, si));
+		camel_lite_store_summary_info_free ((CamelStoreSummary *) s, si);
 		return f;
 	}
 
@@ -240,7 +240,7 @@ camel_nntp_store_summary_path_to_full (CamelNNTPStoreSummary *s, const char *pat
 	else
 		p = path;
 
-	while ((c = camel_utf8_getc ((const unsigned char **) &p))) {
+	while ((c = camel_lite_utf8_getc ((const unsigned char **) &p))) {
 		switch (state) {
 		case 0:
 			if (c == '%') {
@@ -248,7 +248,7 @@ camel_nntp_store_summary_path_to_full (CamelNNTPStoreSummary *s, const char *pat
 			} else {
 				if (c == '/')
 					c = dir_sep;
-				camel_utf8_putc((unsigned char **) &f, c);
+				camel_lite_utf8_putc((unsigned char **) &f, c);
 			}
 			break;
 		case 1:
@@ -258,18 +258,18 @@ camel_nntp_store_summary_path_to_full (CamelNNTPStoreSummary *s, const char *pat
 		case 2:
 			state = 0;
 			v |= hexnib (c);
-			camel_utf8_putc ((unsigned char **) &f, v);
+			camel_lite_utf8_putc ((unsigned char **) &f, v);
 			break;
 		}
 	}
-	camel_utf8_putc ((unsigned char **) &f, c);
+	camel_lite_utf8_putc ((unsigned char **) &f, c);
 
 	/* merge old path part if required */
-	f = camel_utf8_utf7 (full);
+	f = camel_lite_utf8_utf7 (full);
 	if (si) {
-		full = g_strdup_printf ("%s%s", camel_nntp_store_info_full_name (s, si), f);
+		full = g_strdup_printf ("%s%s", camel_lite_nntp_store_info_full_name (s, si), f);
 		g_free (f);
-		camel_store_summary_info_free ((CamelStoreSummary *) s, si);
+		camel_lite_store_summary_info_free ((CamelStoreSummary *) s, si);
 		f = full;
 	}
 
@@ -277,7 +277,7 @@ camel_nntp_store_summary_path_to_full (CamelNNTPStoreSummary *s, const char *pat
 }
 
 CamelNNTPStoreInfo *
-camel_nntp_store_summary_add_from_full (CamelNNTPStoreSummary *s, const char *full, char dir_sep)
+camel_lite_nntp_store_summary_add_from_full (CamelNNTPStoreSummary *s, const char *full, char dir_sep)
 {
 	CamelNNTPStoreInfo *info;
 	char *pathu8;
@@ -292,19 +292,19 @@ camel_nntp_store_summary_add_from_full (CamelNNTPStoreSummary *s, const char *fu
 	if (full_name[len-1] == dir_sep)
 		full_name[len-1] = 0;
 
-	info = camel_nntp_store_summary_full_name (s, full_name);
+	info = camel_lite_nntp_store_summary_full_name (s, full_name);
 	if (info) {
-		camel_store_summary_info_free ((CamelStoreSummary *) s, (CamelStoreInfo *) info);
+		camel_lite_store_summary_info_free ((CamelStoreSummary *) s, (CamelStoreInfo *) info);
 		d(printf("  already there\n"));
 		return info;
 	}
 
-	pathu8 = camel_nntp_store_summary_full_to_path (s, full_name, dir_sep);
+	pathu8 = camel_lite_nntp_store_summary_full_to_path (s, full_name, dir_sep);
 
-	info = (CamelNNTPStoreInfo *) camel_store_summary_add_from_path ((CamelStoreSummary *) s, pathu8);
+	info = (CamelNNTPStoreInfo *) camel_lite_store_summary_add_from_path ((CamelStoreSummary *) s, pathu8);
 	if (info) {
 		d(printf("  '%s' -> '%s'\n", pathu8, full_name));
-		camel_store_info_set_string((CamelStoreSummary *)s, (CamelStoreInfo *)info, CAMEL_NNTP_STORE_INFO_FULL_NAME, full_name);
+		camel_lite_store_info_set_string((CamelStoreSummary *)s, (CamelStoreInfo *)info, CAMEL_NNTP_STORE_INFO_FULL_NAME, full_name);
 	} else
 		d(printf("  failed\n"));
 
@@ -317,8 +317,8 @@ summary_header_load (CamelStoreSummary *s, FILE *in)
 	CamelNNTPStoreSummary *is = (CamelNNTPStoreSummary *) s;
 	gint32 version, nil;
 
-	if (camel_nntp_store_summary_parent->summary_header_load ((CamelStoreSummary *) s, in) == -1
-	    || camel_file_util_decode_fixed_int32 (in, &version) == -1)
+	if (camel_lite_nntp_store_summary_parent->summary_header_load ((CamelStoreSummary *) s, in) == -1
+	    || camel_lite_file_util_decode_fixed_int32 (in, &version) == -1)
 		return -1;
 
 	is->version = version;
@@ -331,7 +331,7 @@ summary_header_load (CamelStoreSummary *s, FILE *in)
 	if (fread (is->last_newslist, 1, NNTP_DATE_SIZE, in) < NNTP_DATE_SIZE)
 		return -1;
 
-	camel_file_util_decode_fixed_int32 (in, &nil);
+	camel_lite_file_util_decode_fixed_int32 (in, &nil);
 
 	return 0;
 }
@@ -342,10 +342,10 @@ summary_header_save (CamelStoreSummary *s, FILE *out)
 	CamelNNTPStoreSummary *is = (CamelNNTPStoreSummary *) s;
 
 	/* always write as latest version */
-	if (camel_nntp_store_summary_parent->summary_header_save ((CamelStoreSummary *) s, out) == -1
-	    || camel_file_util_encode_fixed_int32 (out, CAMEL_NNTP_STORE_SUMMARY_VERSION) == -1
+	if (camel_lite_nntp_store_summary_parent->summary_header_save ((CamelStoreSummary *) s, out) == -1
+	    || camel_lite_file_util_encode_fixed_int32 (out, CAMEL_NNTP_STORE_SUMMARY_VERSION) == -1
 	    || fwrite (is->last_newslist, 1, NNTP_DATE_SIZE, out) < NNTP_DATE_SIZE
-	    || camel_file_util_encode_fixed_int32 (out, 0) == -1)
+	    || camel_lite_file_util_encode_fixed_int32 (out, 0) == -1)
 		return -1;
 
 	return 0;
@@ -356,16 +356,16 @@ store_info_load (CamelStoreSummary *s, FILE *in)
 {
 	CamelNNTPStoreInfo *ni;
 
-	ni = (CamelNNTPStoreInfo *) camel_nntp_store_summary_parent->store_info_load (s, in);
+	ni = (CamelNNTPStoreInfo *) camel_lite_nntp_store_summary_parent->store_info_load (s, in);
 	if (ni) {
-		if (camel_file_util_decode_string (in, &ni->full_name) == -1) {
-			camel_store_summary_info_free (s, (CamelStoreInfo *) ni);
+		if (camel_lite_file_util_decode_string (in, &ni->full_name) == -1) {
+			camel_lite_store_summary_info_free (s, (CamelStoreInfo *) ni);
 			return NULL;
 		}
 		if (((CamelNNTPStoreSummary *)s)->version >= CAMEL_NNTP_STORE_SUMMARY_VERSION_1) {
-			if (camel_file_util_decode_uint32(in, &ni->first) == -1
-			    || camel_file_util_decode_uint32(in, &ni->last) == -1) {
-				camel_store_summary_info_free (s, (CamelStoreInfo *) ni);
+			if (camel_lite_file_util_decode_uint32(in, &ni->first) == -1
+			    || camel_lite_file_util_decode_uint32(in, &ni->last) == -1) {
+				camel_lite_store_summary_info_free (s, (CamelStoreInfo *) ni);
 				return NULL;
 			}
 		}
@@ -380,10 +380,10 @@ store_info_save (CamelStoreSummary *s, FILE *out, CamelStoreInfo *mi)
 {
 	CamelNNTPStoreInfo *isi = (CamelNNTPStoreInfo *)mi;
 
-	if (camel_nntp_store_summary_parent->store_info_save (s, out, mi) == -1
-	    || camel_file_util_encode_string (out, isi->full_name) == -1
-	    || camel_file_util_encode_uint32(out, isi->first) == -1
-	    || camel_file_util_encode_uint32(out, isi->last) == -1)
+	if (camel_lite_nntp_store_summary_parent->store_info_save (s, out, mi) == -1
+	    || camel_lite_file_util_encode_string (out, isi->full_name) == -1
+	    || camel_lite_file_util_encode_uint32(out, isi->first) == -1
+	    || camel_lite_file_util_encode_uint32(out, isi->last) == -1)
 		return -1;
 
 	return 0;
@@ -395,7 +395,7 @@ store_info_free (CamelStoreSummary *s, CamelStoreInfo *mi)
 	CamelNNTPStoreInfo *nsi = (CamelNNTPStoreInfo *) mi;
 
 	g_free (nsi->full_name);
-	camel_nntp_store_summary_parent->store_info_free (s, mi);
+	camel_lite_nntp_store_summary_parent->store_info_free (s, mi);
 }
 
 static const char *
@@ -411,7 +411,7 @@ store_info_string(CamelStoreSummary *s, const CamelStoreInfo *mi, int type)
 	case CAMEL_NNTP_STORE_INFO_FULL_NAME:
 		return nsi->full_name;
 	default:
-		return camel_nntp_store_summary_parent->store_info_string(s, mi, type);
+		return camel_lite_nntp_store_summary_parent->store_info_string(s, mi, type);
 	}
 }
 
@@ -431,7 +431,7 @@ store_info_set_string(CamelStoreSummary *s, CamelStoreInfo *mi, int type, const 
 		CAMEL_STORE_SUMMARY_UNLOCK(s, summary_lock);
 		break;
 	default:
-		camel_nntp_store_summary_parent->store_info_set_string (s, mi, type, str);
+		camel_lite_nntp_store_summary_parent->store_info_set_string (s, mi, type, str);
 		break;
 	}
 }

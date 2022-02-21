@@ -57,9 +57,9 @@ tny_camel_stream_write_to_stream (TnyStream *self, TnyStream *output)
 	g_return_val_if_fail (CAMEL_IS_STREAM (stream), -1);
 	g_return_val_if_fail (TNY_IS_STREAM (output), -1);
 
-	while (G_LIKELY (!camel_stream_eos (stream))) 
+	while (G_LIKELY (!camel_lite_stream_eos (stream))) 
 	{
-		nb_read = camel_stream_read (stream, tmp_buf, sizeof (tmp_buf));
+		nb_read = camel_lite_stream_read (stream, tmp_buf, sizeof (tmp_buf));
 		if (G_UNLIKELY (nb_read < 0))
 			return -1;
 		else if (G_LIKELY (nb_read > 0)) 
@@ -85,7 +85,7 @@ tny_camel_stream_read  (TnyStream *self, char *buffer, gsize n)
 {
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
-	return camel_stream_read (priv->stream, buffer, n);
+	return camel_lite_stream_read (priv->stream, buffer, n);
 }
 
 static gssize
@@ -93,7 +93,7 @@ tny_camel_stream_write (TnyStream *self, const char *buffer, gsize n)
 {
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
-	return camel_stream_write (priv->stream, buffer, n);
+	return camel_lite_stream_write (priv->stream, buffer, n);
 }
 
 static gint
@@ -101,7 +101,7 @@ tny_camel_stream_flush (TnyStream *self)
 {
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
-	return camel_stream_flush (priv->stream);
+	return camel_lite_stream_flush (priv->stream);
 }
 
 static gint
@@ -109,7 +109,7 @@ tny_camel_stream_close (TnyStream *self)
 {
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
-	return camel_stream_close (priv->stream);
+	return camel_lite_stream_close (priv->stream);
 }
 
 static gboolean
@@ -117,7 +117,7 @@ tny_camel_stream_is_eos   (TnyStream *self)
 {
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
-	return camel_stream_eos (priv->stream);
+	return camel_lite_stream_eos (priv->stream);
 }
 
 static gint
@@ -125,7 +125,7 @@ tny_camel_stream_reset (TnyStream *self)
 {
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
-	return camel_stream_reset (priv->stream);
+	return camel_lite_stream_reset (priv->stream);
 }
 
 static off_t 
@@ -133,7 +133,7 @@ tny_camel_stream_seek (TnySeekable *self, off_t offset, int policy)
 {
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 	if (CAMEL_IS_SEEKABLE_STREAM (priv->stream))
-		return camel_seekable_stream_seek ((CamelSeekableStream *) priv->stream, offset, (CamelStreamSeekPolicy) policy);
+		return camel_lite_seekable_stream_seek ((CamelSeekableStream *) priv->stream, offset, (CamelStreamSeekPolicy) policy);
 	return -1;
 }
 
@@ -143,7 +143,7 @@ tny_camel_stream_tell (TnySeekable *self)
 {
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 	if (CAMEL_IS_SEEKABLE_STREAM (priv->stream))
-		return camel_seekable_stream_tell ((CamelSeekableStream *) priv->stream);
+		return camel_lite_seekable_stream_tell ((CamelSeekableStream *) priv->stream);
 	return -1;
 }
 
@@ -152,7 +152,7 @@ tny_camel_stream_set_bounds (TnySeekable *self, off_t start, off_t end)
 {
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 	if (CAMEL_IS_SEEKABLE_STREAM (priv->stream))
-		return camel_seekable_stream_set_bounds ((CamelSeekableStream *) priv->stream, start, end);
+		return camel_lite_seekable_stream_set_bounds ((CamelSeekableStream *) priv->stream, start, end);
 	return -1;
 }
 
@@ -171,7 +171,7 @@ tny_camel_stream_get_stream (TnyCamelStream *self)
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
 	if (priv->stream)
-		camel_object_ref (priv->stream);
+		camel_lite_object_ref (priv->stream);
 
 	return priv->stream;
 }
@@ -193,7 +193,7 @@ tny_camel_stream_new (CamelStream *stream)
 	TnyCamelStream *self = g_object_new (TNY_TYPE_CAMEL_STREAM, NULL);
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
-	camel_object_ref (CAMEL_OBJECT (stream));
+	camel_lite_object_ref (CAMEL_OBJECT (stream));
 	priv->stream = stream;
 
 	return TNY_STREAM (self);
@@ -217,7 +217,7 @@ tny_camel_stream_finalize (GObject *object)
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
 	if (priv->stream)
-		camel_object_unref (priv->stream);
+		camel_lite_object_unref (priv->stream);
 
 	(*parent_class->finalize) (object);
 
@@ -332,7 +332,7 @@ tny_camel_stream_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

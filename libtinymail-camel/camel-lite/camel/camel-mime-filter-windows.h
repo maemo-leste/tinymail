@@ -26,9 +26,9 @@
 
 #include <camel/camel-mime-filter.h>
 
-#define CAMEL_MIME_FILTER_WINDOWS(obj)         CAMEL_CHECK_CAST (obj, camel_mime_filter_windows_get_type (), CamelMimeFilterWindows)
-#define CAMEL_MIME_FILTER_WINDOWS_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_mime_filter_windows_get_type (), CamelMimeFilterWindowsClass)
-#define CAMEL_IS_MIME_FILTER_WINDOWS(obj)      CAMEL_CHECK_TYPE (obj, camel_mime_filter_windows_get_type ())
+#define CAMEL_MIME_FILTER_WINDOWS(obj)         CAMEL_CHECK_CAST (obj, camel_lite_mime_filter_windows_get_type (), CamelMimeFilterWindows)
+#define CAMEL_MIME_FILTER_WINDOWS_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_mime_filter_windows_get_type (), CamelMimeFilterWindowsClass)
+#define CAMEL_IS_MIME_FILTER_WINDOWS(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_mime_filter_windows_get_type ())
 
 G_BEGIN_DECLS
 
@@ -48,12 +48,12 @@ struct _CamelMimeFilterWindowsClass {
 };
 
 
-CamelType camel_mime_filter_windows_get_type (void);
+CamelType camel_lite_mime_filter_windows_get_type (void);
 
-CamelMimeFilter *camel_mime_filter_windows_new (const char *claimed_charset);
+CamelMimeFilter *camel_lite_mime_filter_windows_new (const char *claimed_charset);
 
-gboolean camel_mime_filter_windows_is_windows_charset (CamelMimeFilterWindows *filter);
-const char *camel_mime_filter_windows_real_charset (CamelMimeFilterWindows *filter);
+gboolean camel_lite_mime_filter_windows_is_windows_charset (CamelMimeFilterWindows *filter);
+const char *camel_lite_mime_filter_windows_real_charset (CamelMimeFilterWindows *filter);
 
 G_END_DECLS
 

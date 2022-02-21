@@ -36,11 +36,11 @@
 /* if defined, must also compile in dump_tag() below somewhere */
 #define d(x)
 
-static void camel_html_parser_class_init (CamelHTMLParserClass *klass);
-static void camel_html_parser_init       (CamelObject *o);
-static void camel_html_parser_finalize   (CamelObject *o);
+static void camel_lite_html_parser_class_init (CamelHTMLParserClass *klass);
+static void camel_lite_html_parser_init       (CamelObject *o);
+static void camel_lite_html_parser_finalize   (CamelObject *o);
 
-static CamelObjectClass *camel_html_parser_parent;
+static CamelObjectClass *camel_lite_html_parser_parent;
 
 /* Parser definitions, see below object code for details */
 
@@ -51,7 +51,7 @@ struct _CamelHTMLParserPrivate {
 		*inptr,
 		*inend,
 		*start;
-	enum _camel_html_parser_t state;
+	enum _camel_lite_html_parser_t state;
 	char *charset;
 	int eof;
 	GString *tag;
@@ -71,25 +71,25 @@ static int tokenise_step(CamelHTMLParserPrivate *p, char **datap, int *lenp);
 /* ********************************************************************** */
 
 CamelType
-camel_html_parser_get_type (void)
+camel_lite_html_parser_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_object_get_type (), "CamelHTMLParser",
+		type = camel_lite_type_register (camel_lite_object_get_type (), "CamelLiteHTMLParser",
 					    sizeof (CamelHTMLParser),
 					    sizeof (CamelHTMLParserClass),
-					    (CamelObjectClassInitFunc) camel_html_parser_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_html_parser_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_html_parser_init,
-					    (CamelObjectFinalizeFunc) camel_html_parser_finalize);
+					    (CamelObjectInitFunc) camel_lite_html_parser_init,
+					    (CamelObjectFinalizeFunc) camel_lite_html_parser_finalize);
 	}
 
 	return type;
 }
 
 static void
-camel_html_parser_finalize(CamelObject *o)
+camel_lite_html_parser_finalize(CamelObject *o)
 {
 	CamelHTMLParser *f = (CamelHTMLParser *)o;
 
@@ -97,7 +97,7 @@ camel_html_parser_finalize(CamelObject *o)
 }
 
 static void
-camel_html_parser_init       (CamelObject *o)
+camel_lite_html_parser_init       (CamelObject *o)
 {
 	CamelHTMLParser *f = (CamelHTMLParser *)o;
 
@@ -105,29 +105,29 @@ camel_html_parser_init       (CamelObject *o)
 }
 
 static void
-camel_html_parser_class_init (CamelHTMLParserClass *klass)
+camel_lite_html_parser_class_init (CamelHTMLParserClass *klass)
 {
-	camel_html_parser_parent = CAMEL_OBJECT_CLASS (camel_type_get_global_classfuncs (camel_object_get_type ()));
+	camel_lite_html_parser_parent = CAMEL_OBJECT_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_object_get_type ()));
 
 	tokenise_setup();
 }
 
 /**
- * camel_html_parser_new:
+ * camel_lite_html_parser_new:
  *
  * Create a new CamelHTMLParser object.
  *
  * Return value: A new CamelHTMLParser widget.
  **/
 CamelHTMLParser *
-camel_html_parser_new (void)
+camel_lite_html_parser_new (void)
 {
-	CamelHTMLParser *new = CAMEL_HTML_PARSER ( camel_object_new (camel_html_parser_get_type ()));
+	CamelHTMLParser *new = CAMEL_HTML_PARSER ( camel_lite_object_new (camel_lite_html_parser_get_type ()));
 	return new;
 }
 
 
-void camel_html_parser_set_data(CamelHTMLParser *hp, const char *start, int len, int last)
+void camel_lite_html_parser_set_data(CamelHTMLParser *hp, const char *start, int len, int last)
 {
 	CamelHTMLParserPrivate *p = hp->priv;
 
@@ -136,12 +136,12 @@ void camel_html_parser_set_data(CamelHTMLParser *hp, const char *start, int len,
 	p->eof = last;
 }
 
-camel_html_parser_t camel_html_parser_step(CamelHTMLParser *hp, const char **datap, int *lenp)
+camel_lite_html_parser_t camel_lite_html_parser_step(CamelHTMLParser *hp, const char **datap, int *lenp)
 {
 	return tokenise_step(hp->priv, (char **)datap, lenp);
 }
 
-const char *camel_html_parser_left(CamelHTMLParser *hp, int *lenp)
+const char *camel_lite_html_parser_left(CamelHTMLParser *hp, int *lenp)
 {
 	CamelHTMLParserPrivate *p = hp->priv;
 
@@ -151,12 +151,12 @@ const char *camel_html_parser_left(CamelHTMLParser *hp, int *lenp)
 	return p->inptr;
 }
 
-const char *camel_html_parser_tag(CamelHTMLParser *hp)
+const char *camel_lite_html_parser_tag(CamelHTMLParser *hp)
 {
 	return hp->priv->tag->str;
 }
 
-const char *camel_html_parser_attr(CamelHTMLParser *hp, const char *name)
+const char *camel_lite_html_parser_attr(CamelHTMLParser *hp, const char *name)
 {
 	int i;
 	CamelHTMLParserPrivate *p = hp->priv;
@@ -170,7 +170,7 @@ const char *camel_html_parser_attr(CamelHTMLParser *hp, const char *name)
 	return NULL;
 }
 
-const GPtrArray *camel_html_parser_attr_list(CamelHTMLParser *hp, const GPtrArray **values)
+const GPtrArray *camel_lite_html_parser_attr_list(CamelHTMLParser *hp, const GPtrArray **values)
 {
 	if (values)
 		*values = hp->priv->values;

@@ -48,9 +48,9 @@ _tny_camel_header_set_camel_message_info (TnyCamelHeader *self, CamelMessageInfo
 		g_warning ("Strange behaviour: Overwriting existing message info");
 
 	if (self->info)
-		camel_message_info_free (self->info);
+		camel_lite_message_info_free (self->info);
 
-	camel_message_info_ref (camel_message_info);
+	camel_lite_message_info_ref (camel_message_info);
 	self->info = camel_message_info;
 
 	return;
@@ -63,7 +63,7 @@ _tny_camel_header_set_as_memory (TnyCamelHeader *self, CamelMessageInfo *info)
 		g_warning ("Strange behaviour: Overwriting existing message info");
 
 	if (self->info)
-		camel_message_info_free (self->info);
+		camel_lite_message_info_free (self->info);
 
 	self->info = info;
 
@@ -128,9 +128,9 @@ tny_camel_header_dup_cc (TnyHeader *self)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	gchar *retval = NULL;
 
-	camel_folder_summary_lock ();
-	retval = g_strdup (camel_message_info_cc (me->info));
-	camel_folder_summary_unlock ();
+	camel_lite_folder_summary_lock ();
+	retval = g_strdup (camel_lite_message_info_cc (me->info));
+	camel_lite_folder_summary_unlock ();
 
 	return retval;
 }
@@ -148,7 +148,7 @@ tny_camel_header_get_flags (TnyHeader *self)
 	TnyHeaderFlags retval = 0;
 
 	/* This is only legal because the flags between CamelLite and Tinymail are equalized */
-	retval = camel_message_info_flags (me->info);
+	retval = camel_lite_message_info_flags (me->info);
 
 	return retval;
 }
@@ -172,7 +172,7 @@ tny_camel_header_set_flag (TnyHeader *self, TnyHeaderFlags mask)
 	}
 
 	/* This is only legal because the flags between CamelLite and Tinymail are equalized */
-	camel_message_info_set_flags (me->info, mask, ~0);
+	camel_lite_message_info_set_flags (me->info, mask, ~0);
 
 	if (fpriv)
 		fpriv->handle_changes = TRUE;
@@ -194,7 +194,7 @@ tny_camel_header_unset_flag (TnyHeader *self, TnyHeaderFlags mask)
 	   ((info->flags & CAMEL_MESSAGE_SEEN) && !(mask & TNY_HEADER_FLAG_SEEN)) ) 
 	   && me->folder) doit = TRUE;
 
-	camel_message_info_set_flags (me->info, mask, 0);
+	camel_lite_message_info_set_flags (me->info, mask, 0);
 
 	if (doit)
 		_tny_camel_folder_check_unread_count (me->folder);
@@ -208,7 +208,7 @@ tny_camel_header_get_user_flag (TnyHeader *self, const gchar *id)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	gboolean retval;
 
-	retval = camel_message_info_user_flag (me->info, id);
+	retval = camel_lite_message_info_user_flag (me->info, id);
 
 	return retval;
 }
@@ -218,7 +218,7 @@ tny_camel_header_set_user_flag (TnyHeader *self, const gchar *id)
 {
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 
-	camel_message_info_set_user_flag (me->info, id, TRUE);
+	camel_lite_message_info_set_user_flag (me->info, id, TRUE);
 }
 
 static void
@@ -226,7 +226,7 @@ tny_camel_header_unset_user_flag (TnyHeader *self, const gchar *id)
 {
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 
-	camel_message_info_set_user_flag (me->info, id, FALSE);
+	camel_lite_message_info_set_user_flag (me->info, id, FALSE);
 }
 
 static TnyHeaderSupportFlags
@@ -235,13 +235,13 @@ tny_camel_header_support_user_flags (TnyHeader *self)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	TnyHeaderSupportFlags flags = TNY_HEADER_SUPPORT_FLAGS_NONE;
 
-	if (camel_message_info_user_flag (me->info, CAMEL_MESSAGE_INFO_SUPPORT_FLAGS_ANY_USER_FLAG))
+	if (camel_lite_message_info_user_flag (me->info, CAMEL_MESSAGE_INFO_SUPPORT_FLAGS_ANY_USER_FLAG))
 		flags |= TNY_HEADER_SUPPORT_FLAGS_ANY;
-	if (camel_message_info_user_flag (me->info, CAMEL_MESSAGE_INFO_SUPPORT_FLAGS_SOME_USER_FLAG))
+	if (camel_lite_message_info_user_flag (me->info, CAMEL_MESSAGE_INFO_SUPPORT_FLAGS_SOME_USER_FLAG))
 		flags |= TNY_HEADER_SUPPORT_FLAGS_SOME;
-	if (camel_message_info_user_flag (me->info, CAMEL_MESSAGE_INFO_SUPPORT_PERMANENT_FLAGS_ANY_USER_FLAG))
+	if (camel_lite_message_info_user_flag (me->info, CAMEL_MESSAGE_INFO_SUPPORT_PERMANENT_FLAGS_ANY_USER_FLAG))
 		flags |= TNY_HEADER_SUPPORT_PERSISTENT_FLAGS_ANY;
-	if (camel_message_info_user_flag (me->info, CAMEL_MESSAGE_INFO_SUPPORT_PERMANENT_FLAGS_SOME_USER_FLAG))
+	if (camel_lite_message_info_user_flag (me->info, CAMEL_MESSAGE_INFO_SUPPORT_PERMANENT_FLAGS_SOME_USER_FLAG))
 		flags |= TNY_HEADER_SUPPORT_PERSISTENT_FLAGS_SOME;
 
 	return flags;
@@ -253,7 +253,7 @@ tny_camel_header_get_date_received (TnyHeader *self)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	time_t retval = 0;
 
-	retval = camel_message_info_date_received (me->info);
+	retval = camel_lite_message_info_date_received (me->info);
 
 	return retval;
 }
@@ -264,7 +264,7 @@ tny_camel_header_get_date_sent (TnyHeader *self)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	time_t retval = 0;
 
-	retval = camel_message_info_date_sent (me->info);
+	retval = camel_lite_message_info_date_sent (me->info);
 
 	return retval;
 }
@@ -275,9 +275,9 @@ tny_camel_header_dup_from (TnyHeader *self)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	gchar *retval = NULL;
 
-	camel_folder_summary_lock ();
-	retval = g_strdup (camel_message_info_from (me->info));
-	camel_folder_summary_unlock ();
+	camel_lite_folder_summary_lock ();
+	retval = g_strdup (camel_lite_message_info_from (me->info));
+	camel_lite_folder_summary_unlock ();
 
 	return retval;
 }
@@ -288,9 +288,9 @@ tny_camel_header_dup_subject (TnyHeader *self)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	gchar *retval = NULL;
 
-	camel_folder_summary_lock ();
-	retval = g_strdup (camel_message_info_subject (me->info));
-	camel_folder_summary_unlock ();
+	camel_lite_folder_summary_lock ();
+	retval = g_strdup (camel_lite_message_info_subject (me->info));
+	camel_lite_folder_summary_unlock ();
 
 	return retval;
 }
@@ -302,9 +302,9 @@ tny_camel_header_dup_to (TnyHeader *self)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	gchar *retval = NULL;
 
-	camel_folder_summary_lock ();
-	retval = g_strdup (camel_message_info_to (me->info));
-	camel_folder_summary_unlock ();
+	camel_lite_folder_summary_lock ();
+	retval = g_strdup (camel_lite_message_info_to (me->info));
+	camel_lite_folder_summary_unlock ();
 
 	return retval;
 }
@@ -315,10 +315,10 @@ tny_camel_header_dup_message_id (TnyHeader *self)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	gchar *retval = NULL;
 
-	camel_folder_summary_lock ();
-	retval = g_strndup ((const gchar *) camel_message_info_message_id (me->info),
+	camel_lite_folder_summary_lock ();
+	retval = g_strndup ((const gchar *) camel_lite_message_info_message_id (me->info),
 			    sizeof (CamelSummaryMessageID));
-	camel_folder_summary_unlock ();
+	camel_lite_folder_summary_unlock ();
 
 	return retval;
 }
@@ -331,7 +331,7 @@ tny_camel_header_get_message_size (TnyHeader *self)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	guint retval;
 
-	retval = (guint) camel_message_info_size (me->info);
+	retval = (guint) camel_lite_message_info_size (me->info);
 
 	return retval;
 
@@ -344,7 +344,7 @@ tny_camel_header_dup_uid (TnyHeader *self)
 	TnyCamelHeader *me = TNY_CAMEL_HEADER (self);
 	gchar *retval = NULL;
 
-	retval = g_strdup (camel_message_info_uid (me->info));
+	retval = g_strdup (camel_lite_message_info_uid (me->info));
 
 	return retval;
 }
@@ -355,7 +355,7 @@ tny_camel_header_finalize (GObject *object)
 	TnyCamelHeader *self = (TnyCamelHeader*) object;
 
 	if (self->info)
-		camel_message_info_free (self->info);
+		camel_lite_message_info_free (self->info);
 
 	if (self->folder) {
 		TnyCamelFolderPriv *fpriv = TNY_CAMEL_FOLDER_GET_PRIVATE (self->folder);
@@ -504,7 +504,7 @@ tny_camel_header_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

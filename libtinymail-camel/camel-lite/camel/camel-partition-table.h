@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 
 /* CamelPartitionTable - index of key to keyid */
 
-typedef guint32 camel_hash_t;	/* a hashed key */
+typedef guint32 camel_lite_hash_t;	/* a hashed key */
 
 typedef struct _CamelPartitionKey CamelPartitionKey;
 typedef struct _CamelPartitionKeyBlock CamelPartitionKeyBlock;
@@ -44,8 +44,8 @@ typedef struct _CamelPartitionTable CamelPartitionTable;
 typedef struct _CamelPartitionTableClass CamelPartitionTableClass;
 
 struct _CamelPartitionKey {
-	camel_hash_t hashid;
-	camel_key_t keyid;
+	camel_lite_hash_t hashid;
+	camel_lite_key_t keyid;
 };
 
 struct _CamelPartitionKeyBlock {
@@ -54,12 +54,12 @@ struct _CamelPartitionKeyBlock {
 };
 
 struct _CamelPartitionMap {
-	camel_hash_t hashid;
-	camel_block_t blockid;
+	camel_lite_hash_t hashid;
+	camel_lite_block_t blockid;
 };
 
 struct _CamelPartitionMapBlock {
-	camel_block_t next;
+	camel_lite_block_t next;
 	guint32 used;
 	struct _CamelPartitionMap partition[(CAMEL_BLOCK_SIZE-8)/sizeof(struct _CamelPartitionMap)];
 };
@@ -70,9 +70,9 @@ struct _CamelPartitionTable {
 	struct _CamelPartitionTablePrivate *priv;
 
 	CamelBlockFile *blocks;
-	camel_block_t rootid;
+	camel_lite_block_t rootid;
 
-	int (*is_key)(CamelPartitionTable *cpi, const char *key, camel_key_t keyid, void *data);
+	int (*is_key)(CamelPartitionTable *cpi, const char *key, camel_lite_key_t keyid, void *data);
 	void *is_key_data;
 
 	/* we keep a list of partition blocks active at all times */
@@ -83,13 +83,13 @@ struct _CamelPartitionTableClass {
 	CamelObjectClass parent;
 };
 
-CamelType camel_partition_table_get_type(void);
+CamelType camel_lite_partition_table_get_type(void);
 
-CamelPartitionTable *camel_partition_table_new(struct _CamelBlockFile *bs, camel_block_t root);
-int camel_partition_table_sync(CamelPartitionTable *cpi);
-int camel_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_key_t keyid);
-camel_key_t camel_partition_table_lookup(CamelPartitionTable *cpi, const char *key);
-void camel_partition_table_remove(CamelPartitionTable *cpi, const char *key);
+CamelPartitionTable *camel_lite_partition_table_new(struct _CamelBlockFile *bs, camel_lite_block_t root);
+int camel_lite_partition_table_sync(CamelPartitionTable *cpi);
+int camel_lite_partition_table_add(CamelPartitionTable *cpi, const char *key, camel_lite_key_t keyid);
+camel_lite_key_t camel_lite_partition_table_lookup(CamelPartitionTable *cpi, const char *key);
+void camel_lite_partition_table_remove(CamelPartitionTable *cpi, const char *key);
 
 /* ********************************************************************** */
 
@@ -102,19 +102,19 @@ typedef struct _CamelKeyTable CamelKeyTable;
 typedef struct _CamelKeyTableClass CamelKeyTableClass;
 
 struct _CamelKeyRootBlock {
-	camel_block_t first;
-	camel_block_t last;
-	camel_key_t free;	/* free list */
+	camel_lite_block_t first;
+	camel_lite_block_t last;
+	camel_lite_key_t free;	/* free list */
 };
 
 struct _CamelKeyKey {
-	camel_block_t data;
+	camel_lite_block_t data;
 	unsigned int offset:10;
 	unsigned int flags:22;
 };
 
 struct _CamelKeyBlock {
-	camel_block_t next;
+	camel_lite_block_t next;
 	guint32 used;
 	union {
 		struct _CamelKeyKey keys[(CAMEL_BLOCK_SIZE-8)/sizeof(struct _CamelKeyKey)];
@@ -131,7 +131,7 @@ struct _CamelKeyTable {
 
 	CamelBlockFile *blocks;
 
-	camel_block_t rootid;
+	camel_lite_block_t rootid;
 
 	CamelKeyRootBlock *root;
 	CamelBlock *root_block;
@@ -141,15 +141,15 @@ struct _CamelKeyTableClass {
 	CamelObjectClass parent;
 };
 
-CamelType camel_key_table_get_type(void);
+CamelType camel_lite_key_table_get_type(void);
 
-CamelKeyTable * camel_key_table_new(CamelBlockFile *bs, camel_block_t root);
-int camel_key_table_sync(CamelKeyTable *ki);
-camel_key_t camel_key_table_add(CamelKeyTable *ki, const char *key, camel_block_t data, unsigned int flags);
-void camel_key_table_set_data(CamelKeyTable *ki, camel_key_t keyid, camel_block_t data);
-void camel_key_table_set_flags(CamelKeyTable *ki, camel_key_t keyid, unsigned int flags, unsigned int set);
-camel_block_t camel_key_table_lookup(CamelKeyTable *ki, camel_key_t keyid, char **key, unsigned int *flags);
-camel_key_t camel_key_table_next(CamelKeyTable *ki, camel_key_t next, char **keyp, unsigned int *flagsp, camel_block_t *datap);
+CamelKeyTable * camel_lite_key_table_new(CamelBlockFile *bs, camel_lite_block_t root);
+int camel_lite_key_table_sync(CamelKeyTable *ki);
+camel_lite_key_t camel_lite_key_table_add(CamelKeyTable *ki, const char *key, camel_lite_block_t data, unsigned int flags);
+void camel_lite_key_table_set_data(CamelKeyTable *ki, camel_lite_key_t keyid, camel_lite_block_t data);
+void camel_lite_key_table_set_flags(CamelKeyTable *ki, camel_lite_key_t keyid, unsigned int flags, unsigned int set);
+camel_lite_block_t camel_lite_key_table_lookup(CamelKeyTable *ki, camel_lite_key_t keyid, char **key, unsigned int *flags);
+camel_lite_key_t camel_lite_key_table_next(CamelKeyTable *ki, camel_lite_key_t next, char **keyp, unsigned int *flagsp, camel_lite_block_t *datap);
 
 G_END_DECLS
 

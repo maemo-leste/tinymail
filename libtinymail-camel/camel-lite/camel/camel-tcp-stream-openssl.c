@@ -195,31 +195,31 @@ tls_cleanup(void)
 
 
 static void
-camel_tcp_stream_ssl_class_init (CamelTcpStreamSSLClass *camel_tcp_stream_ssl_class)
+camel_lite_tcp_stream_ssl_class_init (CamelTcpStreamSSLClass *camel_lite_tcp_stream_ssl_class)
 {
-	CamelTcpStreamClass *camel_tcp_stream_class =
-		CAMEL_TCP_STREAM_CLASS (camel_tcp_stream_ssl_class);
-	CamelStreamClass *camel_stream_class =
-		CAMEL_STREAM_CLASS (camel_tcp_stream_ssl_class);
+	CamelTcpStreamClass *camel_lite_tcp_stream_class =
+		CAMEL_TCP_STREAM_CLASS (camel_lite_tcp_stream_ssl_class);
+	CamelStreamClass *camel_lite_stream_class =
+		CAMEL_STREAM_CLASS (camel_lite_tcp_stream_ssl_class);
 
 	g_warning ("tinymail: Using openssl, which is not fully tested or supported. NSS is recommended instead.");
 
 
-	parent_class = CAMEL_TCP_STREAM_CLASS (camel_type_get_global_classfuncs (camel_tcp_stream_get_type ()));
+	parent_class = CAMEL_TCP_STREAM_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_tcp_stream_get_type ()));
 
-	camel_stream_class->read = stream_read;
-	camel_stream_class->write = stream_write;
-	camel_stream_class->flush = stream_flush;
-	camel_stream_class->close = stream_close;
+	camel_lite_stream_class->read = stream_read;
+	camel_lite_stream_class->write = stream_write;
+	camel_lite_stream_class->flush = stream_flush;
+	camel_lite_stream_class->close = stream_close;
 
-	camel_tcp_stream_class->enable_compress = openssl_enable_compress;
-	camel_tcp_stream_class->gettimeout = stream_gettimeout;
-	camel_tcp_stream_class->read_nb = stream_read_nb;
-	camel_tcp_stream_class->connect = stream_connect;
-	camel_tcp_stream_class->getsockopt = stream_getsockopt;
-	camel_tcp_stream_class->setsockopt = stream_setsockopt;
-	camel_tcp_stream_class->get_local_address  = stream_get_local_address;
-	camel_tcp_stream_class->get_remote_address = stream_get_remote_address;
+	camel_lite_tcp_stream_class->enable_compress = openssl_enable_compress;
+	camel_lite_tcp_stream_class->gettimeout = stream_gettimeout;
+	camel_lite_tcp_stream_class->read_nb = stream_read_nb;
+	camel_lite_tcp_stream_class->connect = stream_connect;
+	camel_lite_tcp_stream_class->getsockopt = stream_getsockopt;
+	camel_lite_tcp_stream_class->setsockopt = stream_setsockopt;
+	camel_lite_tcp_stream_class->get_local_address  = stream_get_local_address;
+	camel_lite_tcp_stream_class->get_remote_address = stream_get_remote_address;
 
 	/* init OpenSSL stuff */
 
@@ -227,7 +227,7 @@ camel_tcp_stream_ssl_class_init (CamelTcpStreamSSLClass *camel_tcp_stream_ssl_cl
 }
 
 static void
-camel_tcp_stream_ssl_init (gpointer object, gpointer klass)
+camel_lite_tcp_stream_ssl_init (gpointer object, gpointer klass)
 {
 	CamelTcpStreamSSL *stream = CAMEL_TCP_STREAM_SSL (object);
 
@@ -236,7 +236,7 @@ camel_tcp_stream_ssl_init (gpointer object, gpointer klass)
 }
 
 static void
-camel_tcp_stream_ssl_finalize (CamelObject *object)
+camel_lite_tcp_stream_ssl_finalize (CamelObject *object)
 {
 	CamelTcpStreamSSL *stream = CAMEL_TCP_STREAM_SSL (object);
 
@@ -260,19 +260,19 @@ camel_tcp_stream_ssl_finalize (CamelObject *object)
 
 
 CamelType
-camel_tcp_stream_ssl_get_type (void)
+camel_lite_tcp_stream_ssl_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_tcp_stream_get_type (),
-					    "CamelTcpStreamSSL",
+		type = camel_lite_type_register (camel_lite_tcp_stream_get_type (),
+					    "CamelLiteTcpStreamSSL",
 					    sizeof (CamelTcpStreamSSL),
 					    sizeof (CamelTcpStreamSSLClass),
-					    (CamelObjectClassInitFunc) camel_tcp_stream_ssl_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_tcp_stream_ssl_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_tcp_stream_ssl_init,
-					    (CamelObjectFinalizeFunc) camel_tcp_stream_ssl_finalize);
+					    (CamelObjectInitFunc) camel_lite_tcp_stream_ssl_init,
+					    (CamelObjectFinalizeFunc) camel_lite_tcp_stream_ssl_finalize);
 	}
 
 	return type;
@@ -281,7 +281,7 @@ camel_tcp_stream_ssl_get_type (void)
 
 
 /**
- * camel_tcp_stream_ssl_new:
+ * camel_lite_tcp_stream_ssl_new:
  * @service: camel service
  * @expected_host: host that the stream is expecting to connect with.
  * @flags: flags
@@ -293,11 +293,11 @@ camel_tcp_stream_ssl_get_type (void)
  * Return value: a ssl stream (in ssl mode)
  **/
 CamelStream *
-camel_tcp_stream_ssl_new (CamelService *service, const char *expected_host, guint32 flags)
+camel_lite_tcp_stream_ssl_new (CamelService *service, const char *expected_host, guint32 flags)
 {
 	CamelTcpStreamSSL *stream;
 
-	stream = CAMEL_TCP_STREAM_SSL (camel_object_new (camel_tcp_stream_ssl_get_type ()));
+	stream = CAMEL_TCP_STREAM_SSL (camel_lite_object_new (camel_lite_tcp_stream_ssl_get_type ()));
 
 	stream->priv->session = service->session;
 	stream->priv->expected_host = g_strdup (expected_host);
@@ -310,7 +310,7 @@ camel_tcp_stream_ssl_new (CamelService *service, const char *expected_host, guin
 
 
 /**
- * camel_tcp_stream_ssl_new_raw:
+ * camel_lite_tcp_stream_ssl_new_raw:
  * @service: camel service
  * @expected_host: host that the stream is expecting to connect with.
  * @flags: flags
@@ -322,11 +322,11 @@ camel_tcp_stream_ssl_new (CamelService *service, const char *expected_host, guin
  * Return value: a ssl-capable stream (in non ssl mode)
  **/
 CamelStream *
-camel_tcp_stream_ssl_new_raw (CamelService *service, const char *expected_host, guint32 flags)
+camel_lite_tcp_stream_ssl_new_raw (CamelService *service, const char *expected_host, guint32 flags)
 {
 	CamelTcpStreamSSL *stream;
 
-	stream = CAMEL_TCP_STREAM_SSL (camel_object_new (camel_tcp_stream_ssl_get_type ()));
+	stream = CAMEL_TCP_STREAM_SSL (camel_lite_object_new (camel_lite_tcp_stream_ssl_get_type ()));
 
 	stream->priv->session = service->session;
 	stream->priv->expected_host = g_strdup (expected_host);
@@ -366,7 +366,7 @@ ssl_errno (SSL *ssl, int ret)
 
 
 /**
- * camel_tcp_stream_ssl_enable_ssl:
+ * camel_lite_tcp_stream_ssl_enable_ssl:
  * @stream: ssl stream
  *
  * Toggles an ssl-capable stream into ssl mode (if it isn't already).
@@ -374,7 +374,7 @@ ssl_errno (SSL *ssl, int ret)
  * Returns 0 on success or -1 on fail.
  **/
 int
-camel_tcp_stream_ssl_enable_ssl (CamelTcpStreamSSL *stream)
+camel_lite_tcp_stream_ssl_enable_ssl (CamelTcpStreamSSL *stream)
 {
 	SSL *ssl;
 
@@ -464,12 +464,12 @@ stream_read (CamelStream *stream, char *buffer, size_t n)
 	ssize_t nread;
 	int cancel_fd;
 
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
 
-	cancel_fd = camel_operation_cancel_fd (NULL);
+	cancel_fd = camel_lite_operation_cancel_fd (NULL);
 	if (cancel_fd == -1) {
 
 		int error, flags, fdmax;
@@ -557,12 +557,12 @@ stream_write (CamelStream *stream, const char *buffer, size_t n)
 	ssize_t w, written = 0;
 	int cancel_fd;
 
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
 
-	cancel_fd = camel_operation_cancel_fd (NULL);
+	cancel_fd = camel_lite_operation_cancel_fd (NULL);
 	if (cancel_fd == -1) {
 
 
@@ -706,7 +706,7 @@ stream_close (CamelStream *stream)
 	return 0;
 }
 
-/* this is a 'cancellable' connect, cancellable from camel_operation_cancel etc */
+/* this is a 'cancellable' connect, cancellable from camel_lite_operation_cancel etc */
 /* returns -1 & errno == EINTR if the connection was cancelled */
 static int
 socket_connect (struct addrinfo *host)
@@ -717,14 +717,14 @@ socket_connect (struct addrinfo *host)
 	int ret, fd;
 
 	/* see if we're cancelled yet */
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
 
 	fd = socket (host->ai_family, SOCK_STREAM, 0);
 
-	cancel_fd = camel_operation_cancel_fd (NULL);
+	cancel_fd = camel_lite_operation_cancel_fd (NULL);
 	if (cancel_fd == -1) {
 		ret = connect (fd, saddr, sizeof (struct sockaddr));
 		if (ret == -1) {
@@ -899,28 +899,28 @@ ssl_verify (int ok, X509_STORE_CTX *ctx)
 
 #define GET_STRING(name) X509_NAME_oneline (name, buf, 256)
 
-	certdb = camel_certdb_get_default ();
+	certdb = camel_lite_certdb_get_default ();
 	if (certdb) {
-		ccert = camel_certdb_get_cert (certdb, (const char *) fingerprint);
+		ccert = camel_lite_certdb_get_cert (certdb, (const char *) fingerprint);
 		if (ccert) {
 			if (ccert->trust != CAMEL_CERT_TRUST_UNKNOWN) {
 				ok = ccert->trust != CAMEL_CERT_TRUST_NEVER;
-				camel_certdb_cert_unref (certdb, ccert);
-				camel_object_unref (certdb);
+				camel_lite_certdb_cert_unref (certdb, ccert);
+				camel_lite_object_unref (certdb);
 
 				return ok;
 			}
 		} else {
 			/* create a new camel-cert */
-			ccert = camel_certdb_cert_new (certdb);
-			camel_cert_set_issuer (certdb, ccert, GET_STRING (X509_get_issuer_name (cert)));
-			camel_cert_set_subject (certdb, ccert, GET_STRING (X509_get_subject_name (cert)));
-			camel_cert_set_hostname (certdb, ccert, (const char *) stream->priv->expected_host);
-			camel_cert_set_fingerprint (certdb, ccert, (const char *) fingerprint);
-			camel_cert_set_trust (certdb, ccert, CAMEL_CERT_TRUST_UNKNOWN);
+			ccert = camel_lite_certdb_cert_new (certdb);
+			camel_lite_cert_set_issuer (certdb, ccert, GET_STRING (X509_get_issuer_name (cert)));
+			camel_lite_cert_set_subject (certdb, ccert, GET_STRING (X509_get_subject_name (cert)));
+			camel_lite_cert_set_hostname (certdb, ccert, (const char *) stream->priv->expected_host);
+			camel_lite_cert_set_fingerprint (certdb, ccert, (const char *) fingerprint);
+			camel_lite_cert_set_trust (certdb, ccert, CAMEL_CERT_TRUST_UNKNOWN);
 
 			/* Add the certificate to our db */
-			camel_certdb_add (certdb, ccert);
+			camel_lite_certdb_add (certdb, ccert);
 		}
 	}
 
@@ -935,18 +935,18 @@ ssl_verify (int ok, X509_STORE_CTX *ctx)
 	prompt = g_strdup_printf (_("SSL Certificate check:\n\n%s\n\n%s\n"),
 				    cert_str, x509_strerror (err));
 
-	ok = camel_session_alert_user_with_id (session, CAMEL_SESSION_ALERT_WARNING,
+	ok = camel_lite_session_alert_user_with_id (session, CAMEL_SESSION_ALERT_WARNING,
 		CAMEL_EXCEPTION_SERVICE_CERTIFICATE, prompt, TRUE, stream->priv->service);
 	g_free (prompt);
 
 	if (ok && ccert) {
-		camel_cert_set_trust (certdb, ccert, CAMEL_CERT_TRUST_FULLY);
-		camel_certdb_touch (certdb);
+		camel_lite_cert_set_trust (certdb, ccert, CAMEL_CERT_TRUST_FULLY);
+		camel_lite_certdb_touch (certdb);
 	}
 
 	if (certdb) {
-		camel_certdb_cert_unref (certdb, ccert);
-		camel_object_unref (certdb);
+		camel_lite_certdb_cert_unref (certdb, ccert);
+		camel_lite_object_unref (certdb);
 	}
 
 	return ok;

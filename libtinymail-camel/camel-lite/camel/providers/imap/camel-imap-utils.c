@@ -520,7 +520,7 @@ imap_label_to_flags(CamelMessageInfo *info)
 	const char *label;
 	guint32 flags;
 
-	label = camel_message_info_user_tag(info, "label");
+	label = camel_lite_message_info_user_tag(info, "label");
 	if (label == NULL)
 		flags = 0;
 	else if (!strcmp(label, "important"))
@@ -669,7 +669,7 @@ imap_is_atom(const char *in)
  * string. On failure, *@str_p will be set to %NULL.
  *
  * This assumes that the string is in the form returned by
- * camel_imap_command(): that line breaks are indicated by LF rather
+ * camel_lite_imap_command(): that line breaks are indicated by LF rather
  * than CRLF.
  *
  * Return value: the parsed string, or %NULL if a NIL or no string
@@ -825,7 +825,7 @@ parse_params (const char **parms_p, CamelContentType *type)
 		value = imap_parse_nstring (&parms, &len);
 
 		if (name && value)
-			camel_content_type_set_param (type, name, value);
+			camel_lite_content_type_set_param (type, name, value);
 		g_free (name);
 		g_free (value);
 
@@ -859,7 +859,7 @@ imap_body_decode (const char **in, CamelMessageContentInfo *ci, CamelFolder *fol
 		return NULL;
 
 	if (ci == NULL) {
-		ci = camel_folder_summary_content_info_new (folder->summary);
+		ci = camel_lite_folder_summary_content_info_new (folder->summary);
 		g_ptr_array_add (cis, ci);
 	}
 
@@ -888,11 +888,11 @@ imap_body_decode (const char **in, CamelMessageContentInfo *ci, CamelFolder *fol
 			inptr += 3;
 		}
 
-		ctype = camel_content_type_new ("multipart", subtype ? subtype : "mixed");
+		ctype = camel_lite_content_type_new ("multipart", subtype ? subtype : "mixed");
 		g_free (subtype);
 
 		if (*inptr++ != ')') {
-			camel_content_type_unref (ctype);
+			camel_lite_content_type_unref (ctype);
 			return NULL;
 		}
 
@@ -927,9 +927,9 @@ imap_body_decode (const char **in, CamelMessageContentInfo *ci, CamelFolder *fol
 			inptr += 3;
 		}
 
-		camel_strdown (type);
-		camel_strdown (subtype);
-		ctype = camel_content_type_new (type, subtype);
+		camel_lite_strdown (type);
+		camel_lite_strdown (subtype);
+		ctype = camel_lite_content_type_new (type, subtype);
 		g_free (subtype);
 		g_free (type);
 
@@ -993,7 +993,7 @@ imap_body_decode (const char **in, CamelMessageContentInfo *ci, CamelFolder *fol
 			goto exception;
 
 
-		if (camel_content_type_is (ctype, "message", "rfc822")) {
+		if (camel_lite_content_type_is (ctype, "message", "rfc822")) {
 			/* body_type_msg */
 			if (*inptr++ != ' ')
 				goto exception;
@@ -1015,7 +1015,7 @@ imap_body_decode (const char **in, CamelMessageContentInfo *ci, CamelFolder *fol
 			/* lines */
 			strtoul ((const char *) inptr, &p, 10);
 			inptr = (const char *) p;
-		} else if (camel_content_type_is (ctype, "text", "*")) {
+		} else if (camel_lite_content_type_is (ctype, "text", "*")) {
 			if (*inptr++ != ' ')
 				goto exception;
 
@@ -1043,7 +1043,7 @@ imap_body_decode (const char **in, CamelMessageContentInfo *ci, CamelFolder *fol
 
  exception:
 
-	camel_content_type_unref (ctype);
+	camel_lite_content_type_unref (ctype);
 	g_free (id);
 	g_free (description);
 	g_free (encoding);
@@ -1088,7 +1088,7 @@ imap_parse_body (const char **body_p, CamelFolder *folder,
 			child->parent = NULL;
 			child->childs = NULL;
 
-			camel_folder_summary_content_info_free (folder->summary, child);
+			camel_lite_folder_summary_content_info_free (folder->summary, child);
 		}
 		*body_p = NULL;
 	} else {
@@ -1142,10 +1142,10 @@ get_summary_uid_numeric (CamelFolderSummary *summary, int index)
 	CamelMessageInfo *info;
 	unsigned long uid = 0;
 
-	info = camel_folder_summary_index (summary, index);
+	info = camel_lite_folder_summary_index (summary, index);
 	if (info) {
-		uid = strtoul (camel_message_info_uid (info), NULL, 10);
-		camel_message_info_free(info);
+		uid = strtoul (camel_lite_message_info_uid (info), NULL, 10);
+		camel_lite_message_info_free(info);
 	}
 	return uid;
 }
@@ -1187,7 +1187,7 @@ imap_uid_array_to_set (CamelFolderSummary *summary, GPtrArray *uids, int uid, ss
 	gset = g_string_new (uids->pdata[uid]);
 	last_uid = strtoul (uids->pdata[uid], NULL, 10);
 	next_summary_uid = 0;
-	scount = camel_folder_summary_count (summary);
+	scount = camel_lite_folder_summary_count (summary);
 
 	for (uid++, si = 0; uid < uids->len && !UID_SET_FULL (gset->len, maxlen); uid++) {
 		/* Find the next UID in the summary after the one we
@@ -1249,7 +1249,7 @@ imap_uid_set_to_array (CamelFolderSummary *summary, const char *uids)
 	int si, scount;
 
 	arr = g_ptr_array_new ();
-	scount = camel_folder_summary_count (summary);
+	scount = camel_lite_folder_summary_count (summary);
 
 	p = (char *)uids;
 	si = 0;
@@ -1334,7 +1334,7 @@ imap_mailbox_encode (const unsigned char *in, size_t inlen)
 	memcpy (buf, in, inlen);
 	buf[inlen] = 0;
 
-	return camel_utf8_utf7 (buf);
+	return camel_lite_utf8_utf7 (buf);
 }
 
 char *
@@ -1346,7 +1346,7 @@ imap_mailbox_decode (const unsigned char *in, size_t inlen)
 	memcpy (buf, in, inlen);
 	buf[inlen] = 0;
 
-	return camel_utf7_utf8 (buf);
+	return camel_lite_utf7_utf8 (buf);
 }
 
 char *

@@ -36,8 +36,8 @@
 
 #include "camel-pop3-stream.h"
 
-extern int camel_verbose_debug;
-#define dd(x) (camel_verbose_debug?(x):0)
+extern int camel_lite_verbose_debug;
+#define dd(x) (camel_lite_verbose_debug?(x):0)
 
 static CamelObjectClass *parent_class = NULL;
 
@@ -57,7 +57,7 @@ stream_fill(CamelPOP3Stream *is)
 		memcpy(is->buf, is->ptr, left);
 		is->end = is->buf + left;
 		is->ptr = is->buf;
-		left = camel_stream_read(is->source, (char *) is->end, CAMEL_POP3_STREAM_SIZE - (is->end - is->buf));
+		left = camel_lite_stream_read(is->source, (char *) is->end, CAMEL_POP3_STREAM_SIZE - (is->end - is->buf));
 		if (left > 0) {
 			is->end += left;
 			is->end[0] = '\n';
@@ -154,7 +154,7 @@ stream_write(CamelStream *stream, const char *buffer, size_t n)
 		pop3_debug("POP3_STREAM_WRITE(%d):\nPASS xxxxxxxx\n", (int)n);
 	}
 
-	return camel_stream_write(is->source, buffer, n);
+	return camel_lite_stream_write(is->source, buffer, n);
 }
 
 static int
@@ -187,23 +187,23 @@ stream_reset(CamelStream *stream)
 }
 
 static void
-camel_pop3_stream_class_init (CamelStreamClass *camel_pop3_stream_class)
+camel_lite_pop3_stream_class_init (CamelStreamClass *camel_lite_pop3_stream_class)
 {
-	CamelStreamClass *camel_stream_class = (CamelStreamClass *)camel_pop3_stream_class;
+	CamelStreamClass *camel_lite_stream_class = (CamelStreamClass *)camel_lite_pop3_stream_class;
 
-	parent_class = camel_type_get_global_classfuncs( CAMEL_OBJECT_TYPE );
+	parent_class = camel_lite_type_get_global_classfuncs( CAMEL_OBJECT_TYPE );
 
 	/* virtual method definition */
-	camel_stream_class->read = stream_read;
-	camel_stream_class->write = stream_write;
-	camel_stream_class->close = stream_close;
-	camel_stream_class->flush = stream_flush;
-	camel_stream_class->eos = stream_eos;
-	camel_stream_class->reset = stream_reset;
+	camel_lite_stream_class->read = stream_read;
+	camel_lite_stream_class->write = stream_write;
+	camel_lite_stream_class->close = stream_close;
+	camel_lite_stream_class->flush = stream_flush;
+	camel_lite_stream_class->eos = stream_eos;
+	camel_lite_stream_class->reset = stream_reset;
 }
 
 static void
-camel_pop3_stream_init(CamelPOP3Stream *is, CamelPOP3StreamClass *isclass)
+camel_lite_pop3_stream_init(CamelPOP3Stream *is, CamelPOP3StreamClass *isclass)
 {
 	/* +1 is room for appending a 0 if we need to for a line */
 	is->ptr = is->end = is->buf = g_malloc(CAMEL_POP3_STREAM_SIZE+1);
@@ -218,35 +218,35 @@ camel_pop3_stream_init(CamelPOP3Stream *is, CamelPOP3StreamClass *isclass)
 }
 
 static void
-camel_pop3_stream_finalise(CamelPOP3Stream *is)
+camel_lite_pop3_stream_finalise(CamelPOP3Stream *is)
 {
 	g_free(is->buf);
 	g_free(is->linebuf);
 	if (is->source)
-		camel_object_unref((CamelObject *)is->source);
+		camel_lite_object_unref((CamelObject *)is->source);
 }
 
 CamelType
-camel_pop3_stream_get_type (void)
+camel_lite_pop3_stream_get_type (void)
 {
-	static CamelType camel_pop3_stream_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_pop3_stream_type = CAMEL_INVALID_TYPE;
 
-	if (camel_pop3_stream_type == CAMEL_INVALID_TYPE) {
-		camel_pop3_stream_type = camel_type_register( camel_stream_get_type(),
-							    "CamelPOP3Stream",
+	if (camel_lite_pop3_stream_type == CAMEL_INVALID_TYPE) {
+		camel_lite_pop3_stream_type = camel_lite_type_register( camel_lite_stream_get_type(),
+							    "CamelLitePOP3Stream",
 							    sizeof( CamelPOP3Stream ),
 							    sizeof( CamelPOP3StreamClass ),
-							    (CamelObjectClassInitFunc) camel_pop3_stream_class_init,
+							    (CamelObjectClassInitFunc) camel_lite_pop3_stream_class_init,
 							    NULL,
-							    (CamelObjectInitFunc) camel_pop3_stream_init,
-							    (CamelObjectFinalizeFunc) camel_pop3_stream_finalise );
+							    (CamelObjectInitFunc) camel_lite_pop3_stream_init,
+							    (CamelObjectFinalizeFunc) camel_lite_pop3_stream_finalise );
 	}
 
-	return camel_pop3_stream_type;
+	return camel_lite_pop3_stream_type;
 }
 
 /**
- * camel_pop3_stream_new:
+ * camel_lite_pop3_stream_new:
  *
  * Returns a NULL stream.  A null stream is always at eof, and
  * always returns success for all reads and writes.
@@ -254,12 +254,12 @@ camel_pop3_stream_get_type (void)
  * Return value: the stream
  **/
 CamelStream *
-camel_pop3_stream_new(CamelStream *source)
+camel_lite_pop3_stream_new(CamelStream *source)
 {
 	CamelPOP3Stream *is;
 
-	is = (CamelPOP3Stream *)camel_object_new(camel_pop3_stream_get_type ());
-	camel_object_ref((CamelObject *)source);
+	is = (CamelPOP3Stream *)camel_lite_object_new(camel_lite_pop3_stream_get_type ());
+	camel_lite_object_ref((CamelObject *)source);
 	is->source = source;
 
 	return (CamelStream *)is;
@@ -267,7 +267,7 @@ camel_pop3_stream_new(CamelStream *source)
 
 /* Get one line from the pop3 stream */
 int
-camel_pop3_stream_line(CamelPOP3Stream *is, unsigned char **data, unsigned int *len)
+camel_lite_pop3_stream_line(CamelPOP3Stream *is, unsigned char **data, unsigned int *len)
 {
 	register unsigned char c, *p, *o, *oe;
 	int newlen, oldlen;
@@ -351,7 +351,7 @@ camel_pop3_stream_line(CamelPOP3Stream *is, unsigned char **data, unsigned int *
 }
 
 /* returns -1 on error, 0 if last lot of data, >0 if more remaining */
-int camel_pop3_stream_gets(CamelPOP3Stream *is, unsigned char **start, unsigned int *len)
+int camel_lite_pop3_stream_gets(CamelPOP3Stream *is, unsigned char **start, unsigned int *len)
 {
 	int max;
 	unsigned char *end;
@@ -378,13 +378,13 @@ int camel_pop3_stream_gets(CamelPOP3Stream *is, unsigned char **start, unsigned 
 	return end == NULL?1:0;
 }
 
-void camel_pop3_stream_set_mode(CamelPOP3Stream *is, camel_pop3_stream_mode_t mode)
+void camel_lite_pop3_stream_set_mode(CamelPOP3Stream *is, camel_lite_pop3_stream_mode_t mode)
 {
 	is->mode = mode;
 }
 
 /* returns -1 on erorr, 0 if last data, >0 if more data left */
-int camel_pop3_stream_getd(CamelPOP3Stream *is, unsigned char **start, unsigned int *len)
+int camel_lite_pop3_stream_getd(CamelPOP3Stream *is, unsigned char **start, unsigned int *len)
 {
 	unsigned char *p, *e, *s;
 	int state;

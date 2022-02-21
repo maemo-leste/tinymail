@@ -27,9 +27,9 @@
 #include <camel/camel-folder-summary.h>
 #include <camel/camel-exception.h>
 
-#define CAMEL_IMAP_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_imap_summary_get_type (), CamelImapSummary)
-#define CAMEL_IMAP_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_imap_summary_get_type (), CamelImapSummaryClass)
-#define CAMEL_IS_IMAP_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_imap_summary_get_type ())
+#define CAMEL_IMAP_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_lite_imap_summary_get_type (), CamelImapSummary)
+#define CAMEL_IMAP_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_imap_summary_get_type (), CamelImapSummaryClass)
+#define CAMEL_IS_IMAP_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_imap_summary_get_type ())
 
 #define CAMEL_IMAP_SERVER_FLAGS (CAMEL_MESSAGE_ANSWERED | \
 				 CAMEL_MESSAGE_DELETED | \
@@ -79,15 +79,15 @@ struct _CamelImapSummaryClass {
 
 };
 
-CamelType               camel_imap_summary_get_type     (void);
-CamelFolderSummary *camel_imap_summary_new          (struct _CamelFolder *folder, const char *filename);
+CamelType               camel_lite_imap_summary_get_type     (void);
+CamelFolderSummary *camel_lite_imap_summary_new          (struct _CamelFolder *folder, const char *filename);
 
-void camel_imap_summary_add_offline (CamelFolderSummary *summary,
+void camel_lite_imap_summary_add_offline (CamelFolderSummary *summary,
 				     const char *uid,
 				     CamelMimeMessage *message,
 				     const CamelMessageInfo *info);
 
-void camel_imap_summary_add_offline_uncached (CamelFolderSummary *summary,
+void camel_lite_imap_summary_add_offline_uncached (CamelFolderSummary *summary,
 					      const char *uid,
 					      const CamelMessageInfo *info);
 

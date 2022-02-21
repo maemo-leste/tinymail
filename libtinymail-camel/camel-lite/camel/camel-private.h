@@ -205,18 +205,18 @@ struct _CamelCertDBPrivate {
 #ifdef G_OS_WIN32
 int fsync (int fd);
 
-const char *_camel_get_localedir (void) G_GNUC_CONST;
-const char *_camel_get_libexecdir (void) G_GNUC_CONST;
-const char *_camel_get_providerdir (void) G_GNUC_CONST;
+const char *_camel_lite_get_localedir (void) G_GNUC_CONST;
+const char *_camel_lite_get_libexecdir (void) G_GNUC_CONST;
+const char *_camel_lite_get_providerdir (void) G_GNUC_CONST;
 
 #undef LOCALEDIR
-#define LOCALEDIR _camel_get_localedir ()
+#define LOCALEDIR _camel_lite_get_localedir ()
 
 #undef CAMEL_LIBEXECDIR
-#define CAMEL_LIBEXECDIR _camel_get_libexecdir ()
+#define CAMEL_LIBEXECDIR _camel_lite_get_libexecdir ()
 
 #undef CAMEL_PROVIDERDIR
-#define CAMEL_PROVIDERDIR _camel_get_providerdir ()
+#define CAMEL_PROVIDERDIR _camel_lite_get_providerdir ()
 
 #endif /* G_OS_WIN32 */
 

@@ -25,9 +25,9 @@
 
 #include <camel/camel-mime-filter.h>
 
-#define CAMEL_MIME_FILTER_HTML(obj)         CAMEL_CHECK_CAST (obj, camel_mime_filter_html_get_type (), CamelMimeFilterHTML)
-#define CAMEL_MIME_FILTER_HTML_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_mime_filter_html_get_type (), CamelMimeFilterHTMLClass)
-#define CAMEL_IS_MIME_FILTER_HTML(obj)      CAMEL_CHECK_TYPE (obj, camel_mime_filter_html_get_type ())
+#define CAMEL_MIME_FILTER_HTML(obj)         CAMEL_CHECK_CAST (obj, camel_lite_mime_filter_html_get_type (), CamelMimeFilterHTML)
+#define CAMEL_MIME_FILTER_HTML_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_mime_filter_html_get_type (), CamelMimeFilterHTMLClass)
+#define CAMEL_IS_MIME_FILTER_HTML(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_mime_filter_html_get_type ())
 
 G_BEGIN_DECLS
 
@@ -44,8 +44,8 @@ struct _CamelMimeFilterHTMLClass {
 	CamelMimeFilterClass parent_class;
 };
 
-CamelType		camel_mime_filter_html_get_type	(void);
-CamelMimeFilterHTML      *camel_mime_filter_html_new	(void);
+CamelType		camel_lite_mime_filter_html_get_type	(void);
+CamelMimeFilterHTML      *camel_lite_mime_filter_html_new	(void);
 
 G_END_DECLS
 

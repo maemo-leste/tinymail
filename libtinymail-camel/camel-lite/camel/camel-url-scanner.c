@@ -41,7 +41,7 @@ struct _CamelUrlScanner {
 
 
 CamelUrlScanner *
-camel_url_scanner_new (void)
+camel_lite_url_scanner_new (void)
 {
 	CamelUrlScanner *scanner;
 
@@ -54,7 +54,7 @@ camel_url_scanner_new (void)
 
 
 void
-camel_url_scanner_free (CamelUrlScanner *scanner)
+camel_lite_url_scanner_free (CamelUrlScanner *scanner)
 {
 	g_return_if_fail (scanner != NULL);
 
@@ -65,7 +65,7 @@ camel_url_scanner_free (CamelUrlScanner *scanner)
 
 
 void
-camel_url_scanner_add (CamelUrlScanner *scanner, urlpattern_t *pattern)
+camel_lite_url_scanner_add (CamelUrlScanner *scanner, urlpattern_t *pattern)
 {
 	g_return_if_fail (scanner != NULL);
 
@@ -75,7 +75,7 @@ camel_url_scanner_add (CamelUrlScanner *scanner, urlpattern_t *pattern)
 
 
 gboolean
-camel_url_scanner_scan (CamelUrlScanner *scanner, const char *in, size_t inlen, urlmatch_t *match)
+camel_lite_url_scanner_scan (CamelUrlScanner *scanner, const char *in, size_t inlen, urlmatch_t *match)
 {
 	const char *pos;
 	const unsigned char *inptr, *inend;
@@ -101,7 +101,7 @@ camel_url_scanner_scan (CamelUrlScanner *scanner, const char *in, size_t inlen, 
 			return TRUE;
 
 		inptr = (const unsigned char *) pos;
-		if (camel_utf8_getc_limit (&inptr, inend) == 0xffff)
+		if (camel_lite_utf8_getc_limit (&inptr, inend) == 0xffff)
 			break;
 
 		inlen = inend - inptr;
@@ -198,7 +198,7 @@ url_stop_at_brace (const char *in, size_t so, char *open_brace)
 
 
 gboolean
-camel_url_addrspec_start (const char *in, const char *pos, const char *inend, urlmatch_t *match)
+camel_lite_url_addrspec_start (const char *in, const char *pos, const char *inend, urlmatch_t *match)
 {
 	register const char *inptr = pos;
 
@@ -232,7 +232,7 @@ camel_url_addrspec_start (const char *in, const char *pos, const char *inend, ur
 }
 
 gboolean
-camel_url_addrspec_end (const char *in, const char *pos, const char *inend, urlmatch_t *match)
+camel_lite_url_addrspec_end (const char *in, const char *pos, const char *inend, urlmatch_t *match)
 {
 	const char *inptr = pos;
 	int parts = 0, digits;
@@ -293,7 +293,7 @@ camel_url_addrspec_end (const char *in, const char *pos, const char *inend, urlm
 }
 
 gboolean
-camel_url_file_start (const char *in, const char *pos, const char *inend, urlmatch_t *match)
+camel_lite_url_file_start (const char *in, const char *pos, const char *inend, urlmatch_t *match)
 {
 	match->um_so = (pos - in);
 
@@ -301,7 +301,7 @@ camel_url_file_start (const char *in, const char *pos, const char *inend, urlmat
 }
 
 gboolean
-camel_url_file_end (const char *in, const char *pos, const char *inend, urlmatch_t *match)
+camel_lite_url_file_end (const char *in, const char *pos, const char *inend, urlmatch_t *match)
 {
 	register const char *inptr = pos;
 	char close_brace;
@@ -325,7 +325,7 @@ camel_url_file_end (const char *in, const char *pos, const char *inend, urlmatch
 }
 
 gboolean
-camel_url_web_start (const char *in, const char *pos, const char *inend, urlmatch_t *match)
+camel_lite_url_web_start (const char *in, const char *pos, const char *inend, urlmatch_t *match)
 {
 	if (pos > in && !strncmp (pos, "www", 3)) {
 		/* make sure we aren't actually part of another word */
@@ -339,7 +339,7 @@ camel_url_web_start (const char *in, const char *pos, const char *inend, urlmatc
 }
 
 gboolean
-camel_url_web_end (const char *in, const char *pos, const char *inend, urlmatch_t *match)
+camel_lite_url_web_end (const char *in, const char *pos, const char *inend, urlmatch_t *match)
 {
 	register const char *inptr = pos;
 	gboolean passwd = FALSE;

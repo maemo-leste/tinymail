@@ -62,52 +62,52 @@ static int disco_setv (CamelObject *object, CamelException *ex, CamelArgV *args)
 static int disco_getv (CamelObject *object, CamelException *ex, CamelArgGetV *args);
 
 static void
-camel_disco_store_class_init (CamelDiscoStoreClass *camel_disco_store_class)
+camel_lite_disco_store_class_init (CamelDiscoStoreClass *camel_lite_disco_store_class)
 {
-	CamelObjectClass *camel_object_class =
-		CAMEL_OBJECT_CLASS (camel_disco_store_class);
-	CamelServiceClass *camel_service_class =
-		CAMEL_SERVICE_CLASS (camel_disco_store_class);
-	CamelStoreClass *camel_store_class =
-		CAMEL_STORE_CLASS (camel_disco_store_class);
+	CamelObjectClass *camel_lite_object_class =
+		CAMEL_OBJECT_CLASS (camel_lite_disco_store_class);
+	CamelServiceClass *camel_lite_service_class =
+		CAMEL_SERVICE_CLASS (camel_lite_disco_store_class);
+	CamelStoreClass *camel_lite_store_class =
+		CAMEL_STORE_CLASS (camel_lite_disco_store_class);
 
-	parent_class = CAMEL_STORE_CLASS (camel_type_get_global_classfuncs (camel_store_get_type ()));
+	parent_class = CAMEL_STORE_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_store_get_type ()));
 
 	/* virtual method definition */
-	camel_disco_store_class->set_status = set_status;
-	camel_disco_store_class->can_work_offline = can_work_offline;
+	camel_lite_disco_store_class->set_status = set_status;
+	camel_lite_disco_store_class->can_work_offline = can_work_offline;
 
 	/* virtual method overload */
-	camel_object_class->setv = disco_setv;
-	camel_object_class->getv = disco_getv;
+	camel_lite_object_class->setv = disco_setv;
+	camel_lite_object_class->getv = disco_getv;
 
-	camel_service_class->construct = disco_construct;
-	camel_service_class->connect = disco_connect;
-	camel_service_class->disconnect = disco_disconnect;
-	camel_service_class->cancel_connect = disco_cancel_connect;
+	camel_lite_service_class->construct = disco_construct;
+	camel_lite_service_class->connect = disco_connect;
+	camel_lite_service_class->disconnect = disco_disconnect;
+	camel_lite_service_class->cancel_connect = disco_cancel_connect;
 
-	camel_store_class->get_folder = disco_get_folder;
-	camel_store_class->get_folder_info = disco_get_folder_info;
+	camel_lite_store_class->get_folder = disco_get_folder;
+	camel_lite_store_class->get_folder_info = disco_get_folder_info;
 }
 
 CamelType
-camel_disco_store_get_type (void)
+camel_lite_disco_store_get_type (void)
 {
-	static CamelType camel_disco_store_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_disco_store_type = CAMEL_INVALID_TYPE;
 
-	if (camel_disco_store_type == CAMEL_INVALID_TYPE) {
-		camel_disco_store_type = camel_type_register (
+	if (camel_lite_disco_store_type == CAMEL_INVALID_TYPE) {
+		camel_lite_disco_store_type = camel_lite_type_register (
 			CAMEL_STORE_TYPE,
-			"CamelDiscoStore",
+			"CamelLiteDiscoStore",
 			sizeof (CamelDiscoStore),
 			sizeof (CamelDiscoStoreClass),
-			(CamelObjectClassInitFunc) camel_disco_store_class_init,
+			(CamelObjectClassInitFunc) camel_lite_disco_store_class_init,
 			NULL,
 			NULL,
 			NULL);
 	}
 
-	return camel_disco_store_type;
+	return camel_lite_disco_store_type;
 }
 
 static int
@@ -132,10 +132,10 @@ disco_construct (CamelService *service, CamelSession *session,
 	CamelDiscoStore *disco = CAMEL_DISCO_STORE (service);
 
 	CAMEL_SERVICE_CLASS (parent_class)->construct (service, session, provider, url, ex);
-	if (camel_exception_is_set (ex))
+	if (camel_lite_exception_is_set (ex))
 		return;
 
-	disco->status = camel_session_is_online (session) ?
+	disco->status = camel_lite_session_is_online (session) ?
 		CAMEL_DISCO_STORE_ONLINE : CAMEL_DISCO_STORE_OFFLINE;
 }
 
@@ -146,13 +146,13 @@ disco_connect (CamelService *service, CamelException *ex)
 	CamelDiscoStoreStatus status;
 	struct _CamelDiscoDiary *diary;
 
-	status = camel_disco_store_status (store);
+	status = camel_lite_disco_store_status (store);
 	if (status != CAMEL_DISCO_STORE_OFFLINE) {
 		if (!CAMEL_SERVICE_CLASS (parent_class)->connect (service, ex)) {
-			status = camel_disco_store_status (store);
+			status = camel_lite_disco_store_status (store);
 			if (status != CAMEL_DISCO_STORE_OFFLINE)
 				return FALSE;
-			camel_exception_clear (ex);
+			camel_lite_exception_clear (ex);
 		}
 	}
 
@@ -165,24 +165,24 @@ disco_connect (CamelService *service, CamelException *ex)
 		if (!store->diary)
 			return TRUE;
 
-		d(printf(" diary is %s\n", camel_disco_diary_empty(store->diary)?"empty":"not empty"));
-		if (camel_disco_diary_empty (store->diary))
+		d(printf(" diary is %s\n", camel_lite_disco_diary_empty(store->diary)?"empty":"not empty"));
+		if (camel_lite_disco_diary_empty (store->diary))
 			return TRUE;
 
 		/* Need to resync.  Note we do the ref thing since during the replay
 		   disconnect could be called, which will remove store->diary and unref it */
 		store->status = CAMEL_DISCO_STORE_RESYNCING;
 		diary = store->diary;
-		camel_object_ref(diary);
-		camel_disco_diary_replay(diary, ex);
-		camel_object_unref(diary);
+		camel_lite_object_ref(diary);
+		camel_lite_disco_diary_replay(diary, ex);
+		camel_lite_object_unref(diary);
 		store->status = CAMEL_DISCO_STORE_ONLINE;
-		if (camel_exception_is_set (ex))
+		if (camel_lite_exception_is_set (ex))
 			return FALSE;
 
-		if (!camel_service_disconnect (service, TRUE, ex))
+		if (!camel_lite_service_disconnect (service, TRUE, ex))
 			return FALSE;
-		return camel_service_connect (service, ex);
+		return camel_lite_service_connect (service, ex);
 
 	case CAMEL_DISCO_STORE_OFFLINE:
 		return CDS_CLASS (service)->connect_offline (service, ex);
@@ -207,7 +207,7 @@ disco_disconnect (CamelService *service, gboolean clean, CamelException *ex)
 {
 	CamelDiscoStore *store = CAMEL_DISCO_STORE (service);
 
-	switch (camel_disco_store_status (store)) {
+	switch (camel_lite_disco_store_status (store)) {
 	case CAMEL_DISCO_STORE_ONLINE:
 	case CAMEL_DISCO_STORE_RESYNCING:
 		if (!CDS_CLASS (service)->disconnect_online (service, clean, ex))
@@ -230,7 +230,7 @@ disco_get_folder (CamelStore *store, const char *name,
 {
 	CamelDiscoStore *disco_store = CAMEL_DISCO_STORE (store);
 
-	switch (camel_disco_store_status (disco_store)) {
+	switch (camel_lite_disco_store_status (disco_store)) {
 	case CAMEL_DISCO_STORE_ONLINE:
 		return CDS_CLASS (store)->get_folder_online (store, name, flags, ex);
 
@@ -251,7 +251,7 @@ disco_get_folder_info (CamelStore *store, const char *top,
 {
 	CamelDiscoStore *disco_store = CAMEL_DISCO_STORE (store);
 
-	switch (camel_disco_store_status (disco_store)) {
+	switch (camel_lite_disco_store_status (disco_store)) {
 	case CAMEL_DISCO_STORE_ONLINE:
 		return CDS_CLASS (store)->get_folder_info_online (store, top, flags, ex);
 
@@ -259,7 +259,7 @@ disco_get_folder_info (CamelStore *store, const char *top,
 		/* Can't edit subscriptions while offline
 		if ((store->flags & CAMEL_STORE_SUBSCRIPTIONS) &&
 		    !(flags & CAMEL_STORE_FOLDER_INFO_SUBSCRIBED)) {
-			camel_disco_store_check_online (disco_store, ex);
+			camel_lite_disco_store_check_online (disco_store, ex);
 			return NULL;
 		}*/
 
@@ -275,20 +275,20 @@ disco_get_folder_info (CamelStore *store, const char *top,
 
 
 /**
- * camel_disco_store_status:
+ * camel_lite_disco_store_status:
  * @store: a disconnectable store
  *
  * Return value: the current online/offline status of @store.
  **/
 CamelDiscoStoreStatus
-camel_disco_store_status (CamelDiscoStore *store)
+camel_lite_disco_store_status (CamelDiscoStore *store)
 {
 	CamelService *service = CAMEL_SERVICE (store);
 
 	g_return_val_if_fail (CAMEL_IS_DISCO_STORE (store), CAMEL_DISCO_STORE_ONLINE);
 
 	if (store->status != CAMEL_DISCO_STORE_OFFLINE
-	    && !camel_session_is_online (service->session))
+	    && !camel_lite_session_is_online (service->session))
 		store->status = CAMEL_DISCO_STORE_OFFLINE;
 
 	return store->status;
@@ -299,12 +299,12 @@ set_status(CamelDiscoStore *disco_store, CamelDiscoStoreStatus status, CamelExce
 {
 	CamelException x;
 	CamelService *service = CAMEL_SERVICE (disco_store);
-	gboolean network_state = camel_session_get_network_state (service->session);
+	gboolean network_state = camel_lite_session_get_network_state (service->session);
 
 	if (disco_store->status == status)
 		return;
 
-	camel_exception_init(&x);
+	camel_lite_exception_init(&x);
 	/* Sync the folder fully if we've been told to sync online for this store or this folder
 	   and we're going offline */
 
@@ -316,35 +316,35 @@ set_status(CamelDiscoStore *disco_store, CamelDiscoStoreStatus status, CamelExce
 				CamelFolder *folder;
 				int i, sync;
 
-				sync =  camel_url_get_param(((CamelService *)disco_store)->url, "offline_sync") != NULL;
+				sync =  camel_lite_url_get_param(((CamelService *)disco_store)->url, "offline_sync") != NULL;
 
-				folders = camel_object_bag_list(((CamelStore *)disco_store)->folders);
+				folders = camel_lite_object_bag_list(((CamelStore *)disco_store)->folders);
 				for (i=0;i<folders->len;i++) {
 					folder = folders->pdata[i];
 					if (CAMEL_CHECK_TYPE(folder, CAMEL_DISCO_FOLDER_TYPE)
 					    && (sync || ((CamelDiscoFolder *)folder)->offline_sync)) {
-						camel_disco_folder_prepare_for_offline((CamelDiscoFolder *)folder, "(match-all)", &x);
-						camel_exception_clear(&x);
+						camel_lite_disco_folder_prepare_for_offline((CamelDiscoFolder *)folder, "(match-all)", &x);
+						camel_lite_exception_clear(&x);
 					}
-					camel_object_unref(folder);
+					camel_lite_object_unref(folder);
 				}
 				g_ptr_array_free(folders, TRUE);
 			}
 		}
 
-		camel_store_sync(CAMEL_STORE (disco_store), FALSE, &x);
-		camel_exception_clear(&x);
+		camel_lite_store_sync(CAMEL_STORE (disco_store), FALSE, &x);
+		camel_lite_exception_clear(&x);
 	}
 
-	if (!camel_service_disconnect (CAMEL_SERVICE (disco_store), network_state, ex))
+	if (!camel_lite_service_disconnect (CAMEL_SERVICE (disco_store), network_state, ex))
 		return;
 
 	disco_store->status = status;
-	camel_service_connect (CAMEL_SERVICE (disco_store), ex);
+	camel_lite_service_connect (CAMEL_SERVICE (disco_store), ex);
 }
 
 /**
- * camel_disco_store_set_status:
+ * camel_lite_disco_store_set_status:
  * @store: a disconnectable store
  * @status: the new status
  * @ex: a CamelException
@@ -353,7 +353,7 @@ set_status(CamelDiscoStore *disco_store, CamelDiscoStoreStatus status, CamelExce
  * be set to @status, @ex will be set.
  **/
 void
-camel_disco_store_set_status (CamelDiscoStore *store,
+camel_lite_disco_store_set_status (CamelDiscoStore *store,
 			      CamelDiscoStoreStatus status,
 			      CamelException *ex)
 {
@@ -365,27 +365,27 @@ camel_disco_store_set_status (CamelDiscoStore *store,
 static gboolean
 can_work_offline (CamelDiscoStore *disco_store)
 {
-	g_warning ("CamelDiscoStore::can_work_offline not implemented for `%s'",
-		   camel_type_to_name (CAMEL_OBJECT_GET_TYPE (disco_store)));
+	g_warning ("CamelLiteDiscoStore::can_work_offline not implemented for `%s'",
+		   camel_lite_type_to_name (CAMEL_OBJECT_GET_TYPE (disco_store)));
 	return FALSE;
 }
 
 /**
- * camel_disco_store_can_work_offline:
+ * camel_lite_disco_store_can_work_offline:
  * @store: a disconnectable store
  *
  * Return value: whether or not @store can be used offline. (Will be
  * %FALSE if the store is not caching data to local disk, for example.)
  **/
 gboolean
-camel_disco_store_can_work_offline (CamelDiscoStore *store)
+camel_lite_disco_store_can_work_offline (CamelDiscoStore *store)
 {
 	return CDS_CLASS (store)->can_work_offline (store);
 }
 
 
 /**
- * camel_disco_store_check_online:
+ * camel_lite_disco_store_check_online:
  * @store: a disconnectable store
  * @ex: a CamelException
  *
@@ -396,14 +396,14 @@ camel_disco_store_can_work_offline (CamelDiscoStore *store)
  * Return value: whether or not @store is online.
  **/
 gboolean
-camel_disco_store_check_online (CamelDiscoStore *store, CamelException *ex)
+camel_lite_disco_store_check_online (CamelDiscoStore *store, CamelException *ex)
 {
 
-	if (camel_disco_store_status (store) == CAMEL_DISCO_STORE_RESYNCING)
+	if (camel_lite_disco_store_status (store) == CAMEL_DISCO_STORE_RESYNCING)
 		return TRUE;
 
-	if (camel_disco_store_status (store) != CAMEL_DISCO_STORE_ONLINE) {
-		camel_exception_set (ex, CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
+	if (camel_lite_disco_store_status (store) != CAMEL_DISCO_STORE_ONLINE) {
+		camel_lite_exception_set (ex, CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
 				     _("You must be working online to "
 				       "complete this operation"));
 		return FALSE;
@@ -413,13 +413,13 @@ camel_disco_store_check_online (CamelDiscoStore *store, CamelException *ex)
 }
 
 void
-camel_disco_store_prepare_for_offline(CamelDiscoStore *disco_store, CamelException *ex)
+camel_lite_disco_store_prepare_for_offline(CamelDiscoStore *disco_store, CamelException *ex)
 {
 	CamelException x;
 	CamelService *service = CAMEL_SERVICE (disco_store);
-	gboolean network_state = camel_session_get_network_state (service->session);
+	gboolean network_state = camel_lite_session_get_network_state (service->session);
 
-	camel_exception_init(&x);
+	camel_lite_exception_init(&x);
 	/* Sync the folder fully if we've been told to sync online for this store or this folder */
 
 	if (network_state) {
@@ -429,24 +429,24 @@ camel_disco_store_prepare_for_offline(CamelDiscoStore *disco_store, CamelExcepti
 				CamelFolder *folder;
 				int i, sync;
 
-				sync =  camel_url_get_param(((CamelService *)disco_store)->url, "offline_sync") != NULL;
+				sync =  camel_lite_url_get_param(((CamelService *)disco_store)->url, "offline_sync") != NULL;
 
-				folders = camel_object_bag_list(((CamelStore *)disco_store)->folders);
+				folders = camel_lite_object_bag_list(((CamelStore *)disco_store)->folders);
 				for (i=0;i<folders->len;i++) {
 					folder = folders->pdata[i];
 					if (CAMEL_CHECK_TYPE(folder, CAMEL_DISCO_FOLDER_TYPE)
 					    && (sync || ((CamelDiscoFolder *)folder)->offline_sync)) {
-						camel_disco_folder_prepare_for_offline((CamelDiscoFolder *)folder, "(match-all)", &x);
-						camel_exception_clear(&x);
+						camel_lite_disco_folder_prepare_for_offline((CamelDiscoFolder *)folder, "(match-all)", &x);
+						camel_lite_exception_clear(&x);
 					}
-					camel_object_unref(folder);
+					camel_lite_object_unref(folder);
 				}
 				g_ptr_array_free(folders, TRUE);
 			}
 		}
 
-		camel_store_sync(CAMEL_STORE (disco_store), FALSE, &x);
-		camel_exception_clear(&x);
+		camel_lite_store_sync(CAMEL_STORE (disco_store), FALSE, &x);
+		camel_lite_exception_clear(&x);
 	}
 }
 

@@ -32,7 +32,7 @@
 #include "camel-utf8.h"
 
 /**
- * camel_utf8_putc:
+ * camel_lite_utf8_putc:
  * @ptr:
  * @c:
  *
@@ -40,7 +40,7 @@
  * be written to @ptr.  @ptr will be advanced to the next character position.
  **/
 void
-camel_utf8_putc(guchar **ptr, guint32 c)
+camel_lite_utf8_putc(guchar **ptr, guint32 c)
 {
 	register guchar *p = *ptr;
 
@@ -65,7 +65,7 @@ camel_utf8_putc(guchar **ptr, guint32 c)
 }
 
 /**
- * camel_utf8_getc:
+ * camel_lite_utf8_getc:
  * @ptr:
  *
  * Get a Unicode character from a utf8 stream.  @ptr will be advanced
@@ -76,7 +76,7 @@ camel_utf8_putc(guchar **ptr, guint32 c)
  * the next character always.
  **/
 guint32
-camel_utf8_getc(const guchar **ptr)
+camel_lite_utf8_getc(const guchar **ptr)
 {
 	register guchar *p = (guchar *)*ptr;
 	register guchar c, r;
@@ -113,7 +113,7 @@ loop:
 }
 
 /**
- * camel_utf8_getc_limit:
+ * camel_lite_utf8_getc_limit:
  * @ptr:
  * @end: must not be NULL.
  *
@@ -126,7 +126,7 @@ loop:
  * Return value: The next utf8 char, or 0xffff.
  **/
 guint32
-camel_utf8_getc_limit(const guchar **ptr, const guchar *end)
+camel_lite_utf8_getc_limit(const guchar **ptr, const guchar *end)
 {
 	register guchar *p = (guchar *)*ptr;
 	register guchar c, r;
@@ -174,7 +174,7 @@ g_string_append_u(GString *out, guint32 c)
 	guchar buffer[8];
 	guchar *p = buffer;
 
-	camel_utf8_putc(&p, c);
+	camel_lite_utf8_putc(&p, c);
 	*p = 0;
 	g_string_append(out, (const gchar *) buffer);
 }
@@ -202,7 +202,7 @@ static const guchar utf7_rank[256] = {
 };
 
 /**
- * camel_utf7_utf8:
+ * camel_lite_utf7_utf8:
  * @ptr:
  *
  * Convert a modified utf7 string to utf8.  If the utf7 string
@@ -213,7 +213,7 @@ static const guchar utf7_rank[256] = {
  * Return value: The converted string.
  **/
 gchar *
-camel_utf7_utf8(const gchar *ptr)
+camel_lite_utf7_utf8(const gchar *ptr)
 {
 	const guchar *p = (guchar *)ptr;
 	guint c;
@@ -284,7 +284,7 @@ static void utf7_closeb64(GString *out, guint32 v, guint32 i)
 }
 
 /**
- * camel_utf8_utf7:
+ * camel_lite_utf8_utf7:
  * @ptr:
  *
  * Convert a utf8 string to a modified utf7 format.
@@ -294,7 +294,7 @@ static void utf7_closeb64(GString *out, guint32 v, guint32 i)
  * Return value:
  **/
 gchar *
-camel_utf8_utf7(const gchar *ptr)
+camel_lite_utf8_utf7(const gchar *ptr)
 {
 	const guchar *p = (guchar *)ptr;
 	guint c;
@@ -306,7 +306,7 @@ camel_utf8_utf7(const gchar *ptr)
 
 	out = g_string_new("");
 
-	while ( (c = camel_utf8_getc(&p)) ) {
+	while ( (c = camel_lite_utf8_getc(&p)) ) {
 		if (c >= 0x20 && c <= 0x7e) {
 			if (state == 1) {
 				utf7_closeb64(out, v, i);
@@ -342,7 +342,7 @@ camel_utf8_utf7(const gchar *ptr)
 }
 
 /**
- * camel_utf8_ucs2:
+ * camel_lite_utf8_ucs2:
  * @ptr:
  *
  * Convert a utf8 string into a ucs2 one.  The ucs string will be in
@@ -351,7 +351,7 @@ camel_utf8_utf7(const gchar *ptr)
  * Return value:
  **/
 gchar *
-camel_utf8_ucs2(const gchar *pptr)
+camel_lite_utf8_ucs2(const gchar *pptr)
 {
 	GByteArray *work = g_byte_array_new();
 	guint32 c;
@@ -360,7 +360,7 @@ camel_utf8_ucs2(const gchar *pptr)
 
 	/* what if c is > 0xffff ? */
 
-	while ( (c = camel_utf8_getc(&ptr)) ) {
+	while ( (c = camel_lite_utf8_getc(&ptr)) ) {
 		guint16 s = g_htons(c);
 
 		g_byte_array_append(work, (guchar *) &s, 2);
@@ -375,7 +375,7 @@ camel_utf8_ucs2(const gchar *pptr)
 }
 
 /**
- * camel_ucs2_utf8:
+ * camel_lite_ucs2_utf8:
  * @ptr:
  *
  * Convert a ucs2 string into a utf8 one.  The ucs2 string is treated
@@ -383,7 +383,7 @@ camel_utf8_ucs2(const gchar *pptr)
  *
  * Return value:
  **/
-gchar *camel_ucs2_utf8(const gchar *ptr)
+gchar *camel_lite_ucs2_utf8(const gchar *ptr)
 {
 	guint16 *ucs = (guint16 *)ptr;
 	guint32 c;
@@ -400,14 +400,14 @@ gchar *camel_ucs2_utf8(const gchar *ptr)
 }
 
 /**
- * camel_utf8_make_valid:
+ * camel_lite_utf8_make_valid:
  * @text:
  *
  * Ensures the returned text will be valid UTF-8 string, with incorrect letters
  * changed to question marks. Returned pointer should be freed with g_free.
  **/
 gchar *
-camel_utf8_make_valid (const gchar *text)
+camel_lite_utf8_make_valid (const gchar *text)
 {
 	gchar *res = g_strdup (text), *p;
 

@@ -61,7 +61,7 @@ struct _CamelDListNode {
  * node such as head = { first, NULL } and tail = { NULL, last } then
  * overlap them at the common NULL, you get this structure.
  *
- * The list header must be initialised with camel_dlist_init, or by
+ * The list header must be initialised with camel_lite_dlist_init, or by
  * using the static CAMEL_DLIST_INITIALISER macro.
  **/
 struct _CamelDList {
@@ -72,14 +72,14 @@ struct _CamelDList {
 
 #define CAMEL_DLIST_INITIALISER(l) { (CamelDListNode *)&l.tail, 0, (CamelDListNode *)&l.head }
 
-void camel_dlist_init(CamelDList *v);
-CamelDListNode *camel_dlist_addhead(CamelDList *l, CamelDListNode *n);
-CamelDListNode *camel_dlist_addtail(CamelDList *l, CamelDListNode *n);
-CamelDListNode *camel_dlist_remove(CamelDListNode *n);
-CamelDListNode *camel_dlist_remhead(CamelDList *l);
-CamelDListNode *camel_dlist_remtail(CamelDList *l);
-int camel_dlist_empty(CamelDList *l);
-int camel_dlist_length(CamelDList *l);
+void camel_lite_dlist_init(CamelDList *v);
+CamelDListNode *camel_lite_dlist_addhead(CamelDList *l, CamelDListNode *n);
+CamelDListNode *camel_lite_dlist_addtail(CamelDList *l, CamelDListNode *n);
+CamelDListNode *camel_lite_dlist_remove(CamelDListNode *n);
+CamelDListNode *camel_lite_dlist_remhead(CamelDList *l);
+CamelDListNode *camel_lite_dlist_remtail(CamelDList *l);
+int camel_lite_dlist_empty(CamelDList *l);
+int camel_lite_dlist_length(CamelDList *l);
 
 /* This is provided mostly for orthogonality with the dlist structure.
  * By making the nodes contain all of the data themselves it
@@ -116,14 +116,14 @@ struct _CamelSList {
 
 #define CAMEL_SLIST_INITIALISER(l) { 0 }
 
-void camel_slist_init(CamelSList *l);
-CamelSListNode *camel_slist_addhead(CamelSList *l, CamelSListNode *n);
-CamelSListNode *camel_slist_addtail(CamelSList *l, CamelSListNode *n);
-CamelSListNode *camel_slist_remove(CamelSList *l, CamelSListNode *n);
-CamelSListNode *camel_slist_remhead(CamelSList *l);
-CamelSListNode *camel_slist_remtail(CamelSList *l);
-int camel_slist_empty(CamelSList *l);
-int camel_slist_length(CamelSList *l);
+void camel_lite_slist_init(CamelSList *l);
+CamelSListNode *camel_lite_slist_addhead(CamelSList *l, CamelSListNode *n);
+CamelSListNode *camel_lite_slist_addtail(CamelSList *l, CamelSListNode *n);
+CamelSListNode *camel_lite_slist_remove(CamelSList *l, CamelSListNode *n);
+CamelSListNode *camel_lite_slist_remhead(CamelSList *l);
+CamelSListNode *camel_lite_slist_remtail(CamelSList *l);
+int camel_lite_slist_empty(CamelSList *l);
+int camel_lite_slist_length(CamelSList *l);
 
 G_END_DECLS
 

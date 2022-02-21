@@ -25,7 +25,7 @@
 
 #include "camel-store.h"
 
-#define CAMEL_LOCAL_STORE_TYPE     (camel_local_store_get_type ())
+#define CAMEL_LOCAL_STORE_TYPE     (camel_lite_local_store_get_type ())
 #define CAMEL_LOCAL_STORE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_LOCAL_STORE_TYPE, CamelLocalStore))
 #define CAMEL_LOCAL_STORE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_LOCAL_STORE_TYPE, CamelLocalStoreClass))
 #define CAMEL_IS_LOCAL_STORE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_LOCAL_STORE_TYPE))
@@ -46,12 +46,12 @@ typedef struct {
 } CamelLocalStoreClass;
 
 /* Standard Camel function */
-CamelType camel_local_store_get_type (void);
+CamelType camel_lite_local_store_get_type (void);
 
-const gchar *camel_local_store_get_toplevel_dir (CamelLocalStore *store);
+const gchar *camel_lite_local_store_get_toplevel_dir (CamelLocalStore *store);
 
-#define camel_local_store_get_full_path(ls, name) ((CamelLocalStoreClass *)((CamelObject *)ls)->klass)->get_full_path((CamelLocalStore *)ls, name)
-#define camel_local_store_get_meta_path(ls, name, ext) ((CamelLocalStoreClass *)((CamelObject *)ls)->klass)->get_meta_path((CamelLocalStore *)ls, name, ext)
+#define camel_lite_local_store_get_full_path(ls, name) ((CamelLocalStoreClass *)((CamelObject *)ls)->klass)->get_full_path((CamelLocalStore *)ls, name)
+#define camel_lite_local_store_get_meta_path(ls, name, ext) ((CamelLocalStoreClass *)((CamelObject *)ls)->klass)->get_meta_path((CamelLocalStore *)ls, name, ext)
 
 G_END_DECLS
 

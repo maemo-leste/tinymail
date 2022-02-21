@@ -29,7 +29,7 @@
 #include <sys/types.h>
 #include <camel/camel-seekable-stream.h>
 
-#define CAMEL_STREAM_MEM_TYPE     (camel_stream_mem_get_type ())
+#define CAMEL_STREAM_MEM_TYPE     (camel_lite_stream_mem_get_type ())
 #define CAMEL_STREAM_MEM(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_STREAM_MEM_TYPE, CamelStreamMem))
 #define CAMEL_STREAM_MEM_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_STREAM_MEM_TYPE, CamelStreamMemClass))
 #define CAMEL_IS_STREAM_MEM(o)    (CAMEL_CHECK_TYPE((o), CAMEL_STREAM_MEM_TYPE))
@@ -53,19 +53,19 @@ struct _CamelStreamMemClass {
 };
 
 /* Standard Camel function */
-CamelType camel_stream_mem_get_type (void);
+CamelType camel_lite_stream_mem_get_type (void);
 
 /* public methods */
-CamelStream *camel_stream_mem_new(void);
-CamelStream *camel_stream_mem_new_with_byte_array(GByteArray *buffer);
-CamelStream *camel_stream_mem_new_with_buffer(const char *buffer, size_t len);
+CamelStream *camel_lite_stream_mem_new(void);
+CamelStream *camel_lite_stream_mem_new_with_byte_array(GByteArray *buffer);
+CamelStream *camel_lite_stream_mem_new_with_buffer(const char *buffer, size_t len);
 
 /* 'secure' data, currently just clears memory on finalise */
-void camel_stream_mem_set_secure(CamelStreamMem *mem);
+void camel_lite_stream_mem_set_secure(CamelStreamMem *mem);
 
 /* these are really only here for implementing classes */
-void camel_stream_mem_set_byte_array(CamelStreamMem *mem, GByteArray *buffer);
-void camel_stream_mem_set_buffer(CamelStreamMem *mem, const char *buffer, size_t len);
+void camel_lite_stream_mem_set_byte_array(CamelStreamMem *mem, GByteArray *buffer);
+void camel_lite_stream_mem_set_buffer(CamelStreamMem *mem, const char *buffer, size_t len);
 
 G_END_DECLS
 

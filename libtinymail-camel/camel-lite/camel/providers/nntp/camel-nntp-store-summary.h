@@ -28,9 +28,9 @@
 #include <camel/camel-object.h>
 #include <camel/camel-store-summary.h>
 
-#define CAMEL_NNTP_STORE_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_nntp_store_summary_get_type (), CamelNNTPStoreSummary)
-#define CAMEL_NNTP_STORE_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_nntp_store_summary_get_type (), CamelNNTPStoreSummaryClass)
-#define CAMEL_IS_NNTP_STORE_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_nntp_store_summary_get_type ())
+#define CAMEL_NNTP_STORE_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_lite_nntp_store_summary_get_type (), CamelNNTPStoreSummary)
+#define CAMEL_NNTP_STORE_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_nntp_store_summary_get_type (), CamelNNTPStoreSummaryClass)
+#define CAMEL_IS_NNTP_STORE_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_nntp_store_summary_get_type ())
 
 G_BEGIN_DECLS
 
@@ -67,29 +67,29 @@ struct _CamelNNTPStoreSummaryClass {
 	CamelStoreSummaryClass summary_class;
 };
 
-CamelType			 camel_nntp_store_summary_get_type	(void);
-CamelNNTPStoreSummary      *camel_nntp_store_summary_new	(void);
+CamelType			 camel_lite_nntp_store_summary_get_type	(void);
+CamelNNTPStoreSummary      *camel_lite_nntp_store_summary_new	(void);
 
 /* TODO: this api needs some more work, needs to support lists */
-/*CamelNNTPStoreNamespace *camel_nntp_store_summary_namespace_new(CamelNNTPStoreSummary *s, const char *full_name, char dir_sep);*/
-/*void camel_nntp_store_summary_namespace_set(CamelNNTPStoreSummary *s, CamelNNTPStoreNamespace *ns);*/
-/*CamelNNTPStoreNamespace *camel_nntp_store_summary_namespace_find_path(CamelNNTPStoreSummary *s, const char *path);*/
-/*CamelNNTPStoreNamespace *camel_nntp_store_summary_namespace_find_full(CamelNNTPStoreSummary *s, const char *full_name);*/
+/*CamelNNTPStoreNamespace *camel_lite_nntp_store_summary_namespace_new(CamelNNTPStoreSummary *s, const char *full_name, char dir_sep);*/
+/*void camel_lite_nntp_store_summary_namespace_set(CamelNNTPStoreSummary *s, CamelNNTPStoreNamespace *ns);*/
+/*CamelNNTPStoreNamespace *camel_lite_nntp_store_summary_namespace_find_path(CamelNNTPStoreSummary *s, const char *path);*/
+/*CamelNNTPStoreNamespace *camel_lite_nntp_store_summary_namespace_find_full(CamelNNTPStoreSummary *s, const char *full_name);*/
 
 /* helper macro's */
-#define camel_nntp_store_info_full_name(s, i) (camel_store_info_string((CamelStoreSummary *)s, (const CamelStoreInfo *)i, CAMEL_NNTP_STORE_INFO_FULL_NAME))
+#define camel_lite_nntp_store_info_full_name(s, i) (camel_lite_store_info_string((CamelStoreSummary *)s, (const CamelStoreInfo *)i, CAMEL_NNTP_STORE_INFO_FULL_NAME))
 
 /* converts to/from utf8 canonical nasmes */
-char *camel_nntp_store_summary_full_to_path(CamelNNTPStoreSummary *s, const char *full_name, char dir_sep);
+char *camel_lite_nntp_store_summary_full_to_path(CamelNNTPStoreSummary *s, const char *full_name, char dir_sep);
 
-char *camel_nntp_store_summary_path_to_full(CamelNNTPStoreSummary *s, const char *path, char dir_sep);
-char *camel_nntp_store_summary_dotted_to_full(CamelNNTPStoreSummary *s, const char *dotted, char dir_sep);
+char *camel_lite_nntp_store_summary_path_to_full(CamelNNTPStoreSummary *s, const char *path, char dir_sep);
+char *camel_lite_nntp_store_summary_dotted_to_full(CamelNNTPStoreSummary *s, const char *dotted, char dir_sep);
 
-CamelNNTPStoreInfo *camel_nntp_store_summary_full_name(CamelNNTPStoreSummary *s, const char *full_name);
-CamelNNTPStoreInfo *camel_nntp_store_summary_add_from_full(CamelNNTPStoreSummary *s, const char *full_name, char dir_sep);
+CamelNNTPStoreInfo *camel_lite_nntp_store_summary_full_name(CamelNNTPStoreSummary *s, const char *full_name);
+CamelNNTPStoreInfo *camel_lite_nntp_store_summary_add_from_full(CamelNNTPStoreSummary *s, const char *full_name, char dir_sep);
 
 /* a convenience lookup function. always use this if path known */
-char *camel_nntp_store_summary_full_from_path(CamelNNTPStoreSummary *s, const char *path);
+char *camel_lite_nntp_store_summary_full_from_path(CamelNNTPStoreSummary *s, const char *path);
 
 G_END_DECLS
 

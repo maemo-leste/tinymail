@@ -57,17 +57,17 @@ static void imap_sync (CamelFolder *folder, gboolean expunge, CamelException *ex
 static CamelMimeMessage *imap_get_message (CamelFolder *folder, const char *uid, CamelException *ex);
 
 static void
-imap_folder_class_init (CamelIMAPPFolderClass *camel_imapp_folder_class)
+imap_folder_class_init (CamelIMAPPFolderClass *camel_lite_imapp_folder_class)
 {
-	CamelFolderClass *camel_folder_class = CAMEL_FOLDER_CLASS(camel_imapp_folder_class);
+	CamelFolderClass *camel_lite_folder_class = CAMEL_FOLDER_CLASS(camel_lite_imapp_folder_class);
 
-	parent_class = CAMEL_FOLDER_CLASS(camel_folder_get_type());
+	parent_class = CAMEL_FOLDER_CLASS(camel_lite_folder_get_type());
 
 	/* virtual method overload */
-	camel_folder_class->refresh_info = imap_refresh_info;
-	camel_folder_class->sync = imap_sync;
+	camel_lite_folder_class->refresh_info = imap_refresh_info;
+	camel_lite_folder_class->sync = imap_sync;
 
-	camel_folder_class->get_message = imap_get_message;
+	camel_lite_folder_class->get_message = imap_get_message;
 }
 
 static void
@@ -85,16 +85,16 @@ imap_folder_init(CamelObject *o, CamelObjectClass *klass)
 
 	/* FIXME: this is just a skeleton */
 
-	ifolder->changes = camel_folder_change_info_new();
+	ifolder->changes = camel_lite_folder_change_info_new();
 }
 
 CamelType
-camel_imapp_folder_get_type (void)
+camel_lite_imapp_folder_get_type (void)
 {
-	static CamelType camel_imapp_folder_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_imapp_folder_type = CAMEL_INVALID_TYPE;
 
-	if (!camel_imapp_folder_type) {
-		camel_imapp_folder_type = camel_type_register (CAMEL_FOLDER_TYPE, "CamelIMAPPFolder",
+	if (!camel_lite_imapp_folder_type) {
+		camel_lite_imapp_folder_type = camel_lite_type_register (CAMEL_FOLDER_TYPE, "CamelLiteIMAPPFolder",
 							      sizeof (CamelIMAPPFolder),
 							      sizeof (CamelIMAPPFolderClass),
 							      (CamelObjectClassInitFunc) imap_folder_class_init,
@@ -103,7 +103,7 @@ camel_imapp_folder_get_type (void)
 							      (CamelObjectFinalizeFunc) imap_finalize);
 	}
 
-	return camel_imapp_folder_type;
+	return camel_lite_imapp_folder_type;
 }
 
 void
@@ -111,25 +111,25 @@ imap_finalize (CamelObject *object)
 {
 	CamelIMAPPFolder *folder = (CamelIMAPPFolder *)object;
 
-	camel_folder_change_info_free(folder->changes);
+	camel_lite_folder_change_info_free(folder->changes);
 }
 
 CamelFolder *
-camel_imapp_folder_new(CamelStore *store, const char *path)
+camel_lite_imapp_folder_new(CamelStore *store, const char *path)
 {
 	CamelFolder *folder;
 	char *root;
 
 	d(printf("opening imap folder '%s'\n", path));
 
-	folder = CAMEL_FOLDER (camel_object_new (CAMEL_IMAPP_FOLDER_TYPE));
-	camel_folder_construct(folder, store, path, path);
+	folder = CAMEL_FOLDER (camel_lite_object_new (CAMEL_IMAPP_FOLDER_TYPE));
+	camel_lite_folder_construct(folder, store, path, path);
 
 	((CamelIMAPPFolder *)folder)->raw_name = g_strdup(path);
 
-	folder->summary = camel_imapp_summary_new();
+	folder->summary = camel_lite_imapp_summary_new();
 
-	root = camel_session_get_storage_path(((CamelService *)store)->session, (CamelService *)store, NULL);
+	root = camel_lite_session_get_storage_path(((CamelService *)store)->session, (CamelService *)store, NULL);
 	if (root) {
 		char *base = g_build_filename(root, path, NULL);
 		char *file = g_build_filename(base, ".ev-summary.mmap", NULL);
@@ -137,10 +137,10 @@ camel_imapp_folder_new(CamelStore *store, const char *path)
 		g_mkdir_with_parents (base, 0777);
 		g_free(base);
 
-		camel_folder_summary_set_filename(folder->summary, file);
+		camel_lite_folder_summary_set_filename(folder->summary, file);
 		printf("loading summary from '%s' (root=%s)\n", file, root);
 		g_free(file);
-		camel_folder_summary_load(folder->summary);
+		camel_lite_folder_summary_load(folder->summary);
 		g_free(root);
 	}
 
@@ -150,23 +150,23 @@ camel_imapp_folder_new(CamelStore *store, const char *path)
 #if 0
 /* experimental interfaces */
 void
-camel_imapp_folder_open(CamelIMAPPFolder *folder, CamelException *ex)
+camel_lite_imapp_folder_open(CamelIMAPPFolder *folder, CamelException *ex)
 {
 	/* */
 }
 
 void
-camel_imapp_folder_delete(CamelIMAPPFolder *folder, CamelException *ex)
+camel_lite_imapp_folder_delete(CamelIMAPPFolder *folder, CamelException *ex)
 {
 }
 
 void
-camel_imapp_folder_rename(CamelIMAPPFolder *folder, const char *new, CamelException *ex)
+camel_lite_imapp_folder_rename(CamelIMAPPFolder *folder, const char *new, CamelException *ex)
 {
 }
 
 void
-camel_imapp_folder_close(CamelIMAPPFolder *folder, CamelException *ex)
+camel_lite_imapp_folder_close(CamelIMAPPFolder *folder, CamelException *ex)
 {
 }
 #endif
@@ -180,7 +180,7 @@ imap_refresh_info (CamelFolder *folder, CamelException *ex)
 static void
 imap_sync (CamelFolder *folder, gboolean expunge, CamelException *ex)
 {
-	camel_imapp_driver_sync(((CamelIMAPPStore *)(folder->parent_store))->driver, expunge, (CamelIMAPPFolder *) folder);
+	camel_lite_imapp_driver_sync(((CamelIMAPPStore *)(folder->parent_store))->driver, expunge, (CamelIMAPPFolder *) folder);
 }
 
 static CamelMimeMessage *
@@ -193,21 +193,21 @@ imap_get_message (CamelFolder *folder, const char *uid, CamelException *ex)
 
 	CAMEL_TRY {
 		/* simple implementation, just get whole message in 1 go */
-		stream = camel_imapp_driver_fetch(((CamelIMAPPStore *)(folder->parent_store))->driver, (CamelIMAPPFolder *)folder, uid, "");
-		camel_stream_reset(stream);
-		msg = camel_mime_message_new();
-		if (camel_data_wrapper_construct_from_stream((CamelDataWrapper *)msg, stream) != -1) {
+		stream = camel_lite_imapp_driver_fetch(((CamelIMAPPStore *)(folder->parent_store))->driver, (CamelIMAPPFolder *)folder, uid, "");
+		camel_lite_stream_reset(stream);
+		msg = camel_lite_mime_message_new();
+		if (camel_lite_data_wrapper_construct_from_stream((CamelDataWrapper *)msg, stream) != -1) {
 			/* do we care? */
 		}
 	} CAMEL_CATCH(e) {
 		if (msg)
-			camel_object_unref(msg);
+			camel_lite_object_unref(msg);
 		msg = NULL;
-		camel_exception_xfer(ex, e);
+		camel_lite_exception_xfer(ex, e);
 	} CAMEL_DONE;
 
 	if (stream)
-		camel_object_unref(stream);
+		camel_lite_object_unref(stream);
 
 	return msg;
 }

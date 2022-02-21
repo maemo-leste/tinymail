@@ -129,9 +129,9 @@ tny_camel_bs_msg_get_url_string_default (TnyMsg *self)
 		} else if (fpriv->account) {
 			TnyCamelAccountPriv *apriv = TNY_CAMEL_ACCOUNT_GET_PRIVATE (fpriv->account);
 			if (apriv->service) {
-				char *urls = camel_service_get_url (apriv->service);
+				char *urls = camel_lite_service_get_url (apriv->service);
 				CamelFolder *cfol = _tny_camel_folder_get_camel_folder (TNY_CAMEL_FOLDER (priv->folder));
-				const char *foln = camel_folder_get_full_name (cfol);
+				const char *foln = camel_lite_folder_get_full_name (cfol);
 				retval = g_strdup_printf ("%s/%s/%s", urls, foln, uid);
 				g_free (urls);
 			}
@@ -417,7 +417,7 @@ tny_camel_bs_msg_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

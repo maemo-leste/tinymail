@@ -23,9 +23,9 @@
 
 #include <camel/camel-stream.h>
 
-#define CAMEL_IMAPP_FETCH_STREAM(obj)         CAMEL_CHECK_CAST (obj, camel_imapp_fetch_stream_get_type (), CamelIMAPPFetchStream)
-#define CAMEL_IMAPP_FETCH_STREAM_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_imapp_fetch_stream_get_type (), CamelIMAPPFetchStreamClass)
-#define CAMEL_IS_IMAP_FETCH_STREAM(obj)      CAMEL_CHECK_TYPE (obj, camel_imapp_fetch_stream_get_type ())
+#define CAMEL_IMAPP_FETCH_STREAM(obj)         CAMEL_CHECK_CAST (obj, camel_lite_imapp_fetch_stream_get_type (), CamelIMAPPFetchStream)
+#define CAMEL_IMAPP_FETCH_STREAM_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_imapp_fetch_stream_get_type (), CamelIMAPPFetchStreamClass)
+#define CAMEL_IS_IMAP_FETCH_STREAM(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_imapp_fetch_stream_get_type ())
 
 G_BEGIN_DECLS
 
@@ -42,9 +42,9 @@ struct _CamelIMAPPFetchStreamClass {
 	CamelStreamClass parent_class;
 };
 
-CamelType	 camel_imapp_fetch_stream_get_type	(void);
+CamelType	 camel_lite_imapp_fetch_stream_get_type	(void);
 
-CamelStream     *camel_imapp_fetch_stream_new		(struct _CamelIMAPPEngine *src, const char *uid, const char *spec);
+CamelStream     *camel_lite_imapp_fetch_stream_new		(struct _CamelIMAPPEngine *src, const char *uid, const char *spec);
 
 G_END_DECLS
 

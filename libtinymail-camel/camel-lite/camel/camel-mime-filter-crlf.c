@@ -31,7 +31,7 @@ static void reset (CamelMimeFilter *f);
 
 
 static void
-camel_mime_filter_crlf_class_init (CamelMimeFilterCRLFClass *klass)
+camel_lite_mime_filter_crlf_class_init (CamelMimeFilterCRLFClass *klass)
 {
 	CamelMimeFilterClass *mime_filter_class =
 		(CamelMimeFilterClass *) klass;
@@ -42,15 +42,15 @@ camel_mime_filter_crlf_class_init (CamelMimeFilterCRLFClass *klass)
 }
 
 CamelType
-camel_mime_filter_crlf_get_type (void)
+camel_lite_mime_filter_crlf_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type(), "CamelMimeFilterCRLF",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type(), "CamelLiteMimeFilterCRLF",
 					    sizeof (CamelMimeFilterCRLF),
 					    sizeof (CamelMimeFilterCRLFClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_crlf_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_crlf_class_init,
 					    NULL,
 					    NULL,
 					    NULL);
@@ -75,7 +75,7 @@ filter (CamelMimeFilter *f, char *in, size_t len, size_t prespace,
 	inend = in + len;
 
 	if (crlf->direction == CAMEL_MIME_FILTER_CRLF_ENCODE) {
-		camel_mime_filter_set_size (f, 3 * len, FALSE);
+		camel_lite_mime_filter_set_size (f, 3 * len, FALSE);
 
 		outptr = f->outbuf;
 		while (inptr < inend) {
@@ -101,7 +101,7 @@ filter (CamelMimeFilter *f, char *in, size_t len, size_t prespace,
 		 * a carry-over from the previous invocation. This will happen
 		 * in practice, as the input is processed in arbitrarily-sized
 		 * blocks. */
-		camel_mime_filter_set_size (f, len + 1, FALSE);
+		camel_lite_mime_filter_set_size (f, len + 1, FALSE);
 
 		outptr = f->outbuf;
 		while (inptr < inend) {
@@ -163,7 +163,7 @@ reset (CamelMimeFilter *f)
 
 
 /**
- * camel_mime_filter_crlf_new:
+ * camel_lite_mime_filter_crlf_new:
  * @direction: encode vs decode
  * @mode: whether or not to perform SMTP dot-escaping
  *
@@ -172,9 +172,9 @@ reset (CamelMimeFilter *f)
  * Returns a new #CamelMimeFilterCRLF object
  **/
 CamelMimeFilter *
-camel_mime_filter_crlf_new (CamelMimeFilterCRLFDirection direction, CamelMimeFilterCRLFMode mode)
+camel_lite_mime_filter_crlf_new (CamelMimeFilterCRLFDirection direction, CamelMimeFilterCRLFMode mode)
 {
-	CamelMimeFilterCRLF *crlf = CAMEL_MIME_FILTER_CRLF(camel_object_new (CAMEL_MIME_FILTER_CRLF_TYPE));
+	CamelMimeFilterCRLF *crlf = CAMEL_MIME_FILTER_CRLF(camel_lite_object_new (CAMEL_MIME_FILTER_CRLF_TYPE));
 
 	crlf->direction = direction;
 	crlf->mode = mode;

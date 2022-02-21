@@ -30,10 +30,10 @@
 #include <libedataserver/e-msgport.h>
 #include <camel/camel-data-cache.h>
 
-#define CAMEL_IMAP_SEARCH_TYPE         (camel_imap_search_get_type ())
-#define CAMEL_IMAP_SEARCH(obj)         CAMEL_CHECK_CAST (obj, camel_imap_search_get_type (), CamelImapSearch)
-#define CAMEL_IMAP_SEARCH_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_imap_search_get_type (), CamelImapSearchClass)
-#define CAMEL_IS_IMAP_SEARCH(obj)      CAMEL_CHECK_TYPE (obj, camel_imap_search_get_type ())
+#define CAMEL_IMAP_SEARCH_TYPE         (camel_lite_imap_search_get_type ())
+#define CAMEL_IMAP_SEARCH(obj)         CAMEL_CHECK_CAST (obj, camel_lite_imap_search_get_type (), CamelImapSearch)
+#define CAMEL_IMAP_SEARCH_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_imap_search_get_type (), CamelImapSearchClass)
+#define CAMEL_IS_IMAP_SEARCH(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_imap_search_get_type ())
 
 G_BEGIN_DECLS
 
@@ -58,8 +58,8 @@ struct _CamelImapSearchClass {
 
 };
 
-CamelType              camel_imap_search_get_type (void);
-CamelFolderSearch *camel_imap_search_new      (const char *cachedir);
+CamelType              camel_lite_imap_search_get_type (void);
+CamelFolderSearch *camel_lite_imap_search_new      (const char *cachedir);
 
 G_END_DECLS
 

@@ -44,19 +44,19 @@ static int transport_getv (CamelObject *object, CamelException *ex, CamelArgGetV
 
 
 static void
-camel_transport_class_init (CamelTransportClass *camel_transport_class)
+camel_lite_transport_class_init (CamelTransportClass *camel_lite_transport_class)
 {
-	CamelObjectClass *camel_object_class = CAMEL_OBJECT_CLASS (camel_transport_class);
+	CamelObjectClass *camel_lite_object_class = CAMEL_OBJECT_CLASS (camel_lite_transport_class);
 
-	parent_class = CAMEL_SERVICE_CLASS (camel_type_get_global_classfuncs (camel_service_get_type ()));
+	parent_class = CAMEL_SERVICE_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_service_get_type ()));
 
 	/* virtual method overload */
-	camel_object_class->setv = transport_setv;
-	camel_object_class->getv = transport_getv;
+	camel_lite_object_class->setv = transport_setv;
+	camel_lite_object_class->getv = transport_getv;
 }
 
 static void
-camel_transport_init (gpointer object, gpointer klass)
+camel_lite_transport_init (gpointer object, gpointer klass)
 {
 	CamelTransport *xport = object;
 
@@ -65,7 +65,7 @@ camel_transport_init (gpointer object, gpointer klass)
 }
 
 static void
-camel_transport_finalize (CamelObject *object)
+camel_lite_transport_finalize (CamelObject *object)
 {
 	CamelTransport *xport = CAMEL_TRANSPORT (object);
 
@@ -77,19 +77,19 @@ camel_transport_finalize (CamelObject *object)
 }
 
 CamelType
-camel_transport_get_type (void)
+camel_lite_transport_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (CAMEL_SERVICE_TYPE,
-					    "CamelTransport",
+		type = camel_lite_type_register (CAMEL_SERVICE_TYPE,
+					    "CamelLiteTransport",
 					    sizeof (CamelTransport),
 					    sizeof (CamelTransportClass),
-					    (CamelObjectClassInitFunc) camel_transport_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_transport_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_transport_init,
-					    (CamelObjectFinalizeFunc) camel_transport_finalize);
+					    (CamelObjectInitFunc) camel_lite_transport_init,
+					    (CamelObjectFinalizeFunc) camel_lite_transport_finalize);
 	}
 
 	return type;
@@ -112,7 +112,7 @@ transport_getv (CamelObject *object, CamelException *ex, CamelArgGetV *args)
 
 
 /**
- * camel_transport_send_to:
+ * camel_lite_transport_send_to:
  * @transport: a #CamelTransport object
  * @message: a #CamelMimeMessage to send
  * @from: a #CamelAddress to send from
@@ -126,7 +126,7 @@ transport_getv (CamelObject *object, CamelException *ex, CamelArgGetV *args)
  * Return %TRUE on success or %FALSE on fail
  **/
 gboolean
-camel_transport_send_to (CamelTransport *transport, CamelMimeMessage *message,
+camel_lite_transport_send_to (CamelTransport *transport, CamelMimeMessage *message,
 			 CamelAddress *from, CamelAddress *recipients,
 			 CamelException *ex)
 {
@@ -136,13 +136,13 @@ camel_transport_send_to (CamelTransport *transport, CamelMimeMessage *message,
 	g_return_val_if_fail (CAMEL_IS_MIME_MESSAGE (message), FALSE);
 
 	if (!CAMEL_IS_ADDRESS (from)) {
-		camel_exception_set (ex, CAMEL_EXCEPTION_INVALID_PARAM,
+		camel_lite_exception_set (ex, CAMEL_EXCEPTION_INVALID_PARAM,
 			_("The From address is not well formed"));
 		return FALSE;
 	}
 
 	if (!CAMEL_IS_ADDRESS (recipients)) {
-		camel_exception_set (ex, CAMEL_EXCEPTION_INVALID_PARAM,
+		camel_lite_exception_set (ex, CAMEL_EXCEPTION_INVALID_PARAM,
 			_("The recipients field is not well formed"));
 		return FALSE;
 	}

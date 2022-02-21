@@ -30,7 +30,7 @@
 #include <unistd.h>
 #include <camel/camel-object.h>
 
-#define CAMEL_STREAM_TYPE     (camel_stream_get_type ())
+#define CAMEL_STREAM_TYPE     (camel_lite_stream_get_type ())
 #define CAMEL_STREAM(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_STREAM_TYPE, CamelStream))
 #define CAMEL_STREAM_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_STREAM_TYPE, CamelStreamClass))
 #define CAMEL_IS_STREAM(o)    (CAMEL_CHECK_TYPE((o), CAMEL_STREAM_TYPE))
@@ -59,25 +59,25 @@ typedef struct {
 } CamelStreamClass;
 
 /* Standard Camel function */
-CamelType camel_stream_get_type (void);
+CamelType camel_lite_stream_get_type (void);
 
 /* public methods */
-ssize_t    camel_stream_read       (CamelStream *stream, char *buffer, size_t n);
-ssize_t    camel_stream_write      (CamelStream *stream, const char *buffer, size_t n);
-int        camel_stream_flush      (CamelStream *stream);
-int        camel_stream_close      (CamelStream *stream);
-gboolean   camel_stream_eos        (CamelStream *stream);
-int        camel_stream_reset      (CamelStream *stream);
+ssize_t    camel_lite_stream_read       (CamelStream *stream, char *buffer, size_t n);
+ssize_t    camel_lite_stream_write      (CamelStream *stream, const char *buffer, size_t n);
+int        camel_lite_stream_flush      (CamelStream *stream);
+int        camel_lite_stream_close      (CamelStream *stream);
+gboolean   camel_lite_stream_eos        (CamelStream *stream);
+int        camel_lite_stream_reset      (CamelStream *stream);
 
 /* utility macros and funcs */
-ssize_t camel_stream_write_string (CamelStream *stream, const char *string);
-ssize_t camel_stream_printf (CamelStream *stream, const char *fmt, ... ) G_GNUC_PRINTF (2, 3);
-ssize_t camel_stream_vprintf (CamelStream *stream, const char *fmt, va_list ap);
+ssize_t camel_lite_stream_write_string (CamelStream *stream, const char *string);
+ssize_t camel_lite_stream_printf (CamelStream *stream, const char *fmt, ... ) G_GNUC_PRINTF (2, 3);
+ssize_t camel_lite_stream_vprintf (CamelStream *stream, const char *fmt, va_list ap);
 
 /* Write a whole stream to another stream, until eof or error on
  * either stream.
  */
-ssize_t camel_stream_write_to_stream (CamelStream *stream, CamelStream *output_stream);
+ssize_t camel_lite_stream_write_to_stream (CamelStream *stream, CamelStream *output_stream);
 
 G_END_DECLS
 

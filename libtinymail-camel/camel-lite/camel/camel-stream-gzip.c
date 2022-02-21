@@ -41,7 +41,7 @@ static ssize_t z_stream_read (CamelStream *stream, char *buffer, size_t n)
 		char *mem = g_malloc0 (n);
 		c_stream.next_out = (Bytef *) buffer;
 		c_stream.avail_out = n;
-		haveread = camel_stream_read (self->real, mem, n);
+		haveread = camel_lite_stream_read (self->real, mem, n);
 		c_stream.next_in = (Bytef *) mem;
 		c_stream.avail_in = haveread;
 		deflate (&c_stream, Z_FINISH);
@@ -58,7 +58,7 @@ static ssize_t z_stream_read (CamelStream *stream, char *buffer, size_t n)
 
 		while (haveread == block_size && c_stream.avail_out > 0)
 		{
-			haveread = camel_stream_read (self->real, mem, block_size);
+			haveread = camel_lite_stream_read (self->real, mem, block_size);
 			c_stream.next_in  = (Bytef *) mem;
 			c_stream.avail_in = haveread;
 			inflate (&c_stream, Z_NO_FLUSH);
@@ -88,7 +88,7 @@ static ssize_t z_stream_write (CamelStream *stream, const char *buffer, size_t n
 
 		deflate (&c_stream, Z_FINISH);
 
-		camel_stream_write (self->real, mem, n - c_stream.avail_out);
+		camel_lite_stream_write (self->real, mem, n - c_stream.avail_out);
 
 		retval = n;
 		g_free (mem);
@@ -106,7 +106,7 @@ static ssize_t z_stream_write (CamelStream *stream, const char *buffer, size_t n
 		{
 			inflate (&c_stream, Z_NO_FLUSH);
 
-			camel_stream_write (self->real, mem, n - c_stream.avail_out);
+			camel_lite_stream_write (self->real, mem, n - c_stream.avail_out);
 			retval += n - c_stream.avail_out;
 
 			c_stream.next_out = (Bytef *) mem;
@@ -121,20 +121,20 @@ static ssize_t z_stream_write (CamelStream *stream, const char *buffer, size_t n
 static int z_stream_flush (CamelStream *stream)
 {
 	CamelStreamGZip *self = (CamelStreamGZip *) stream;
-	return camel_stream_flush (self->real);
+	return camel_lite_stream_flush (self->real);
 }
 
 static int z_stream_close (CamelStream *stream)
 {
 	CamelStreamGZip *self = (CamelStreamGZip *) stream;
 	z_stream_flush (stream);
-	return camel_stream_close (self->real);
+	return camel_lite_stream_close (self->real);
 }
 
 static gboolean z_stream_eos (CamelStream *stream)
 {
 	CamelStreamGZip *self = (CamelStreamGZip *) stream;
-	return camel_stream_eos (self->real);
+	return camel_lite_stream_eos (self->real);
 }
 
 static int z_stream_reset (CamelStream *stream)
@@ -157,27 +157,27 @@ static int z_stream_reset (CamelStream *stream)
 }
 
 static void
-camel_stream_gzip_class_init (CamelStreamClass *camel_stream_gzip_class)
+camel_lite_stream_gzip_class_init (CamelStreamClass *camel_lite_stream_gzip_class)
 {
-	CamelStreamClass *camel_stream_class = (CamelStreamClass *)camel_stream_gzip_class;
+	CamelStreamClass *camel_lite_stream_class = (CamelStreamClass *)camel_lite_stream_gzip_class;
 
-	parent_class = camel_type_get_global_classfuncs( CAMEL_OBJECT_TYPE );
+	parent_class = camel_lite_type_get_global_classfuncs( CAMEL_OBJECT_TYPE );
 
 	/* virtual method definition */
-	camel_stream_class->read = z_stream_read;
-	camel_stream_class->write = z_stream_write;
-	camel_stream_class->close = z_stream_close;
-	camel_stream_class->flush = z_stream_flush;
-	camel_stream_class->eos = z_stream_eos;
-	camel_stream_class->reset = z_stream_reset;
+	camel_lite_stream_class->read = z_stream_read;
+	camel_lite_stream_class->write = z_stream_write;
+	camel_lite_stream_class->close = z_stream_close;
+	camel_lite_stream_class->flush = z_stream_flush;
+	camel_lite_stream_class->eos = z_stream_eos;
+	camel_lite_stream_class->reset = z_stream_reset;
 }
 
 static void
-camel_stream_gzip_finalize (CamelObject *object)
+camel_lite_stream_gzip_finalize (CamelObject *object)
 {
 	CamelStreamGZip *self = (CamelStreamGZip *) object;
 
-	camel_object_unref (CAMEL_OBJECT (self->real));
+	camel_lite_object_unref (CAMEL_OBJECT (self->real));
 
 	if (self->read_mode == CAMEL_STREAM_GZIP_ZIP)
 		deflateEnd (self->r_stream);
@@ -197,24 +197,24 @@ camel_stream_gzip_finalize (CamelObject *object)
 }
 
 CamelType
-camel_stream_gzip_get_type (void)
+camel_lite_stream_gzip_get_type (void)
 {
-	static CamelType camel_stream_gzip_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_stream_gzip_type = CAMEL_INVALID_TYPE;
 
-	if (camel_stream_gzip_type == CAMEL_INVALID_TYPE)
+	if (camel_lite_stream_gzip_type == CAMEL_INVALID_TYPE)
 	{
-		camel_stream_gzip_type = camel_type_register(
-			camel_stream_get_type(),
-			"CamelStreamGZip",
+		camel_lite_stream_gzip_type = camel_lite_type_register(
+			camel_lite_stream_get_type(),
+			"CamelLiteStreamGZip",
 			sizeof( CamelStreamGZip ),
 			sizeof( CamelStreamGZipClass ),
-			(CamelObjectClassInitFunc) camel_stream_gzip_class_init,
+			(CamelObjectClassInitFunc) camel_lite_stream_gzip_class_init,
 			NULL,
 			NULL,
-			(CamelObjectFinalizeFunc) camel_stream_gzip_finalize );
+			(CamelObjectFinalizeFunc) camel_lite_stream_gzip_finalize );
 	}
 
-	return camel_stream_gzip_type;
+	return camel_lite_stream_gzip_type;
 }
 
 static int
@@ -230,12 +230,12 @@ set_mode (z_stream *stream, int level, int mode)
 }
 
 CamelStream *
-camel_stream_gzip_new (CamelStream *real, int level, int read_mode, int write_mode)
+camel_lite_stream_gzip_new (CamelStream *real, int level, int read_mode, int write_mode)
 {
-	CamelStreamGZip *self = (CamelStreamGZip *) camel_object_new (camel_stream_gzip_get_type ());
+	CamelStreamGZip *self = (CamelStreamGZip *) camel_lite_object_new (camel_lite_stream_gzip_get_type ());
 	int retval;
 
-	camel_object_ref (CAMEL_OBJECT (real));
+	camel_lite_object_ref (CAMEL_OBJECT (real));
 	self->real = real;
 
 	self->r_stream = g_new0 (z_stream, 1);
@@ -247,7 +247,7 @@ camel_stream_gzip_new (CamelStream *real, int level, int read_mode, int write_mo
 	retval = set_mode (self->r_stream, level, read_mode);
 	if (retval != Z_OK)
 	{
-		camel_object_unref (self);
+		camel_lite_object_unref (self);
 		return NULL;
 	}
 
@@ -255,7 +255,7 @@ camel_stream_gzip_new (CamelStream *real, int level, int read_mode, int write_mo
 	retval = set_mode (self->w_stream, level, write_mode);
 	if (retval != Z_OK)
 	{
-		camel_object_unref (self);
+		camel_lite_object_unref (self);
 		return NULL;
 	}
 

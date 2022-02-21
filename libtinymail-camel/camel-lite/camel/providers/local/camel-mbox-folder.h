@@ -25,7 +25,7 @@
 #include "camel-local-folder.h"
 #include "camel-mbox-summary.h"
 
-#define CAMEL_MBOX_FOLDER_TYPE     (camel_mbox_folder_get_type ())
+#define CAMEL_MBOX_FOLDER_TYPE     (camel_lite_mbox_folder_get_type ())
 #define CAMEL_MBOX_FOLDER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_MBOX_FOLDER_TYPE, CamelMboxFolder))
 #define CAMEL_MBOX_FOLDER_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_MBOX_FOLDER_TYPE, CamelMboxFolderClass))
 #define CAMEL_IS_MBOX_FOLDER(o)    (CAMEL_CHECK_TYPE((o), CAMEL_MBOX_FOLDER_TYPE))
@@ -47,10 +47,10 @@ typedef struct {
 
 /* public methods */
 /* flags are taken from CAMEL_STORE_FOLDER_* flags */
-CamelFolder *camel_mbox_folder_new(CamelStore *parent_store, const char *full_name, guint32 flags, CamelException *ex);
+CamelFolder *camel_lite_mbox_folder_new(CamelStore *parent_store, const char *full_name, guint32 flags, CamelException *ex);
 
 /* Standard Camel function */
-CamelType camel_mbox_folder_get_type(void);
+CamelType camel_lite_mbox_folder_get_type(void);
 
 G_END_DECLS
 

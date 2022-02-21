@@ -29,7 +29,7 @@
 #include "camel-nntp-stream.h"
 #include "camel-nntp-store-summary.h"
 
-#define CAMEL_NNTP_STORE_TYPE     (camel_nntp_store_get_type ())
+#define CAMEL_NNTP_STORE_TYPE     (camel_lite_nntp_store_get_type ())
 #define CAMEL_NNTP_STORE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_NNTP_STORE_TYPE, CamelNNTPStore))
 #define CAMEL_NNTP_STORE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_NNTP_STORE_TYPE, CamelNNTPStoreClass))
 #define CAMEL_IS_NNTP_STORE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_NNTP_STORE_TYPE))
@@ -94,12 +94,12 @@ struct _CamelNNTPStoreClass {
 };
 
 /* Standard Camel function */
-CamelType camel_nntp_store_get_type (void);
+CamelType camel_lite_nntp_store_get_type (void);
 
-int camel_nntp_raw_commandv (CamelNNTPStore *store, struct _CamelException *ex, char **line, const char *fmt, va_list ap);
-int camel_nntp_raw_command(CamelNNTPStore *store, struct _CamelException *ex, char **line, const char *fmt, ...);
-int camel_nntp_raw_command_auth(CamelNNTPStore *store, struct _CamelException *ex, char **line, const char *fmt, ...);
-int camel_nntp_command (CamelNNTPStore *store, struct _CamelException *ex, struct _CamelNNTPFolder *folder, char **line, const char *fmt, ...);
+int camel_lite_nntp_raw_commandv (CamelNNTPStore *store, struct _CamelException *ex, char **line, const char *fmt, va_list ap);
+int camel_lite_nntp_raw_command(CamelNNTPStore *store, struct _CamelException *ex, char **line, const char *fmt, ...);
+int camel_lite_nntp_raw_command_auth(CamelNNTPStore *store, struct _CamelException *ex, char **line, const char *fmt, ...);
+int camel_lite_nntp_command (CamelNNTPStore *store, struct _CamelException *ex, struct _CamelNNTPFolder *folder, char **line, const char *fmt, ...);
 
 G_END_DECLS
 

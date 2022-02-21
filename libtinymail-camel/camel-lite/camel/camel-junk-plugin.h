@@ -55,12 +55,12 @@ struct _CamelJunkPlugin
 	void (*init) (struct _CamelJunkPlugin *csp);
 };
 
-const char * camel_junk_plugin_get_name (CamelJunkPlugin *csp);
-int camel_junk_plugin_check_junk (CamelJunkPlugin *csp, struct _CamelMimeMessage *message);
-void camel_junk_plugin_report_junk (CamelJunkPlugin *csp, struct _CamelMimeMessage *message);
-void camel_junk_plugin_report_notjunk (CamelJunkPlugin *csp, struct _CamelMimeMessage *message);
-void camel_junk_plugin_commit_reports (CamelJunkPlugin *csp);
-void camel_junk_plugin_init (CamelJunkPlugin *csp);
+const char * camel_lite_junk_plugin_get_name (CamelJunkPlugin *csp);
+int camel_lite_junk_plugin_check_junk (CamelJunkPlugin *csp, struct _CamelMimeMessage *message);
+void camel_lite_junk_plugin_report_junk (CamelJunkPlugin *csp, struct _CamelMimeMessage *message);
+void camel_lite_junk_plugin_report_notjunk (CamelJunkPlugin *csp, struct _CamelMimeMessage *message);
+void camel_lite_junk_plugin_commit_reports (CamelJunkPlugin *csp);
+void camel_lite_junk_plugin_init (CamelJunkPlugin *csp);
 
 G_END_DECLS
 

@@ -26,7 +26,7 @@
 
 #include "camel-folder.h"
 
-#define CAMEL_DISCO_FOLDER_TYPE     (camel_disco_folder_get_type ())
+#define CAMEL_DISCO_FOLDER_TYPE     (camel_lite_disco_folder_get_type ())
 #define CAMEL_DISCO_FOLDER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_DISCO_FOLDER_TYPE, CamelDiscoFolder))
 #define CAMEL_DISCO_FOLDER_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_DISCO_FOLDER_TYPE, CamelDiscoFolderClass))
 #define CAMEL_IS_DISCO_FOLDER(o)    (CAMEL_CHECK_TYPE((o), CAMEL_DISCO_FOLDER_TYPE))
@@ -108,18 +108,18 @@ typedef struct {
 
 
 /* public methods */
-void camel_disco_folder_expunge_uids (CamelFolder *folder, GPtrArray *uids,
+void camel_lite_disco_folder_expunge_uids (CamelFolder *folder, GPtrArray *uids,
 				      CamelException *ex);
 
-void camel_disco_folder_cache_message       (CamelDiscoFolder *disco_folder,
+void camel_lite_disco_folder_cache_message       (CamelDiscoFolder *disco_folder,
 					     const char *uid,
 					     CamelException *ex);
-void camel_disco_folder_prepare_for_offline (CamelDiscoFolder *disco_folder,
+void camel_lite_disco_folder_prepare_for_offline (CamelDiscoFolder *disco_folder,
 					     const char *expression,
 					     CamelException *ex);
 
 /* Standard Camel function */
-CamelType camel_disco_folder_get_type (void);
+CamelType camel_lite_disco_folder_get_type (void);
 
 G_END_DECLS
 

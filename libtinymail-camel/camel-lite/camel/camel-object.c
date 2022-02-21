@@ -122,13 +122,13 @@ static const char interface_name[] = "object:interface";
 
 /* ********************************************************************** */
 
-static CamelHookList *camel_object_get_hooks(CamelObject *o);
-static void camel_object_free_hooks(CamelObject *o);
-static void camel_object_bag_remove_unlocked(CamelObjectBag *inbag, CamelObject *o, CamelHookList *hooks);
+static CamelHookList *camel_lite_object_get_hooks(CamelObject *o);
+static void camel_lite_object_free_hooks(CamelObject *o);
+static void camel_lite_object_bag_remove_unlocked(CamelObjectBag *inbag, CamelObject *o, CamelHookList *hooks);
 
 static GStaticRecMutex hooks_lock = G_STATIC_REC_MUTEX_INIT;
 
-#define camel_object_unget_hooks(o) \
+#define camel_lite_object_unget_hooks(o) \
 	(g_static_rec_mutex_unlock(&(CAMEL_OBJECT(o)->hooks->lock)))
 
 
@@ -143,8 +143,8 @@ static GMutex *ref_lock;
 static GHashTable *type_table;
 
 /* fundamental types are accessed via global */
-CamelType camel_object_type;
-CamelType camel_interface_type;
+CamelType camel_lite_object_type;
+CamelType camel_lite_interface_type;
 
 #define CLASS_LOCK(k) (g_mutex_lock((((CamelObjectClass *)k)->lock)))
 #define CLASS_UNLOCK(k) (g_mutex_unlock((((CamelObjectClass *)k)->lock)))
@@ -191,7 +191,7 @@ hooks_free(CamelHookList *hooks)
 
 /* not checked locked, who cares, only required for people that want to redefine root objects */
 void
-camel_type_init(void)
+camel_lite_type_init(void)
 {
 	static int init = FALSE;
 
@@ -225,7 +225,7 @@ cobject_finalise(CamelObject *o)
 	if (o->ref_count == 0)
 		return;
 
-	camel_object_free_hooks(o);
+	camel_lite_object_free_hooks(o);
 
 	o->klass = NULL;
 }
@@ -253,7 +253,7 @@ cobject_getv(CamelObject *o, CamelException *ex, CamelArgGetV *args)
 
 			if (pair) {
 				*arg->ca_str = g_strdup(pair->func.filename);
-				camel_object_unget_hooks(o);
+				camel_lite_object_unget_hooks(o);
 			}
 			break; }
 		}
@@ -282,7 +282,7 @@ cobject_setv(CamelObject *o, CamelException *ex, CamelArgV *args)
 			pair = co_metadata_pair(o, TRUE);
 			g_free(pair->func.filename);
 			pair->func.filename = g_strdup(arg->ca_str);
-			camel_object_unget_hooks(o);
+			camel_lite_object_unget_hooks(o);
 			break; }
 		}
 	}
@@ -327,7 +327,7 @@ cobject_meta_get(CamelObject *obj, const char * name)
 			}
 			meta = meta->next;
 		}
-		camel_object_unget_hooks(obj);
+		camel_lite_object_unget_hooks(obj);
 	}
 
 	return res;
@@ -379,7 +379,7 @@ cobject_meta_set(CamelObject *obj, const char * name, const char *value)
 	}
 
 done:
-	camel_object_unget_hooks(obj);
+	camel_lite_object_unget_hooks(obj);
 
 	return changed;
 }
@@ -406,17 +406,17 @@ cobject_state_read(CamelObject *obj, FILE *fp)
 	guint32 i, count, version;
 
 	/* NB: for later versions, just check the version is 1 .. known version */
-	if (camel_file_util_decode_uint32(fp, &version) == -1
+	if (camel_lite_file_util_decode_uint32(fp, &version) == -1
 	    || version > 1
-	    || camel_file_util_decode_uint32(fp, &count) == -1)
+	    || camel_lite_file_util_decode_uint32(fp, &count) == -1)
 		return -1;
 
 	for (i=0;i<count;i++) {
 		char *name = NULL, *value = NULL;
 
-		if (camel_file_util_decode_string(fp, &name) == 0
-		    && camel_file_util_decode_string(fp, &value) == 0) {
-			camel_object_meta_set(obj, name, value);
+		if (camel_lite_file_util_decode_string(fp, &name) == 0
+		    && camel_lite_file_util_decode_string(fp, &value) == 0) {
+			camel_lite_object_meta_set(obj, name, value);
 			g_free(name);
 			g_free(value);
 		} else {
@@ -430,7 +430,7 @@ cobject_state_read(CamelObject *obj, FILE *fp)
 	if (version > 0) {
 		CamelArgV *argv;
 
-		if (camel_file_util_decode_uint32(fp, &count) == -1
+		if (camel_lite_file_util_decode_uint32(fp, &count) == -1
 			|| count == 0 || count > 1024) {
 			/* maybe it was just version 0 afterall */
 			return 0;
@@ -446,7 +446,7 @@ cobject_state_read(CamelObject *obj, FILE *fp)
 
 		argv->argc = 0;
 		for (i=0;i<count;i++) {
-			if (camel_file_util_decode_uint32(fp, &argv->argv[argv->argc].tag) == -1)
+			if (camel_lite_file_util_decode_uint32(fp, &argv->argv[argv->argc].tag) == -1)
 				goto cleanup;
 
 			/* so far,only do strings and ints, doubles could be added,
@@ -455,11 +455,11 @@ cobject_state_read(CamelObject *obj, FILE *fp)
 			switch(argv->argv[argv->argc].tag & CAMEL_ARG_TYPE) {
 			case CAMEL_ARG_INT:
 			case CAMEL_ARG_BOO:
-				if (camel_file_util_decode_uint32(fp, (guint32 *) &argv->argv[argv->argc].ca_int) == -1)
+				if (camel_lite_file_util_decode_uint32(fp, (guint32 *) &argv->argv[argv->argc].ca_int) == -1)
 					goto cleanup;
 				break;
 			case CAMEL_ARG_STR:
-				if (camel_file_util_decode_string(fp, &argv->argv[argv->argc].ca_str) == -1)
+				if (camel_lite_file_util_decode_string(fp, &argv->argv[argv->argc].ca_str) == -1)
 					goto cleanup;
 				break;
 			default:
@@ -469,7 +469,7 @@ cobject_state_read(CamelObject *obj, FILE *fp)
 			argv->argc++;
 		}
 
-		camel_object_setv(obj, NULL, argv);
+		camel_lite_object_setv(obj, NULL, argv);
 	cleanup:
 		for (i=0;i<argv->argc;i++) {
 			if ((argv->argv[i].tag & CAMEL_ARG_TYPE) == CAMEL_ARG_STR)
@@ -492,7 +492,7 @@ cobject_state_write(CamelObject *obj, FILE *fp)
 	CamelArgGetV *arggetv = NULL;
 	CamelArgV *argv = NULL;
 
-	camel_object_get(obj, NULL, CAMEL_OBJECT_METADATA, &meta, NULL);
+	camel_lite_object_get(obj, NULL, CAMEL_OBJECT_METADATA, &meta, NULL);
 
 	count = 0;
 	scan = meta;
@@ -502,19 +502,19 @@ cobject_state_write(CamelObject *obj, FILE *fp)
 	}
 
 	/* current version is 1 */
-	if (camel_file_util_encode_uint32(fp, 1) == -1
-	    || camel_file_util_encode_uint32(fp, count) == -1)
+	if (camel_lite_file_util_encode_uint32(fp, 1) == -1
+	    || camel_lite_file_util_encode_uint32(fp, count) == -1)
 		goto abort;
 
 	scan = meta;
 	while (scan) {
-		if (camel_file_util_encode_string(fp, scan->name) == -1
-		    || camel_file_util_encode_string(fp, scan->value) == -1)
+		if (camel_lite_file_util_encode_string(fp, scan->name) == -1
+		    || camel_lite_file_util_encode_string(fp, scan->value) == -1)
 			goto abort;
 		scan = scan->next;
 	}
 
-	camel_object_get(obj, NULL, CAMEL_OBJECT_PERSISTENT_PROPERTIES, &props, NULL);
+	camel_lite_object_get(obj, NULL, CAMEL_OBJECT_PERSISTENT_PROPERTIES, &props, NULL);
 
 	/* we build an arggetv to query the object atomically,
 	   we also need an argv to store the results - bit messy */
@@ -541,25 +541,25 @@ cobject_state_write(CamelObject *obj, FILE *fp)
 	arggetv->argc = i;
 	argv->argc = i;
 
-	camel_object_getv(obj, NULL, arggetv);
+	camel_lite_object_getv(obj, NULL, arggetv);
 
-	if (camel_file_util_encode_uint32(fp, count) == -1)
+	if (camel_lite_file_util_encode_uint32(fp, count) == -1)
 		goto abort;
 
 	for (i=0;i<argv->argc;i++) {
 		CamelArg *arg = &argv->argv[i];
 
-		if (camel_file_util_encode_uint32(fp, arg->tag) == -1)
+		if (camel_lite_file_util_encode_uint32(fp, arg->tag) == -1)
 			goto abort;
 
 		switch (arg->tag & CAMEL_ARG_TYPE) {
 		case CAMEL_ARG_INT:
 		case CAMEL_ARG_BOO:
-			if (camel_file_util_encode_uint32(fp, arg->ca_int) == -1)
+			if (camel_lite_file_util_encode_uint32(fp, arg->ca_int) == -1)
 				goto abort;
 			break;
 		case CAMEL_ARG_STR:
-			if (camel_file_util_encode_string(fp, arg->ca_str) == -1)
+			if (camel_lite_file_util_encode_string(fp, arg->ca_str) == -1)
 				goto abort;
 			break;
 		}
@@ -571,17 +571,17 @@ abort:
 		CamelArg *arg = &argv->argv[i];
 
 		if ((argv->argv[i].tag & CAMEL_ARG_TYPE) == CAMEL_ARG_STR)
-			camel_object_free(obj, arg->tag, arg->ca_str);
+			camel_lite_object_free(obj, arg->tag, arg->ca_str);
 	}
 
 	g_free(argv);
 	g_free(arggetv);
 
 	if (props)
-		camel_object_free(obj, CAMEL_OBJECT_PERSISTENT_PROPERTIES, props);
+		camel_lite_object_free(obj, CAMEL_OBJECT_PERSISTENT_PROPERTIES, props);
 
 	if (meta)
-		camel_object_free(obj, CAMEL_OBJECT_METADATA, meta);
+		camel_lite_object_free(obj, CAMEL_OBJECT_METADATA, meta);
 */
 	return res;
 }
@@ -601,8 +601,8 @@ cobject_class_init(CamelObjectClass *klass)
 	klass->state_read = cobject_state_read;
 	klass->state_write = cobject_state_write;
 
-	camel_object_class_add_event(klass, "finalize", NULL);
-	camel_object_class_add_event(klass, "meta_changed", NULL);
+	camel_lite_object_class_add_event(klass, "finalize", NULL);
+	camel_lite_object_class_add_event(klass, "meta_changed", NULL);
 }
 
 static void
@@ -667,31 +667,31 @@ cinterface_class_finalise(CamelObjectClass * klass)
 
 /* this function must be called for any other in the object system */
 CamelType
-camel_object_get_type(void)
+camel_lite_object_get_type(void)
 {
-	if (camel_object_type == CAMEL_INVALID_TYPE) {
-		camel_type_init();
+	if (camel_lite_object_type == CAMEL_INVALID_TYPE) {
+		camel_lite_type_init();
 
-		camel_object_type = camel_type_register(NULL, "CamelObject", /*, 0, 0*/
+		camel_lite_object_type = camel_lite_type_register(NULL, "CamelLiteObject", /*, 0, 0*/
 							sizeof(CamelObject), sizeof(CamelObjectClass),
 							cobject_class_init, cobject_class_finalise,
 							cobject_init, cobject_finalise);
 
-		camel_interface_type = camel_type_register(NULL, "CamelInterface",
+		camel_lite_interface_type = camel_lite_type_register(NULL, "CamelLiteInterface",
 							   0, sizeof(CamelInterface),
 							   cinterface_class_init, cinterface_class_finalise,
 							   cinterface_init, NULL);
 
 	}
 
-	return camel_object_type;
+	return camel_lite_object_type;
 }
 
 static void
-camel_type_class_init(CamelObjectClass *klass, CamelObjectClass *type)
+camel_lite_type_class_init(CamelObjectClass *klass, CamelObjectClass *type)
 {
 	if (type->parent)
-		camel_type_class_init(klass, type->parent);
+		camel_lite_type_class_init(klass, type->parent);
 
 	if (type->klass_init)
 		type->klass_init(klass);
@@ -718,7 +718,7 @@ co_type_register(CamelType parent, const char * name,
 		if (klass->klass_size != klass_size || klass->object_size != object_size
 		    || klass->klass_init != class_init || klass->klass_finalise != class_finalise
 		    || klass->init != object_init || klass->finalise != object_finalise) {
-			g_warning("camel_type_register: Trying to re-register class '%s'", name);
+			g_warning("camel_lite_type_register: Trying to re-register class '%s'", name);
 			klass = NULL;
 		}
 		TYPE_UNLOCK();
@@ -744,7 +744,7 @@ co_type_register(CamelType parent, const char * name,
 
 	if (parent
 	    && klass_size < parent->klass_size) {
-		g_warning("camel_type_register: '%s' has smaller class size than parent '%s'", name, parent->name);
+		g_warning("camel_lite_type_register: '%s' has smaller class size than parent '%s'", name, parent->name);
 		TYPE_UNLOCK();
 		return NULL;
 	}
@@ -774,7 +774,7 @@ co_type_register(CamelType parent, const char * name,
 	/* setup before class init, incase class init func uses the type or looks it up ? */
 	g_hash_table_insert(type_table, (void *)name, klass);
 
-	camel_type_class_init(klass, klass);
+	camel_lite_type_class_init(klass, klass);
 
 	TYPE_UNLOCK();
 
@@ -782,7 +782,7 @@ co_type_register(CamelType parent, const char * name,
 }
 
 CamelType
-camel_type_register(CamelType parent, const char * name,
+camel_lite_type_register(CamelType parent, const char * name,
 		    /*unsigned int ver, unsigned int rev,*/
 		    size_t object_size, size_t klass_size,
 		    CamelObjectClassInitFunc class_init,
@@ -791,7 +791,7 @@ camel_type_register(CamelType parent, const char * name,
 		    CamelObjectFinalizeFunc object_finalise)
 {
 	if (parent != NULL && parent->magic != CAMEL_OBJECT_CLASS_MAGIC) {
-		g_warning("camel_type_register: invalid junk parent class for '%s'", name);
+		g_warning("camel_lite_type_register: invalid junk parent class for '%s'", name);
 		return NULL;
 	}
 
@@ -799,31 +799,31 @@ camel_type_register(CamelType parent, const char * name,
 }
 
 CamelType
-camel_interface_register(CamelType parent, const char *name,
+camel_lite_interface_register(CamelType parent, const char *name,
 			 size_t class_size,
 			 CamelObjectClassInitFunc class_init,
 			 CamelObjectClassFinalizeFunc class_finalise)
 {
 	if (parent != NULL && parent->magic != CAMEL_INTERFACE_MAGIC) {
-		g_warning("camel_interface_register: invalid junk parent class for '%s'", name);
+		g_warning("camel_lite_interface_register: invalid junk parent class for '%s'", name);
 		return NULL;
 	}
 
-	return camel_type_register(parent, name, 0, class_size, class_init, class_finalise, NULL, NULL);
+	return camel_lite_type_register(parent, name, 0, class_size, class_init, class_finalise, NULL, NULL);
 }
 
 static void
-camel_object_init(CamelObject *o, CamelObjectClass *klass, CamelType type)
+camel_lite_object_init(CamelObject *o, CamelObjectClass *klass, CamelType type)
 {
 	if (type->parent)
-		camel_object_init(o, klass, type->parent);
+		camel_lite_object_init(o, klass, type->parent);
 
 	if (type->init)
 		type->init(o, klass);
 }
 
 CamelObject *
-camel_object_new(CamelType type)
+camel_lite_object_new(CamelType type)
 {
 	CamelObject *o;
 
@@ -839,7 +839,7 @@ camel_object_new(CamelType type)
 
 	CLASS_UNLOCK(type);
 
-	camel_object_init(o, type, type);
+	camel_lite_object_init(o, type, type);
 
 	if (o->flags & CAMEL_OBJECT_REF_DEBUG)
 		printf ("An object of the type that you are debugging got created\n");
@@ -850,7 +850,7 @@ camel_object_new(CamelType type)
 }
 
 void
-camel_object_ref(void *vo)
+camel_lite_object_ref(void *vo)
 {
 	register CamelObject *o = vo;
 
@@ -869,7 +869,7 @@ camel_object_ref(void *vo)
 }
 
 void
-camel_object_unref(void *vo)
+camel_lite_object_unref(void *vo)
 {
 	register CamelObject *o = vo;
 	register CamelObjectClass *klass, *k;
@@ -883,7 +883,7 @@ camel_object_unref(void *vo)
 		printf ("An object of the type that you are debugging got unreferenced\n");
 
 	if (o->hooks)
-		hooks = camel_object_get_hooks(o);
+		hooks = camel_lite_object_get_hooks(o);
 
 	REF_LOCK();
 
@@ -895,7 +895,7 @@ camel_object_unref(void *vo)
 	    || (o->flags & CAMEL_OBJECT_DESTROY)) {
 		REF_UNLOCK();
 		if (hooks)
-			camel_object_unget_hooks(o);
+			camel_lite_object_unget_hooks(o);
 		return;
 	}
 
@@ -905,14 +905,14 @@ camel_object_unref(void *vo)
 	o->flags |= CAMEL_OBJECT_DESTROY;
 
 	if (hooks)
-		camel_object_bag_remove_unlocked(NULL, o, hooks);
+		camel_lite_object_bag_remove_unlocked(NULL, o, hooks);
 
 	REF_UNLOCK();
 
 	if (hooks)
-		camel_object_unget_hooks(o);
+		camel_lite_object_unget_hooks(o);
 
-	camel_object_trigger_event(o, "finalize", NULL);
+	camel_lite_object_trigger_event(o, "finalize", NULL);
 
 	k = klass;
 	while (k) {
@@ -932,7 +932,7 @@ camel_object_unref(void *vo)
 }
 
 const char *
-camel_type_to_name(CamelType type)
+camel_lite_type_to_name(CamelType type)
 {
 	if (type == NULL)
 		return "(NULL class)";
@@ -946,7 +946,7 @@ camel_type_to_name(CamelType type)
 	return "(Junk class)";
 }
 
-CamelType camel_name_to_type(const char *name)
+CamelType camel_lite_name_to_type(const char *name)
 {
 	/* TODO: Load a class off disk (!) */
 
@@ -955,7 +955,7 @@ CamelType camel_name_to_type(const char *name)
 
 
 gboolean
-camel_object_is(CamelObject *o, CamelType ctype)
+camel_lite_object_is(CamelObject *o, CamelType ctype)
 {
 	CamelObjectClass *k;
 
@@ -976,7 +976,7 @@ camel_object_is(CamelObject *o, CamelType ctype)
 }
 
 gboolean
-camel_object_class_is(CamelObjectClass *k, CamelType ctype)
+camel_lite_object_class_is(CamelObjectClass *k, CamelType ctype)
 {
 	g_return_val_if_fail(k != NULL, FALSE);
 
@@ -990,7 +990,7 @@ camel_object_class_is(CamelObjectClass *k, CamelType ctype)
 }
 
 gboolean
-camel_interface_is(CamelObjectClass *k, CamelType ctype)
+camel_lite_interface_is(CamelObjectClass *k, CamelType ctype)
 {
 	g_return_val_if_fail(k != NULL, FALSE);
 
@@ -1004,7 +1004,7 @@ camel_interface_is(CamelObjectClass *k, CamelType ctype)
 }
 
 CamelObject *
-camel_object_cast(CamelObject *o, CamelType ctype)
+camel_lite_object_cast(CamelObject *o, CamelType ctype)
 {
 	CamelObjectClass *k;
 
@@ -1021,7 +1021,7 @@ camel_object_cast(CamelObject *o, CamelType ctype)
 }
 
 CamelObjectClass *
-camel_object_class_cast(CamelObjectClass *k, CamelType ctype)
+camel_lite_object_class_cast(CamelObjectClass *k, CamelType ctype)
 {
 	CamelObjectClass *r = k;
 
@@ -1037,7 +1037,7 @@ camel_object_class_cast(CamelObjectClass *k, CamelType ctype)
 }
 
 CamelObjectClass *
-camel_interface_cast(CamelObjectClass *k, CamelType ctype)
+camel_lite_interface_cast(CamelObjectClass *k, CamelType ctype)
 {
 	CamelObjectClass *r = k;
 
@@ -1084,7 +1084,7 @@ co_find_pair_ptr(CamelObjectClass *klass, const char *name)
 
 /* class functions */
 void
-camel_object_class_add_event(CamelObjectClass *klass, const char *name, CamelObjectEventPrepFunc prep)
+camel_lite_object_class_add_event(CamelObjectClass *klass, const char *name, CamelObjectEventPrepFunc prep)
 {
 	CamelHookPair *pair;
 
@@ -1092,13 +1092,13 @@ camel_object_class_add_event(CamelObjectClass *klass, const char *name, CamelObj
 
 	pair = co_find_pair(klass, name);
 	if (pair) {
-		g_warning("camel_object_class_add_event: `%s' is already declared for '%s'",
+		g_warning("camel_lite_object_class_add_event: `%s' is already declared for '%s'",
 			  name, klass->name);
 		return;
 	}
 
 	if (klass->magic == CAMEL_INTERFACE_MAGIC && prep != NULL) {
-		g_warning("camel_object_class_add_event: `%s', CamelInterface '%s' may not have an event prep function - ignored",
+		g_warning("camel_lite_object_class_add_event: `%s', CamelInterface '%s' may not have an event prep function - ignored",
 			  name, klass->name);
 		prep = NULL;
 	}
@@ -1113,19 +1113,19 @@ camel_object_class_add_event(CamelObjectClass *klass, const char *name, CamelObj
 }
 
 void
-camel_object_class_add_interface(CamelObjectClass *klass, CamelType itype)
+camel_lite_object_class_add_interface(CamelObjectClass *klass, CamelType itype)
 {
 	CamelHookPair *pair;
 	CamelType iscan;
 	GPtrArray *interfaces;
 	int i;
 
-	if (!camel_interface_is(itype, camel_interface_type)) {
+	if (!camel_lite_interface_is(itype, camel_lite_interface_type)) {
 		g_warning("Cannot add an interface not derived from CamelInterface on class '%s'", klass->name);
 		return;
 	}
 
-	if (camel_object_class_is(klass, camel_interface_type)) {
+	if (camel_lite_object_class_is(klass, camel_lite_interface_type)) {
 		g_warning("Cannot add an interface onto a class derived from CamelInterface");
 		return;
 	}
@@ -1142,9 +1142,9 @@ camel_object_class_add_interface(CamelObjectClass *klass, CamelType itype)
 	/* We just check that this type isn't added/derived anywhere else */
 	interfaces = pair->data;
 	iscan = itype;
-	while (iscan && iscan != camel_interface_type) {
+	while (iscan && iscan != camel_lite_interface_type) {
 		for (i=0;i<interfaces->len;i++) {
-			if (camel_interface_is((CamelType)interfaces->pdata[i], iscan)) {
+			if (camel_lite_interface_is((CamelType)interfaces->pdata[i], iscan)) {
 				g_warning("Cannot add an interface twice '%s' on class '%s'\n", itype->name, klass->name);
 				return;
 			}
@@ -1152,13 +1152,13 @@ camel_object_class_add_interface(CamelObjectClass *klass, CamelType itype)
 		iscan = iscan->parent;
 	}
 
-	if (iscan == camel_interface_type)
+	if (iscan == camel_lite_interface_type)
 		g_ptr_array_add(interfaces, itype);
 }
 
 /* free hook data */
 static void
-camel_object_free_hooks(CamelObject *o)
+camel_lite_object_free_hooks(CamelObject *o)
 {
 	CamelHookPair *pair, *next;
 
@@ -1191,7 +1191,7 @@ camel_object_free_hooks(CamelObject *o)
 
 /* return (allocate if required) the object's hook list, locking at the same time */
 static CamelHookList *
-camel_object_get_hooks(CamelObject *o)
+camel_lite_object_get_hooks(CamelObject *o)
 {
 	static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 	CamelHookList *hooks;
@@ -1222,7 +1222,7 @@ camel_object_get_hooks(CamelObject *o)
 }
 
 unsigned int
-camel_object_hook_event(void *vo, const char * name, CamelObjectEventHookFunc func, void *data)
+camel_lite_object_hook_event(void *vo, const char * name, CamelObjectEventHookFunc func, void *data)
 {
 	CamelObject *obj = vo;
 	CamelHookPair *pair, *hook;
@@ -1251,7 +1251,7 @@ camel_object_hook_event(void *vo, const char * name, CamelObjectEventHookFunc fu
 			}
 		}
 
-		g_warning("camel_object_hook_event: trying to hook event `%s' in class `%s' with no defined events.",
+		g_warning("camel_lite_object_hook_event: trying to hook event `%s' in class `%s' with no defined events.",
 			  name, obj->klass->name);
 
 		g_static_rec_mutex_unlock (&hooks_lock);
@@ -1268,11 +1268,11 @@ setup:
 	id = pair->id;
 
 	/* get the hook list object, locked, link in new event hook, unlock */
-	hooks = camel_object_get_hooks(obj);
+	hooks = camel_lite_object_get_hooks(obj);
 	pair->next = hooks->list;
 	hooks->list = pair;
 	hooks->list_length++;
-	camel_object_unget_hooks(obj);
+	camel_lite_object_unget_hooks(obj);
 
 	h(printf("%p hook event '%s' %p %p = %d\n", vo, name, func, data, id));
 
@@ -1282,7 +1282,7 @@ setup:
 }
 
 void
-camel_object_remove_event(void *vo, unsigned int id)
+camel_lite_object_remove_event(void *vo, unsigned int id)
 {
 	CamelObject *obj = vo;
 	CamelHookList *hooks;
@@ -1296,7 +1296,7 @@ camel_object_remove_event(void *vo, unsigned int id)
 	g_static_rec_mutex_lock (&hooks_lock);
 
 	if (obj->hooks == NULL) {
-		g_warning("camel_object_unhook_event: trying to unhook `%u` from an instance of `%s' with no hooks",
+		g_warning("camel_lite_object_unhook_event: trying to unhook `%u` from an instance of `%s' with no hooks",
 			  id, obj->klass->name);
 		g_static_rec_mutex_unlock (&hooks_lock);
 		return;
@@ -1305,7 +1305,7 @@ camel_object_remove_event(void *vo, unsigned int id)
 	h(printf("%p remove event %d\n", vo, id));
 
 	/* scan hooks for this event, remove it, or flag it if we're busy */
-	hooks = camel_object_get_hooks(obj);
+	hooks = camel_lite_object_get_hooks(obj);
 	parent = (CamelHookPair *)&hooks->list;
 	pair = parent->next;
 	while (pair) {
@@ -1319,22 +1319,22 @@ camel_object_remove_event(void *vo, unsigned int id)
 				pair_free(pair);
 				hooks->list_length--;
 			}
-			camel_object_unget_hooks(obj);
+			camel_lite_object_unget_hooks(obj);
 			g_static_rec_mutex_unlock (&hooks_lock);
 			return;
 		}
 		parent = pair;
 		pair = pair->next;
 	}
-	camel_object_unget_hooks(obj);
+	camel_lite_object_unget_hooks(obj);
 
-	g_warning("camel_object_unhook_event: cannot find hook id %u in instance of `%s'",
+	g_warning("camel_lite_object_unhook_event: cannot find hook id %u in instance of `%s'",
 		  id, obj->klass->name);
 	g_static_rec_mutex_unlock (&hooks_lock);
 }
 
 void
-camel_object_unhook_event(void *vo, const char * name, CamelObjectEventHookFunc func, void *data)
+camel_lite_object_unhook_event(void *vo, const char * name, CamelObjectEventHookFunc func, void *data)
 {
 	CamelObject *obj = vo;
 	CamelHookList *hooks;
@@ -1347,7 +1347,7 @@ camel_object_unhook_event(void *vo, const char * name, CamelObjectEventHookFunc 
 	g_static_rec_mutex_lock (&hooks_lock);
 
 	if (obj->hooks == NULL) {
-		g_warning("camel_object_unhook_event: trying to unhook `%s` from an instance of `%s' with no hooks",
+		g_warning("camel_lite_object_unhook_event: trying to unhook `%s` from an instance of `%s' with no hooks",
 			  name, obj->klass->name);
 		g_static_rec_mutex_unlock (&hooks_lock);
 		return;
@@ -1356,7 +1356,7 @@ camel_object_unhook_event(void *vo, const char * name, CamelObjectEventHookFunc 
 	h(printf("%p unhook event '%s' %p %p\n", vo, name, func, data));
 
 	/* scan hooks for this event, remove it, or flag it if we're busy */
-	hooks = camel_object_get_hooks(obj);
+	hooks = camel_lite_object_get_hooks(obj);
 	parent = (CamelHookPair *)&hooks->list;
 	pair = parent->next;
 	while (pair) {
@@ -1372,22 +1372,22 @@ camel_object_unhook_event(void *vo, const char * name, CamelObjectEventHookFunc 
 				pair_free(pair);
 				hooks->list_length--;
 			}
-			camel_object_unget_hooks(obj);
+			camel_lite_object_unget_hooks(obj);
 			g_static_rec_mutex_unlock (&hooks_lock);
 			return;
 		}
 		parent = pair;
 		pair = pair->next;
 	}
-	camel_object_unget_hooks(obj);
+	camel_lite_object_unget_hooks(obj);
 
-	g_warning("camel_object_unhook_event: cannot find hook/data pair %p/%p in an instance of `%s' attached to `%s'",
+	g_warning("camel_lite_object_unhook_event: cannot find hook/data pair %p/%p in an instance of `%s' attached to `%s'",
 		  (void *) func, data, obj->klass->name, name);
 	g_static_rec_mutex_unlock (&hooks_lock);
 }
 
 void
-camel_object_trigger_event(void *vo, const char * name, void *event_data)
+camel_lite_object_trigger_event(void *vo, const char * name, void *event_data)
 {
 	CamelObject *obj = vo;
 	CamelHookList *hooks;
@@ -1422,7 +1422,7 @@ camel_object_trigger_event(void *vo, const char * name, void *event_data)
 		}
 	}
 
-	g_warning("camel_object_trigger_event: trying to trigger unknown event `%s' in class `%s'",
+	g_warning("camel_lite_object_trigger_event: trying to trigger unknown event `%s' in class `%s'",
 		  name, obj->klass->name);
 
 	/* g_static_rec_mutex_unlock (&hooks_lock); */
@@ -1444,8 +1444,8 @@ trigger:
 
 trigger_interface:
 	/* lock the object for hook emission */
-	camel_object_ref(obj);
-	hooks = camel_object_get_hooks(obj);
+	camel_lite_object_ref(obj);
+	hooks = camel_lite_object_get_hooks(obj);
 
 	if (hooks->list) {
 		/* first, copy the items in the list, and say we're in an event */
@@ -1486,19 +1486,19 @@ trigger_interface:
 		}
 	}
 
-	camel_object_unget_hooks(obj);
-	camel_object_unref(obj);
+	camel_lite_object_unget_hooks(obj);
+	camel_lite_object_unref(obj);
 	/* g_static_rec_mutex_unlock (&hooks_lock); */
 }
 
 void *
-camel_object_get_interface(void *vo, CamelType itype)
+camel_lite_object_get_interface(void *vo, CamelType itype)
 {
 	CamelObject *obj = vo;
 	CamelHookPair *pair;
 
 	g_return_val_if_fail(CAMEL_IS_OBJECT (obj), NULL);
-	g_return_val_if_fail(camel_interface_is(itype, camel_interface_type), NULL);
+	g_return_val_if_fail(camel_lite_interface_is(itype, camel_lite_interface_type), NULL);
 
 	pair = co_find_pair_ptr(obj->klass, interface_name);
 	if (pair) {
@@ -1506,7 +1506,7 @@ camel_object_get_interface(void *vo, CamelType itype)
 		int i;
 
 		for (i=0;i<interfaces->len;i++) {
-			if (camel_interface_is((CamelType)interfaces->pdata[i], itype))
+			if (camel_lite_interface_is((CamelType)interfaces->pdata[i], itype))
 				return (CamelType)interfaces->pdata[i];
 		}
 	}
@@ -1517,7 +1517,7 @@ camel_object_get_interface(void *vo, CamelType itype)
 }
 
 /* get/set arg methods */
-int camel_object_set(void *vo, CamelException *ex, ...)
+int camel_lite_object_set(void *vo, CamelException *ex, ...)
 {
 	CamelArgV args;
 	CamelObject *o = vo;
@@ -1526,26 +1526,26 @@ int camel_object_set(void *vo, CamelException *ex, ...)
 
 	g_return_val_if_fail(CAMEL_IS_OBJECT(o), -1);
 
-	camel_argv_start(&args, ex);
+	camel_lite_argv_start(&args, ex);
 
-	while (camel_argv_build(&args) && ret == 0)
+	while (camel_lite_argv_build(&args) && ret == 0)
 		ret = klass->setv(o, ex, &args);
 	if (ret == 0)
 		ret = klass->setv(o, ex, &args);
 
-	camel_argv_end(&args);
+	camel_lite_argv_end(&args);
 
 	return ret;
 }
 
-int camel_object_setv(void *vo, CamelException *ex, CamelArgV *args)
+int camel_lite_object_setv(void *vo, CamelException *ex, CamelArgV *args)
 {
 	g_return_val_if_fail(CAMEL_IS_OBJECT(vo), -1);
 
 	return ((CamelObject *)vo)->klass->setv(vo, ex, args);
 }
 
-int camel_object_get(void *vo, CamelException *ex, ...)
+int camel_lite_object_get(void *vo, CamelException *ex, ...)
 {
 	CamelObject *o = vo;
 	CamelArgGetV args;
@@ -1554,19 +1554,19 @@ int camel_object_get(void *vo, CamelException *ex, ...)
 
 	g_return_val_if_fail(CAMEL_IS_OBJECT(o), -1);
 
-	camel_argv_start(&args, ex);
+	camel_lite_argv_start(&args, ex);
 
-	while (camel_arggetv_build(&args) && ret == 0)
+	while (camel_lite_arggetv_build(&args) && ret == 0)
 		ret = klass->getv(o, ex, &args);
 	if (ret == 0)
 		ret = klass->getv(o, ex, &args);
 
-	camel_argv_end(&args);
+	camel_lite_argv_end(&args);
 
 	return ret;
 }
 
-void *camel_object_get_ptr(void *vo, CamelException *ex, int tag)
+void *camel_lite_object_get_ptr(void *vo, CamelException *ex, int tag)
 {
 	CamelObject *o = vo;
 	CamelArgGetV args;
@@ -1591,7 +1591,7 @@ void *camel_object_get_ptr(void *vo, CamelException *ex, int tag)
 		return val;
 }
 
-int camel_object_get_int(void *vo, CamelException *ex, int tag)
+int camel_lite_object_get_int(void *vo, CamelException *ex, int tag)
 {
 	CamelObject *o = vo;
 	CamelArgGetV args;
@@ -1615,7 +1615,7 @@ int camel_object_get_int(void *vo, CamelException *ex, int tag)
 		return val;
 }
 
-int camel_object_getv(void *vo, CamelException *ex, CamelArgGetV *args)
+int camel_lite_object_getv(void *vo, CamelException *ex, CamelArgGetV *args)
 {
 	g_return_val_if_fail(CAMEL_IS_OBJECT(vo), -1);
 
@@ -1636,7 +1636,7 @@ co_metadata_pair(CamelObject *obj, int create)
 		return NULL;
 	}
 
-	hooks = camel_object_get_hooks(obj);
+	hooks = camel_lite_object_get_hooks(obj);
 	pair = hooks->list;
 	while (pair) {
 		if (pair->name == meta_name) {
@@ -1656,7 +1656,7 @@ co_metadata_pair(CamelObject *obj, int create)
 		hooks->list = pair;
 		hooks->list_length++;
 	} else {
-		camel_object_unget_hooks(obj);
+		camel_lite_object_unget_hooks(obj);
 	}
 
 	g_static_rec_mutex_unlock (&hooks_lock);
@@ -1689,7 +1689,7 @@ co_metadata_get(CamelObject *obj)
 			meta = meta->next;
 		}
 
-		camel_object_unget_hooks(obj);
+		camel_lite_object_unget_hooks(obj);
 	}
 
 	return metaout;
@@ -1708,7 +1708,7 @@ co_metadata_free(CamelObject *obj, CamelObjectMeta *meta)
 }
 
 /**
- * camel_object_meta_get:
+ * camel_lite_object_meta_get:
  * @vo:
  * @name:
  *
@@ -1717,7 +1717,7 @@ co_metadata_free(CamelObject *obj, CamelObjectMeta *meta)
  * Return value: NULL if the meta-data is not set.
  **/
 char *
-camel_object_meta_get(void *vo, const char * name)
+camel_lite_object_meta_get(void *vo, const char * name)
 {
 	CamelObject *obj = vo;
 
@@ -1728,7 +1728,7 @@ camel_object_meta_get(void *vo, const char * name)
 }
 
 /**
- * camel_object_meta_set:
+ * camel_lite_object_meta_set:
  * @vo:
  * @name: Name of meta-data.  Should be prefixed with class of setter.
  * @value: Value to set.  If NULL, then the meta-data is removed.
@@ -1744,7 +1744,7 @@ camel_object_meta_get(void *vo, const char * name)
  * metadata.
  **/
 gboolean
-camel_object_meta_set(void *vo, const char * name, const char *value)
+camel_lite_object_meta_set(void *vo, const char * name, const char *value)
 {
 	CamelObject *obj = vo;
 
@@ -1752,7 +1752,7 @@ camel_object_meta_set(void *vo, const char * name, const char *value)
 	g_return_val_if_fail(name != NULL, FALSE);
 
 	if (obj->klass->meta_set(obj, name, value)) {
-		camel_object_trigger_event(obj, "meta_changed", (void *)name);
+		camel_lite_object_trigger_event(obj, "meta_changed", (void *)name);
 		return TRUE;
 	}
 
@@ -1760,14 +1760,14 @@ camel_object_meta_set(void *vo, const char * name, const char *value)
 }
 
 /**
- * camel_object_state_read:
+ * camel_lite_object_state_read:
  * @vo:
  *
  * Read persistent object state from object_set(CAMEL_OBJECT_STATE_FILE).
  *
  * Return value: -1 on error.
  **/
-int camel_object_state_read(void *vo)
+int camel_lite_object_state_read(void *vo)
 {
 	CamelObject *obj = vo;
 	int res = -1;
@@ -1775,7 +1775,7 @@ int camel_object_state_read(void *vo)
 	FILE *fp;
 	char magic[4];
 
-	camel_object_get(vo, NULL, CAMEL_OBJECT_STATE_FILE, &file, NULL);
+	camel_lite_object_get(vo, NULL, CAMEL_OBJECT_STATE_FILE, &file, NULL);
 	if (file == NULL)
 		return 0;
 
@@ -1789,31 +1789,31 @@ int camel_object_state_read(void *vo)
 		fclose(fp);
 	}
 
-	camel_object_free(vo, CAMEL_OBJECT_STATE_FILE, file);
+	camel_lite_object_free(vo, CAMEL_OBJECT_STATE_FILE, file);
 
 	return res;
 }
 
 /**
- * camel_object_state_write:
+ * camel_lite_object_state_write:
  * @vo:
  *
  * Write persistent state to the file as set by object_set(CAMEL_OBJECT_STATE_FILE).
  *
  * Return value: -1 on error.
  **/
-int camel_object_state_write(void *vo)
+int camel_lite_object_state_write(void *vo)
 {
 	CamelObject *obj = vo;
 	int res = -1;
 	char *file, *savename, *dirname;
 	FILE *fp;
 
-	camel_object_get(vo, NULL, CAMEL_OBJECT_STATE_FILE, &file, NULL);
+	camel_lite_object_get(vo, NULL, CAMEL_OBJECT_STATE_FILE, &file, NULL);
 	if (file == NULL)
 		return 0;
 
-	savename = camel_file_util_savename(file);
+	savename = camel_lite_file_util_savename(file);
 	dirname = g_path_get_dirname(savename);
 	g_mkdir_with_parents(dirname, 0777);
 	g_free(dirname);
@@ -1833,13 +1833,13 @@ int camel_object_state_write(void *vo)
 	}
 
 	g_free(savename);
-	camel_object_free(vo, CAMEL_OBJECT_STATE_FILE, file);
+	camel_lite_object_free(vo, CAMEL_OBJECT_STATE_FILE, file);
 
 	return res;
 }
 
 /* free an arg object, you can only free objects 1 at a time */
-void camel_object_free(void *vo, guint32 tag, void *value)
+void camel_lite_object_free(void *vo, guint32 tag, void *value)
 {
 	g_return_if_fail(CAMEL_IS_OBJECT(vo));
 
@@ -1894,13 +1894,13 @@ object_class_dump_tree_rec(CamelType root, int depth)
 }
 
 void
-camel_object_class_dump_tree(CamelType root)
+camel_lite_object_class_dump_tree(CamelType root)
 {
 	object_class_dump_tree_rec(root, 0);
 }
 
 /**
- * camel_object_bag_new:
+ * camel_lite_object_bag_new:
  * @hash:
  * @equal:
  * @keycopy:
@@ -1913,7 +1913,7 @@ camel_object_class_dump_tree(CamelType root)
  * Return value:
  **/
 CamelObjectBag *
-camel_object_bag_new(GHashFunc hash, GEqualFunc equal, CamelCopyFunc keycopy, GFreeFunc keyfree)
+camel_lite_object_bag_new(GHashFunc hash, GEqualFunc equal, CamelCopyFunc keycopy, GFreeFunc keyfree)
 {
 	CamelObjectBag *bag;
 
@@ -1935,7 +1935,7 @@ save_object(void *key, CamelObject *o, GPtrArray *objects)
 }
 
 void
-camel_object_bag_destroy(CamelObjectBag *bag)
+camel_lite_object_bag_destroy(CamelObjectBag *bag)
 {
 	GPtrArray *objects = g_ptr_array_new();
 	int i;
@@ -1944,7 +1944,7 @@ camel_object_bag_destroy(CamelObjectBag *bag)
 
 	g_hash_table_foreach(bag->object_table, (GHFunc)save_object, objects);
 	for (i=0;i<objects->len;i++)
-		camel_object_bag_remove(bag, objects->pdata[i]);
+		camel_lite_object_bag_remove(bag, objects->pdata[i]);
 
 	g_ptr_array_free(objects, TRUE);
 	g_hash_table_destroy(bag->object_table);
@@ -1984,30 +1984,30 @@ co_bag_unreserve(CamelObjectBag *bag, const void *key)
 }
 
 /**
- * camel_object_bag_add:
+ * camel_lite_object_bag_add:
  * @bag:
  * @key:
  * @vo:
  *
  * Add an object @vo to the object bag @bag.  The @key MUST have
- * previously been reserved using camel_object_bag_reserve().
+ * previously been reserved using camel_lite_object_bag_reserve().
  **/
 void
-camel_object_bag_add(CamelObjectBag *bag, const void *key, void *vo)
+camel_lite_object_bag_add(CamelObjectBag *bag, const void *key, void *vo)
 {
 	CamelObject *o = vo;
 	CamelHookList *hooks;
 	CamelHookPair *pair;
 	void *k;
 
-	hooks = camel_object_get_hooks(o);
+	hooks = camel_lite_object_get_hooks(o);
 	REF_LOCK();
 
 	pair = hooks->list;
 	while (pair) {
 		if (pair->name == bag_name && pair->data == bag) {
 			REF_UNLOCK();
-			camel_object_unget_hooks(o);
+			camel_lite_object_unget_hooks(o);
 			return;
 		}
 		pair = pair->next;
@@ -2030,11 +2030,11 @@ camel_object_bag_add(CamelObjectBag *bag, const void *key, void *vo)
 	co_bag_unreserve(bag, key);
 
 	REF_UNLOCK();
-	camel_object_unget_hooks(o);
+	camel_lite_object_unget_hooks(o);
 }
 
 /**
- * camel_object_bag_get:
+ * camel_lite_object_bag_get:
  * @bag:
  * @key:
  *
@@ -2046,7 +2046,7 @@ camel_object_bag_add(CamelObjectBag *bag, const void *key, void *vo)
  * the ref to.
  **/
 void *
-camel_object_bag_get(CamelObjectBag *bag, const void *key)
+camel_lite_object_bag_get(CamelObjectBag *bag, const void *key)
 {
 	CamelObject *o;
 
@@ -2096,7 +2096,7 @@ camel_object_bag_get(CamelObjectBag *bag, const void *key)
 }
 
 /**
- * camel_object_bag_peek:
+ * camel_lite_object_bag_peek:
  * @bag:
  * @key:
  *
@@ -2111,7 +2111,7 @@ camel_object_bag_get(CamelObjectBag *bag, const void *key)
  * present in the bag.
  **/
 void *
-camel_object_bag_peek(CamelObjectBag *bag, const void *key)
+camel_lite_object_bag_peek(CamelObjectBag *bag, const void *key)
 {
 	CamelObject *o;
 
@@ -2129,7 +2129,7 @@ camel_object_bag_peek(CamelObjectBag *bag, const void *key)
 }
 
 /**
- * camel_object_bag_reserve:
+ * camel_lite_object_bag_reserve:
  * @bag:
  * @key:
  *
@@ -2147,7 +2147,7 @@ camel_object_bag_peek(CamelObjectBag *bag, const void *key)
  * Return value:
  **/
 void *
-camel_object_bag_reserve(CamelObjectBag *bag, const void *key)
+camel_lite_object_bag_reserve(CamelObjectBag *bag, const void *key)
 {
 	CamelObject *o;
 
@@ -2204,14 +2204,14 @@ camel_object_bag_reserve(CamelObjectBag *bag, const void *key)
 }
 
 /**
- * camel_object_bag_abort:
+ * camel_lite_object_bag_abort:
  * @bag:
  * @key:
  *
  * Abort a key reservation.
  **/
 void
-camel_object_bag_abort(CamelObjectBag *bag, const void *key)
+camel_lite_object_bag_abort(CamelObjectBag *bag, const void *key)
 {
 	REF_LOCK();
 
@@ -2221,7 +2221,7 @@ camel_object_bag_abort(CamelObjectBag *bag, const void *key)
 }
 
 /**
- * camel_object_bag_rekey:
+ * camel_lite_object_bag_rekey:
  * @bag:
  * @o:
  * @newkey:
@@ -2232,7 +2232,7 @@ camel_object_bag_abort(CamelObjectBag *bag, const void *key)
  * It is an api (fatal) error if @o is not currently in the bag.
  **/
 void
-camel_object_bag_rekey(CamelObjectBag *bag, void *o, const void *newkey)
+camel_lite_object_bag_rekey(CamelObjectBag *bag, void *o, const void *newkey)
 {
 	void *oldkey;
 
@@ -2263,7 +2263,7 @@ save_bag(void *key, CamelObject *o, GPtrArray *list)
 /* get a list of all objects in the bag, ref'd
    ignores any reserved keys */
 GPtrArray *
-camel_object_bag_list(CamelObjectBag *bag)
+camel_lite_object_bag_list(CamelObjectBag *bag)
 {
 	GPtrArray *list;
 
@@ -2278,7 +2278,7 @@ camel_object_bag_list(CamelObjectBag *bag)
 
 /* if bag is NULL, remove all bags from object */
 static void
-camel_object_bag_remove_unlocked(CamelObjectBag *inbag, CamelObject *o, CamelHookList *hooks)
+camel_lite_object_bag_remove_unlocked(CamelObjectBag *inbag, CamelObject *o, CamelHookList *hooks)
 {
 	CamelHookPair *pair, *parent;
 	void *oldkey;
@@ -2308,7 +2308,7 @@ camel_object_bag_remove_unlocked(CamelObjectBag *inbag, CamelObject *o, CamelHoo
 }
 
 void
-camel_object_bag_remove(CamelObjectBag *inbag, void *vo)
+camel_lite_object_bag_remove(CamelObjectBag *inbag, void *vo)
 {
 	CamelObject *o = vo;
 	CamelHookList *hooks;
@@ -2316,18 +2316,18 @@ camel_object_bag_remove(CamelObjectBag *inbag, void *vo)
 	if (o->hooks == NULL)
 		return;
 
-	hooks = camel_object_get_hooks(o);
+	hooks = camel_lite_object_get_hooks(o);
 	REF_LOCK();
 
-	camel_object_bag_remove_unlocked(inbag, o, hooks);
+	camel_lite_object_bag_remove_unlocked(inbag, o, hooks);
 
 	REF_UNLOCK();
-	camel_object_unget_hooks(o);
+	camel_lite_object_unget_hooks(o);
 }
 
 /* ********************************************************************** */
 
-void *camel_iterator_new(CamelIteratorVTable *klass, size_t size)
+void *camel_lite_iterator_new(CamelIteratorVTable *klass, size_t size)
 {
 	CamelIterator *it;
 
@@ -2339,19 +2339,19 @@ void *camel_iterator_new(CamelIteratorVTable *klass, size_t size)
 	return it;
 }
 
-const void *camel_iterator_next(void *it, CamelException *ex)
+const void *camel_lite_iterator_next(void *it, CamelException *ex)
 {
 	g_assert(it);
 	return ((CamelIterator *)it)->klass->next(it, ex);
 }
 
-void camel_iterator_reset(void *it)
+void camel_lite_iterator_reset(void *it)
 {
 	g_assert(it);
 	((CamelIterator *)it)->klass->reset(it);
 }
 
-int camel_iterator_length(void *it)
+int camel_lite_iterator_length(void *it)
 {
 	g_assert(it);
 	g_return_val_if_fail(((CamelIterator *)it)->klass->length != NULL, 0);
@@ -2359,7 +2359,7 @@ int camel_iterator_length(void *it)
 	return ((CamelIterator *)it)->klass->length(it);
 }
 
-void camel_iterator_free(void *it)
+void camel_lite_iterator_free(void *it)
 {
 	if (it) {
 		if (((CamelIterator *)it)->klass->free)

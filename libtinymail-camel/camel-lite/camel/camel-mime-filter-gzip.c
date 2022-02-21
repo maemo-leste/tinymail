@@ -89,9 +89,9 @@ struct _CamelMimeFilterGZipPrivate {
 	guint32 isize;
 };
 
-static void camel_mime_filter_gzip_class_init (CamelMimeFilterGZipClass *klass);
-static void camel_mime_filter_gzip_init (CamelMimeFilterGZip *filter, CamelMimeFilterGZipClass *klass);
-static void camel_mime_filter_gzip_finalize (CamelObject *object);
+static void camel_lite_mime_filter_gzip_class_init (CamelMimeFilterGZipClass *klass);
+static void camel_lite_mime_filter_gzip_init (CamelMimeFilterGZip *filter, CamelMimeFilterGZipClass *klass);
+static void camel_lite_mime_filter_gzip_finalize (CamelObject *object);
 
 static void filter_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 			   char **out, size_t *outlen, size_t *outprespace);
@@ -104,19 +104,19 @@ static CamelMimeFilterClass *parent_class = NULL;
 
 
 CamelType
-camel_mime_filter_gzip_get_type (void)
+camel_lite_mime_filter_gzip_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type (),
-					    "CamelMimeFilterGZip",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type (),
+					    "CamelLiteMimeFilterGZip",
 					    sizeof (CamelMimeFilterGZip),
 					    sizeof (CamelMimeFilterGZipClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_gzip_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_gzip_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_mime_filter_gzip_init,
-					    (CamelObjectFinalizeFunc) camel_mime_filter_gzip_finalize);
+					    (CamelObjectInitFunc) camel_lite_mime_filter_gzip_init,
+					    (CamelObjectFinalizeFunc) camel_lite_mime_filter_gzip_finalize);
 	}
 
 	return type;
@@ -124,11 +124,11 @@ camel_mime_filter_gzip_get_type (void)
 
 
 static void
-camel_mime_filter_gzip_class_init (CamelMimeFilterGZipClass *klass)
+camel_lite_mime_filter_gzip_class_init (CamelMimeFilterGZipClass *klass)
 {
 	CamelMimeFilterClass *filter_class = (CamelMimeFilterClass *) klass;
 
-	parent_class = CAMEL_MIME_FILTER_CLASS (camel_type_get_global_classfuncs (camel_mime_filter_get_type ()));
+	parent_class = CAMEL_MIME_FILTER_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_mime_filter_get_type ()));
 
 	filter_class->reset = filter_reset;
 	filter_class->filter = filter_filter;
@@ -136,7 +136,7 @@ camel_mime_filter_gzip_class_init (CamelMimeFilterGZipClass *klass)
 }
 
 static void
-camel_mime_filter_gzip_init (CamelMimeFilterGZip *filter, CamelMimeFilterGZipClass *klass)
+camel_lite_mime_filter_gzip_init (CamelMimeFilterGZip *filter, CamelMimeFilterGZipClass *klass)
 {
 	filter->priv = g_new0 (struct _CamelMimeFilterGZipPrivate, 1);
 	filter->priv->stream = g_new0 (z_stream, 1);
@@ -144,7 +144,7 @@ camel_mime_filter_gzip_init (CamelMimeFilterGZip *filter, CamelMimeFilterGZipCla
 }
 
 static void
-camel_mime_filter_gzip_finalize (CamelObject *object)
+camel_lite_mime_filter_gzip_finalize (CamelObject *object)
 {
 	CamelMimeFilterGZip *gzip = (CamelMimeFilterGZip *) object;
 	struct _CamelMimeFilterGZipPrivate *priv = gzip->priv;
@@ -181,7 +181,7 @@ gzip_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 			priv->hdr.v.xfl = 0;
 		priv->hdr.v.os = 255;
 
-		camel_mime_filter_set_size (filter, (len * 2) + 22, FALSE);
+		camel_lite_mime_filter_set_size (filter, (len * 2) + 22, FALSE);
 
 		memcpy (filter->outbuf, priv->hdr.buf, 10);
 
@@ -190,7 +190,7 @@ gzip_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 
 		priv->state.zip.wrote_hdr = TRUE;
 	} else {
-		camel_mime_filter_set_size (filter, (len * 2) + 12, FALSE);
+		camel_lite_mime_filter_set_size (filter, (len * 2) + 12, FALSE);
 
 		priv->stream->next_out = (Bytef *) filter->outbuf;
 		priv->stream->avail_out = filter->outsize;
@@ -208,7 +208,7 @@ gzip_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 			size_t n;
 
 			n = filter->outsize - priv->stream->avail_out;
-			camel_mime_filter_set_size (filter, n + (priv->stream->avail_in * 2) + 12, TRUE);
+			camel_lite_mime_filter_set_size (filter, n + (priv->stream->avail_in * 2) + 12, TRUE);
 			priv->stream->avail_out = filter->outsize - n;
 			priv->stream->next_out = (Bytef *) filter->outbuf + n;
 
@@ -229,7 +229,7 @@ gzip_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 			}
 		} else {
 			if (priv->stream->avail_in > 0)
-				camel_mime_filter_backup (filter, (const char *) priv->stream->next_in, priv->stream->avail_in);
+				camel_lite_mime_filter_backup (filter, (const char *) priv->stream->next_in, priv->stream->avail_in);
 
 			break;
 		}
@@ -254,7 +254,7 @@ gunzip_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 
 	if (!priv->state.unzip.got_hdr) {
 		if (len < 10) {
-			camel_mime_filter_backup (filter, in, len);
+			camel_lite_mime_filter_backup (filter, in, len);
 			return;
 		}
 
@@ -274,7 +274,7 @@ gunzip_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 	if (priv->hdr.v.flg & GZIP_FLAG_FEXTRA) {
 		if (!priv->state.unzip.got_xlen) {
 			if (len < 2) {
-				camel_mime_filter_backup (filter, in, len);
+				camel_lite_mime_filter_backup (filter, in, len);
 				return;
 			}
 
@@ -331,7 +331,7 @@ gunzip_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 
 	if ((priv->hdr.v.flg & GZIP_FLAG_FHCRC) && !priv->state.unzip.got_crc16) {
 		if (len < 2) {
-			camel_mime_filter_backup (filter, in, len);
+			camel_lite_mime_filter_backup (filter, in, len);
 			return;
 		}
 
@@ -344,7 +344,7 @@ gunzip_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 	if (len == 0)
 		return;
 
-	camel_mime_filter_set_size (filter, (len * 2) + 12, FALSE);
+	camel_lite_mime_filter_set_size (filter, (len * 2) + 12, FALSE);
 
 	priv->stream->next_in = (Bytef *) in;
 	priv->stream->avail_in = len - 8;
@@ -366,14 +366,14 @@ gunzip_filter (CamelMimeFilter *filter, char *in, size_t len, size_t prespace,
 			}
 
 			n = filter->outsize - priv->stream->avail_out;
-			camel_mime_filter_set_size (filter, n + (priv->stream->avail_in * 2) + 12, TRUE);
+			camel_lite_mime_filter_set_size (filter, n + (priv->stream->avail_in * 2) + 12, TRUE);
 			priv->stream->avail_out = filter->outsize - n;
 			priv->stream->next_out = (Bytef *) filter->outbuf + n;
 		} else {
 			priv->stream->avail_in += 8;
 
 			if (priv->stream->avail_in > 0)
-				camel_mime_filter_backup (filter, (char *) priv->stream->next_in, priv->stream->avail_in);
+				camel_lite_mime_filter_backup (filter, (char *) priv->stream->next_in, priv->stream->avail_in);
 
 			break;
 		}
@@ -434,7 +434,7 @@ filter_reset (CamelMimeFilter *filter)
 
 
 /**
- * camel_mime_filter_gzip_new:
+ * camel_lite_mime_filter_gzip_new:
  * @mode: zip or unzip
  * @level: compression level
  *
@@ -443,12 +443,12 @@ filter_reset (CamelMimeFilter *filter)
  * Returns a new gzip (or gunzip) filter.
  **/
 CamelMimeFilter *
-camel_mime_filter_gzip_new (CamelMimeFilterGZipMode mode, int level)
+camel_lite_mime_filter_gzip_new (CamelMimeFilterGZipMode mode, int level)
 {
 	CamelMimeFilterGZip *new;
 	int retval;
 
-	new = (CamelMimeFilterGZip *) camel_object_new (CAMEL_TYPE_MIME_FILTER_GZIP);
+	new = (CamelMimeFilterGZip *) camel_lite_object_new (CAMEL_TYPE_MIME_FILTER_GZIP);
 	new->mode = mode;
 	new->level = level;
 
@@ -458,7 +458,7 @@ camel_mime_filter_gzip_new (CamelMimeFilterGZipMode mode, int level)
 		retval = inflateInit2 (new->priv->stream, -MAX_WBITS);
 
 	if (retval != Z_OK) {
-		camel_object_unref (new);
+		camel_lite_object_unref (new);
 		return NULL;
 	}
 

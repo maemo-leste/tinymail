@@ -29,16 +29,16 @@
 
 G_BEGIN_DECLS
 
-const char *camel_iconv_locale_charset (void);
-const char *camel_iconv_locale_language (void);
+const char *camel_lite_iconv_locale_charset (void);
+const char *camel_lite_iconv_locale_language (void);
 
-const char *camel_iconv_charset_name (const char *charset);
+const char *camel_lite_iconv_charset_name (const char *charset);
 
-const char *camel_iconv_charset_language (const char *charset);
+const char *camel_lite_iconv_charset_language (const char *charset);
 
-iconv_t camel_iconv_open (const char *to, const char *from);
-size_t camel_iconv (iconv_t cd, const char **inbuf, size_t *inleft, char **outbuf, size_t *outleft);
-void camel_iconv_close (iconv_t cd);
+iconv_t camel_lite_iconv_open (const char *to, const char *from);
+size_t camel_lite_iconv (iconv_t cd, const char **inbuf, size_t *inleft, char **outbuf, size_t *outleft);
+void camel_lite_iconv_close (iconv_t cd);
 
 G_END_DECLS
 

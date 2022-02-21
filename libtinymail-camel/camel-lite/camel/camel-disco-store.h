@@ -27,7 +27,7 @@
 
 #include <camel/camel-store.h>
 
-#define CAMEL_DISCO_STORE_TYPE     (camel_disco_store_get_type ())
+#define CAMEL_DISCO_STORE_TYPE     (camel_lite_disco_store_get_type ())
 #define CAMEL_DISCO_STORE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_DISCO_STORE_TYPE, CamelDiscoStore))
 #define CAMEL_DISCO_STORE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_DISCO_STORE_TYPE, CamelDiscoStoreClass))
 #define CAMEL_IS_DISCO_STORE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_DISCO_STORE_TYPE))
@@ -101,19 +101,19 @@ typedef struct {
 
 
 /* Standard Camel function */
-CamelType camel_disco_store_get_type (void);
+CamelType camel_lite_disco_store_get_type (void);
 
 /* Public methods */
-CamelDiscoStoreStatus camel_disco_store_status           (CamelDiscoStore *);
-void                  camel_disco_store_set_status       (CamelDiscoStore *,
+CamelDiscoStoreStatus camel_lite_disco_store_status           (CamelDiscoStore *);
+void                  camel_lite_disco_store_set_status       (CamelDiscoStore *,
 							  CamelDiscoStoreStatus,
 							  CamelException *);
-gboolean              camel_disco_store_can_work_offline (CamelDiscoStore *);
+gboolean              camel_lite_disco_store_can_work_offline (CamelDiscoStore *);
 
 
 /* Convenience functions */
-gboolean camel_disco_store_check_online (CamelDiscoStore *store, CamelException *ex);
-void camel_disco_store_prepare_for_offline(CamelDiscoStore *store, CamelException *ex);
+gboolean camel_lite_disco_store_check_online (CamelDiscoStore *store, CamelException *ex);
+void camel_lite_disco_store_prepare_for_offline(CamelDiscoStore *store, CamelException *ex);
 
 G_END_DECLS
 

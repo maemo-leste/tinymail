@@ -26,9 +26,9 @@
 #include <camel/camel-mime-part.h>
 #include <camel/camel-charset-map.h>
 
-#define CAMEL_MIME_FILTER_BESTENC(obj)         CAMEL_CHECK_CAST (obj, camel_mime_filter_bestenc_get_type (), CamelMimeFilterBestenc)
-#define CAMEL_MIME_FILTER_BESTENC_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_mime_filter_bestenc_get_type (), CamelMimeFilterBestencClass)
-#define CAMEL_IS_MIME_FILTER_BESTENC(obj)      CAMEL_CHECK_TYPE (obj, camel_mime_filter_bestenc_get_type ())
+#define CAMEL_MIME_FILTER_BESTENC(obj)         CAMEL_CHECK_CAST (obj, camel_lite_mime_filter_bestenc_get_type (), CamelMimeFilterBestenc)
+#define CAMEL_MIME_FILTER_BESTENC_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_mime_filter_bestenc_get_type (), CamelMimeFilterBestencClass)
+#define CAMEL_IS_MIME_FILTER_BESTENC(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_mime_filter_bestenc_get_type ())
 
 G_BEGIN_DECLS
 
@@ -81,13 +81,13 @@ struct _CamelMimeFilterBestencClass {
 	CamelMimeFilterClass parent_class;
 };
 
-CamelType		camel_mime_filter_bestenc_get_type	(void);
-CamelMimeFilterBestenc      *camel_mime_filter_bestenc_new	(unsigned int flags);
+CamelType		camel_lite_mime_filter_bestenc_get_type	(void);
+CamelMimeFilterBestenc      *camel_lite_mime_filter_bestenc_new	(unsigned int flags);
 
 
-CamelTransferEncoding	camel_mime_filter_bestenc_get_best_encoding(CamelMimeFilterBestenc *filter, CamelBestencEncoding required);
-const char *		camel_mime_filter_bestenc_get_best_charset(CamelMimeFilterBestenc *filter);
-void 			camel_mime_filter_bestenc_set_flags(CamelMimeFilterBestenc *filter, unsigned int flags);
+CamelTransferEncoding	camel_lite_mime_filter_bestenc_get_best_encoding(CamelMimeFilterBestenc *filter, CamelBestencEncoding required);
+const char *		camel_lite_mime_filter_bestenc_get_best_charset(CamelMimeFilterBestenc *filter);
+void 			camel_lite_mime_filter_bestenc_set_flags(CamelMimeFilterBestenc *filter, unsigned int flags);
 
 G_END_DECLS
 

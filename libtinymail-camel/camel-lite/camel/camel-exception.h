@@ -46,31 +46,31 @@ struct _CamelException {
 #define CAMEL_EXCEPTION_INITIALISER { 0, NULL }
 
 /* creation and destruction functions */
-CamelException *          camel_exception_new           (void);
-void                      camel_exception_free          (CamelException *ex);
-void                      camel_exception_init          (CamelException *ex);
+CamelException *          camel_lite_exception_new           (void);
+void                      camel_lite_exception_free          (CamelException *ex);
+void                      camel_lite_exception_init          (CamelException *ex);
 
 
 /* exception content manipulation */
-void                      camel_exception_clear         (CamelException *ex);
-void                      camel_exception_set           (CamelException *ex,
+void                      camel_lite_exception_clear         (CamelException *ex);
+void                      camel_lite_exception_set           (CamelException *ex,
 							 ExceptionId id,
 							 const char *desc);
-void                      camel_exception_setv          (CamelException *ex,
+void                      camel_lite_exception_setv          (CamelException *ex,
 							 ExceptionId id,
 							 const char *format,
 							 ...);
 
 /* exception content transfer */
-void                      camel_exception_xfer          (CamelException *ex_dst,
+void                      camel_lite_exception_xfer          (CamelException *ex_dst,
 							 CamelException *ex_src);
 
 
 /* exception content retrieval */
-ExceptionId               camel_exception_get_id        (CamelException *ex);
-const char *             camel_exception_get_description (CamelException *ex);
+ExceptionId               camel_lite_exception_get_id        (CamelException *ex);
+const char *             camel_lite_exception_get_description (CamelException *ex);
 
-#define camel_exception_is_set(ex) (camel_exception_get_id (ex) != CAMEL_EXCEPTION_NONE)
+#define camel_lite_exception_is_set(ex) (camel_lite_exception_get_id (ex) != CAMEL_EXCEPTION_NONE)
 
 G_END_DECLS
 

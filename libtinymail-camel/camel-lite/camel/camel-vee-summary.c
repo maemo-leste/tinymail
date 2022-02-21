@@ -34,7 +34,7 @@
 
 #define d(x)
 
-static CamelFolderSummaryClass *camel_vee_summary_parent;
+static CamelFolderSummaryClass *camel_lite_vee_summary_parent;
 
 static void
 vee_message_info_free(CamelFolderSummary *s, CamelMessageInfo *info)
@@ -42,7 +42,7 @@ vee_message_info_free(CamelFolderSummary *s, CamelMessageInfo *info)
 	CamelVeeMessageInfo *mi = (CamelVeeMessageInfo *)info;
 
 	g_free(info->uid);
-	camel_message_info_free(mi->real);
+	camel_lite_message_info_free(mi->real);
 }
 
 static CamelMessageInfo *
@@ -51,9 +51,9 @@ vee_message_info_clone(CamelFolderSummary *s, const CamelMessageInfo *mi)
 	CamelVeeMessageInfo *to;
 	const CamelVeeMessageInfo *from = (const CamelVeeMessageInfo *)mi;
 
-	to = (CamelVeeMessageInfo *)camel_message_info_new(s);
+	to = (CamelVeeMessageInfo *)camel_lite_message_info_new(s);
 
-	to->real = camel_message_info_clone(from->real);
+	to->real = camel_lite_message_info_clone(from->real);
 	to->info.summary = s;
 
 	return (CamelMessageInfo *)to;
@@ -62,31 +62,31 @@ vee_message_info_clone(CamelFolderSummary *s, const CamelMessageInfo *mi)
 static const void *
 vee_info_ptr(const CamelMessageInfo *mi, int id)
 {
-	return camel_message_info_ptr(((CamelVeeMessageInfo *)mi)->real, id);
+	return camel_lite_message_info_ptr(((CamelVeeMessageInfo *)mi)->real, id);
 }
 
 static guint32
 vee_info_uint32(const CamelMessageInfo *mi, int id)
 {
-	return camel_message_info_uint32(((CamelVeeMessageInfo *)mi)->real, id);
+	return camel_lite_message_info_uint32(((CamelVeeMessageInfo *)mi)->real, id);
 }
 
 static time_t
 vee_info_time(const CamelMessageInfo *mi, int id)
 {
-	return camel_message_info_time(((CamelVeeMessageInfo *)mi)->real, id);
+	return camel_lite_message_info_time(((CamelVeeMessageInfo *)mi)->real, id);
 }
 
 static gboolean
 vee_info_user_flag(const CamelMessageInfo *mi, const char *id)
 {
-	return camel_message_info_user_flag(((CamelVeeMessageInfo *)mi)->real, id);
+	return camel_lite_message_info_user_flag(((CamelVeeMessageInfo *)mi)->real, id);
 }
 
 static const char *
 vee_info_user_tag(const CamelMessageInfo *mi, const char *id)
 {
-	return camel_message_info_user_tag(((CamelVeeMessageInfo *)mi)->real, id);
+	return camel_lite_message_info_user_tag(((CamelVeeMessageInfo *)mi)->real, id);
 }
 
 static gboolean
@@ -95,7 +95,7 @@ vee_info_set_user_flag(CamelMessageInfo *mi, const char *name, gboolean value)
 	int res = FALSE;
 
 	if (mi->uid)
-		res = camel_message_info_set_user_flag(((CamelVeeMessageInfo *)mi)->real, name, value);
+		res = camel_lite_message_info_set_user_flag(((CamelVeeMessageInfo *)mi)->real, name, value);
 
 	return res;
 }
@@ -106,7 +106,7 @@ vee_info_set_user_tag(CamelMessageInfo *mi, const char *name, const char *value)
 	int res = FALSE;
 
 	if (mi->uid)
-		res = camel_message_info_set_user_tag(((CamelVeeMessageInfo *)mi)->real, name, value);
+		res = camel_lite_message_info_set_user_tag(((CamelVeeMessageInfo *)mi)->real, name, value);
 
 	return res;
 }
@@ -117,13 +117,13 @@ vee_info_set_flags(CamelMessageInfo *mi, guint32 flags, guint32 set)
 	int res = FALSE;
 
 	if (mi->uid)
-		res = camel_message_info_set_flags(((CamelVeeMessageInfo *)mi)->real, flags, set);
+		res = camel_lite_message_info_set_flags(((CamelVeeMessageInfo *)mi)->real, flags, set);
 
 	return res;
 }
 
 static void
-camel_vee_summary_class_init (CamelVeeSummaryClass *klass)
+camel_lite_vee_summary_class_init (CamelVeeSummaryClass *klass)
 {
 	((CamelFolderSummaryClass *)klass)->message_info_clone = vee_message_info_clone;
 	((CamelFolderSummaryClass *)klass)->message_info_free = vee_message_info_free;
@@ -147,7 +147,7 @@ camel_vee_summary_class_init (CamelVeeSummaryClass *klass)
 }
 
 static void
-camel_vee_summary_init (CamelVeeSummary *obj)
+camel_lite_vee_summary_init (CamelVeeSummary *obj)
 {
 	CamelFolderSummary *s = (CamelFolderSummary *)obj;
 
@@ -156,20 +156,20 @@ camel_vee_summary_init (CamelVeeSummary *obj)
 }
 
 CamelType
-camel_vee_summary_get_type (void)
+camel_lite_vee_summary_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		camel_vee_summary_parent = (CamelFolderSummaryClass *)camel_folder_summary_get_type();
+		camel_lite_vee_summary_parent = (CamelFolderSummaryClass *)camel_lite_folder_summary_get_type();
 
-		type = camel_type_register(
-			camel_folder_summary_get_type(), "CamelVeeSummary",
+		type = camel_lite_type_register(
+			camel_lite_folder_summary_get_type(), "CamelLiteVeeSummary",
 			sizeof (CamelVeeSummary),
 			sizeof (CamelVeeSummaryClass),
-			(CamelObjectClassInitFunc) camel_vee_summary_class_init,
+			(CamelObjectClassInitFunc) camel_lite_vee_summary_class_init,
 			NULL,
-			(CamelObjectInitFunc) camel_vee_summary_init,
+			(CamelObjectInitFunc) camel_lite_vee_summary_init,
 			NULL);
 	}
 
@@ -177,7 +177,7 @@ camel_vee_summary_get_type (void)
 }
 
 /**
- * camel_vee_summary_new:
+ * camel_lite_vee_summary_new:
  * @parent: Folder its attached to.
  *
  * This will create a new CamelVeeSummary object and read in the
@@ -186,41 +186,41 @@ camel_vee_summary_get_type (void)
  * Return value: A new CamelVeeSummary object.
  **/
 CamelFolderSummary *
-camel_vee_summary_new(CamelFolder *parent)
+camel_lite_vee_summary_new(CamelFolder *parent)
 {
 	CamelVeeSummary *s;
 
-	s = (CamelVeeSummary *)camel_object_new(camel_vee_summary_get_type());
+	s = (CamelVeeSummary *)camel_lite_object_new(camel_lite_vee_summary_get_type());
 	s->summary.folder = parent;
 
 	return &s->summary;
 }
 
 CamelVeeMessageInfo *
-camel_vee_summary_add(CamelVeeSummary *s, CamelMessageInfo *info, const char hash[8])
+camel_lite_vee_summary_add(CamelVeeSummary *s, CamelMessageInfo *info, const char hash[8])
 {
 	CamelVeeMessageInfo *mi;
 	char *vuid;
 	const char *uid;
 
-	uid = camel_message_info_uid(info);
+	uid = camel_lite_message_info_uid(info);
 	vuid = g_malloc(strlen(uid)+9);
 	memcpy(vuid, hash, 8);
 	strcpy(vuid+8, uid);
-	mi = (CamelVeeMessageInfo *)camel_folder_summary_uid(&s->summary, vuid);
+	mi = (CamelVeeMessageInfo *)camel_lite_folder_summary_uid(&s->summary, vuid);
 	if (mi) {
 		d(printf("w:clash, we already have '%s' in summary\n", vuid));
-		camel_message_info_free((CamelMessageInfo *)mi);
+		camel_lite_message_info_free((CamelMessageInfo *)mi);
 		g_free(vuid);
 		return NULL;
 	}
 
-	mi = (CamelVeeMessageInfo *)camel_message_info_new(&s->summary);
+	mi = (CamelVeeMessageInfo *)camel_lite_message_info_new(&s->summary);
 	mi->real = info;
-	camel_message_info_ref(info);
+	camel_lite_message_info_ref(info);
 	mi->info.uid = vuid;
 
-	camel_folder_summary_add(&s->summary, (CamelMessageInfo *)mi);
+	camel_lite_folder_summary_add(&s->summary, (CamelMessageInfo *)mi);
 
 	return mi;
 }

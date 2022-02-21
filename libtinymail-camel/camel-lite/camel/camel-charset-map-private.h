@@ -11042,7 +11042,7 @@ static const struct {
 	const unsigned char *bits0;
 	const unsigned char *bits1;
 	const unsigned char *bits2;
-} camel_charmap[256] = {
+} camel_lite_charmap[256] = {
 	{ m000, m001, m002, }, { m010, m011, m012, }, { m020, m021, m022, }, { m030, m031, m032, }, 
 	{ m040, m041, m042, }, { m050, m051, m052, }, { m060, m061, m062, }, { NULL, m071, m072, }, 
 	{ NULL, m081, m082, }, { NULL, m091, m092, }, { NULL, m0a1, m0a2, }, { NULL, m0b1, m0b2, }, 
@@ -11112,7 +11112,7 @@ static const struct {
 static const struct {
 	const char *name;
 	unsigned int bit;
-} camel_charinfo[] = {
+} camel_lite_charinfo[] = {
 	{ "iso-8859-2", 0x00000001 },
 	{ "iso-8859-4", 0x00000002 },
 	{ "koi8-r", 0x00000004 },
@@ -11136,7 +11136,7 @@ static const struct {
 };
 
 #define charset_mask(x) \
-	(camel_charmap[(x) >> 8].bits0 ? camel_charmap[(x) >> 8].bits0[(x) & 0xff] << 0 : 0)	\
-	| (camel_charmap[(x) >> 8].bits1 ? camel_charmap[(x) >> 8].bits1[(x) & 0xff] << 8 : 0)	\
-	| (camel_charmap[(x) >> 8].bits2 ? camel_charmap[(x) >> 8].bits2[(x) & 0xff] << 16 : 0)
+	(camel_lite_charmap[(x) >> 8].bits0 ? camel_lite_charmap[(x) >> 8].bits0[(x) & 0xff] << 0 : 0)	\
+	| (camel_lite_charmap[(x) >> 8].bits1 ? camel_lite_charmap[(x) >> 8].bits1[(x) & 0xff] << 8 : 0)	\
+	| (camel_lite_charmap[(x) >> 8].bits2 ? camel_lite_charmap[(x) >> 8].bits2[(x) & 0xff] << 16 : 0)
 

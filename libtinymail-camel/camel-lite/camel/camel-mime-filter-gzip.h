@@ -26,7 +26,7 @@
 
 #include <camel/camel-mime-filter.h>
 
-#define CAMEL_TYPE_MIME_FILTER_GZIP            (camel_mime_filter_gzip_get_type ())
+#define CAMEL_TYPE_MIME_FILTER_GZIP            (camel_lite_mime_filter_gzip_get_type ())
 #define CAMEL_MIME_FILTER_GZIP(obj)            (CAMEL_CHECK_CAST ((obj), CAMEL_TYPE_MIME_FILTER_GZIP, CamelMimeFilterGZip))
 #define CAMEL_MIME_FILTER_GZIP_CLASS(klass)    (CAMEL_CHECK_CLASS_CAST ((klass), CAMEL_TYPE_MIME_FILTER_GZIP, CamelMimeFilterGZipClass))
 #define CAMEL_IS_MIME_FILTER_GZIP(obj)         (CAMEL_CHECK_TYPE ((obj), CAMEL_TYPE_MIME_FILTER_GZIP))
@@ -58,9 +58,9 @@ struct _CamelMimeFilterGZipClass {
 };
 
 
-CamelType camel_mime_filter_gzip_get_type (void);
+CamelType camel_lite_mime_filter_gzip_get_type (void);
 
-CamelMimeFilter *camel_mime_filter_gzip_new (CamelMimeFilterGZipMode mode, int level);
+CamelMimeFilter *camel_lite_mime_filter_gzip_new (CamelMimeFilterGZipMode mode, int level);
 
 G_END_DECLS
 

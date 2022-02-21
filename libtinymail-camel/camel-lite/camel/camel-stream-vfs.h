@@ -34,7 +34,7 @@
 
 #include <camel/camel-seekable-stream.h>
 
-#define CAMEL_STREAM_VFS_TYPE     (camel_stream_vfs_get_type ())
+#define CAMEL_STREAM_VFS_TYPE     (camel_lite_stream_vfs_get_type ())
 #define CAMEL_STREAM_VFS(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_STREAM_VFS_TYPE, CamelStreamVFS))
 #define CAMEL_STREAM_VFS_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_STREAM_VFS_TYPE, CamelStreamVFSClass))
 #define CAMEL_IS_STREAM_VFS(o)    (CAMEL_CHECK_TYPE((o), CAMEL_STREAM_VFS_TYPE))
@@ -55,11 +55,11 @@ typedef struct {
 } CamelStreamVFSClass;
 
 /* Standard Camel function */
-CamelType camel_stream_vfs_get_type (void);
+CamelType camel_lite_stream_vfs_get_type (void);
 
 /* public methods */
-CamelStream * camel_stream_vfs_new_with_uri            (const char *uri, int flags, mode_t mode);
-CamelStream * camel_stream_vfs_new_with_handle         (GnomeVFSHandle *handle);
+CamelStream * camel_lite_stream_vfs_new_with_uri            (const char *uri, int flags, mode_t mode);
+CamelStream * camel_lite_stream_vfs_new_with_handle         (GnomeVFSHandle *handle);
 
 G_END_DECLS
 

@@ -26,9 +26,9 @@
 #include <camel/camel-folder-summary.h>
 #include <camel/camel-exception.h>
 
-#define CAMEL_IMAPP_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_imapp_summary_get_type (), CamelIMAPPSummary)
-#define CAMEL_IMAPP_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_imapp_summary_get_type (), CamelIMAPPSummaryClass)
-#define CAMEL_IS_IMAPP_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_imapp_summary_get_type ())
+#define CAMEL_IMAPP_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_lite_imapp_summary_get_type (), CamelIMAPPSummary)
+#define CAMEL_IMAPP_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_imapp_summary_get_type (), CamelIMAPPSummaryClass)
+#define CAMEL_IS_IMAPP_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_imapp_summary_get_type ())
 
 #define CAMEL_IMAPP_SERVER_FLAGS (CAMEL_MESSAGE_ANSWERED | \
 				 CAMEL_MESSAGE_DELETED | \
@@ -61,8 +61,8 @@ struct _CamelIMAPPSummaryClass {
 
 };
 
-CamelType               camel_imapp_summary_get_type     (void);
-CamelFolderSummary *camel_imapp_summary_new          (void);
+CamelType               camel_lite_imapp_summary_get_type     (void);
+CamelFolderSummary *camel_lite_imapp_summary_new          (void);
 
 G_END_DECLS
 

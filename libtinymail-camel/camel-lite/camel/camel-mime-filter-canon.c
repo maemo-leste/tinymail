@@ -40,7 +40,7 @@ static void reset (CamelMimeFilter *f);
 
 
 static void
-camel_mime_filter_canon_class_init (CamelMimeFilterCanonClass *klass)
+camel_lite_mime_filter_canon_class_init (CamelMimeFilterCanonClass *klass)
 {
 	CamelMimeFilterClass *mime_filter_class = (CamelMimeFilterClass *) klass;
 
@@ -50,15 +50,15 @@ camel_mime_filter_canon_class_init (CamelMimeFilterCanonClass *klass)
 }
 
 CamelType
-camel_mime_filter_canon_get_type (void)
+camel_lite_mime_filter_canon_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type(), "CamelMimeFilterCanon",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type(), "CamelLiteMimeFilterCanon",
 					    sizeof (CamelMimeFilterCanon),
 					    sizeof (CamelMimeFilterCanonClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_canon_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_canon_class_init,
 					    NULL,
 					    NULL,
 					    NULL);
@@ -90,7 +90,7 @@ filter_run(CamelMimeFilter *f, char *in, size_t len, size_t prespace, char **out
 	   "From \n" -> "=46rom \r\n"
 	   We add 1 extra incase we're called from complete, when we didn't end in \n */
 
-	camel_mime_filter_set_size(f, len+lf*3+4, FALSE);
+	camel_lite_mime_filter_set_size(f, len+lf*3+4, FALSE);
 
 	o = f->outbuf;
 	inptr = (unsigned char *)in;
@@ -153,7 +153,7 @@ filter_run(CamelMimeFilter *f, char *in, size_t len, size_t prespace, char **out
 	if (last) {
 		*outlen = o - f->outbuf;
 	} else {
-		camel_mime_filter_backup(f, (const char*)start, inend - start);
+		camel_lite_mime_filter_backup(f, (const char*)start, inend - start);
 		*outlen = starto - f->outbuf;
 	}
 
@@ -181,7 +181,7 @@ reset (CamelMimeFilter *f)
 
 
 /**
- * camel_mime_filter_canon_new:
+ * camel_lite_mime_filter_canon_new:
  * @flags: bitwise flags defining the behaviour of the filter
  *
  * Create a new filter to canonicalise an input stream.
@@ -189,9 +189,9 @@ reset (CamelMimeFilter *f)
  * Returns a new #CamelMimeFilterCanon
  **/
 CamelMimeFilter *
-camel_mime_filter_canon_new(guint32 flags)
+camel_lite_mime_filter_canon_new(guint32 flags)
 {
-	CamelMimeFilterCanon *chomp = CAMEL_MIME_FILTER_CANON (camel_object_new (CAMEL_MIME_FILTER_CANON_TYPE));
+	CamelMimeFilterCanon *chomp = CAMEL_MIME_FILTER_CANON (camel_lite_object_new (CAMEL_MIME_FILTER_CANON_TYPE));
 
 	chomp->flags = flags;
 

@@ -54,7 +54,7 @@
 
 
 void
-camel_pop3_logbook_set_rootpath (CamelPOP3Logbook *book, const gchar *path)
+camel_lite_pop3_logbook_set_rootpath (CamelPOP3Logbook *book, const gchar *path)
 {
 	g_static_rec_mutex_lock (book->lock);
 	if (book->path)
@@ -62,8 +62,8 @@ camel_pop3_logbook_set_rootpath (CamelPOP3Logbook *book, const gchar *path)
 	book->path = g_strdup_printf ("%s/logbook", path);
 	if (book->registered)
 	{
-		camel_pop3_logbook_close (book);
-		camel_pop3_logbook_open (book);
+		camel_lite_pop3_logbook_close (book);
+		camel_lite_pop3_logbook_open (book);
 	}
 	g_static_rec_mutex_unlock (book->lock);
 	return;
@@ -82,7 +82,7 @@ stripit (char *buffer)
 }
 
 void
-camel_pop3_logbook_register (CamelPOP3Logbook *book, const gchar *uid)
+camel_lite_pop3_logbook_register (CamelPOP3Logbook *book, const gchar *uid)
 {
 	FILE *f = NULL;
 
@@ -107,7 +107,7 @@ camel_pop3_logbook_register (CamelPOP3Logbook *book, const gchar *uid)
 }
 
 gboolean
-camel_pop3_logbook_is_registered (CamelPOP3Logbook *book, const gchar *uid)
+camel_lite_pop3_logbook_is_registered (CamelPOP3Logbook *book, const gchar *uid)
 {
 	gboolean truth = FALSE;
 
@@ -149,7 +149,7 @@ camel_pop3_logbook_is_registered (CamelPOP3Logbook *book, const gchar *uid)
 }
 
 void
-camel_pop3_logbook_open (CamelPOP3Logbook *book)
+camel_lite_pop3_logbook_open (CamelPOP3Logbook *book)
 {
 	g_static_rec_mutex_lock (book->lock);
 	if (!book->registered)
@@ -175,7 +175,7 @@ camel_pop3_logbook_open (CamelPOP3Logbook *book)
 }
 
 gboolean
-camel_pop3_logbook_is_open (CamelPOP3Logbook *book, const gchar *uid)
+camel_lite_pop3_logbook_is_open (CamelPOP3Logbook *book, const gchar *uid)
 {
 	gboolean truth = FALSE;
 
@@ -193,7 +193,7 @@ foreach_free (gpointer data, gpointer user_data)
 }
 
 void
-camel_pop3_logbook_close (CamelPOP3Logbook *book)
+camel_lite_pop3_logbook_close (CamelPOP3Logbook *book)
 {
 	g_static_rec_mutex_lock (book->lock);
 
@@ -214,7 +214,7 @@ finalize (CamelObject *object)
 {
 	CamelPOP3Logbook *book = (CamelPOP3Logbook *) object;
 
-	camel_pop3_logbook_close (book);
+	camel_lite_pop3_logbook_close (book);
 
 	if (book->path)
 		g_free (book->path);
@@ -229,7 +229,7 @@ finalize (CamelObject *object)
 
 
 static void
-camel_pop3_logbook_init (gpointer object, gpointer klass)
+camel_lite_pop3_logbook_init (gpointer object, gpointer klass)
 {
 	CamelPOP3Logbook *book = (CamelPOP3Logbook *) object;
 
@@ -242,17 +242,17 @@ camel_pop3_logbook_init (gpointer object, gpointer klass)
 
 
 CamelPOP3Logbook*
-camel_pop3_logbook_new (gpointer store_in)
+camel_lite_pop3_logbook_new (gpointer store_in)
 {
 	CamelPOP3Logbook *book = NULL;
 
-	book = CAMEL_POP3_LOGBOOK (camel_object_new (CAMEL_POP3_LOGBOOK_TYPE));
+	book = CAMEL_POP3_LOGBOOK (camel_lite_object_new (CAMEL_POP3_LOGBOOK_TYPE));
 
 	return book;
 }
 
 static void
-camel_pop3_logbook_class_init (CamelPOP3LogbookClass *camel_pop3_logbook_class)
+camel_lite_pop3_logbook_class_init (CamelPOP3LogbookClass *camel_lite_pop3_logbook_class)
 {
 	return;
 }
@@ -260,20 +260,20 @@ camel_pop3_logbook_class_init (CamelPOP3LogbookClass *camel_pop3_logbook_class)
 
 
 CamelType
-camel_pop3_logbook_get_type (void)
+camel_lite_pop3_logbook_get_type (void)
 {
-	static CamelType camel_pop3_logbook_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_pop3_logbook_type = CAMEL_INVALID_TYPE;
 
-	if (!camel_pop3_logbook_type) {
-		camel_pop3_logbook_type = camel_type_register (CAMEL_OBJECT_TYPE,
-				"CamelPOP3Logbook",
+	if (!camel_lite_pop3_logbook_type) {
+		camel_lite_pop3_logbook_type = camel_lite_type_register (CAMEL_OBJECT_TYPE,
+				"CamelLitePOP3Logbook",
 				sizeof (CamelPOP3Logbook),
 				sizeof (CamelPOP3LogbookClass),
-				(CamelObjectClassInitFunc) camel_pop3_logbook_class_init,
+				(CamelObjectClassInitFunc) camel_lite_pop3_logbook_class_init,
 				NULL,
-				(CamelObjectInitFunc) camel_pop3_logbook_init,
+				(CamelObjectInitFunc) camel_lite_pop3_logbook_init,
 				finalize);
 	}
 
-	return camel_pop3_logbook_type;
+	return camel_lite_pop3_logbook_type;
 }

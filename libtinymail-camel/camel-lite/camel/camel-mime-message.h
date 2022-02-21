@@ -38,7 +38,7 @@
 #define CAMEL_RECIPIENT_TYPE_RESENT_CC "Resent-Cc"
 #define CAMEL_RECIPIENT_TYPE_RESENT_BCC "Resent-Bcc"
 
-#define CAMEL_MIME_MESSAGE_TYPE     (camel_mime_message_get_type ())
+#define CAMEL_MIME_MESSAGE_TYPE     (camel_lite_mime_message_get_type ())
 #define CAMEL_MIME_MESSAGE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_MIME_MESSAGE_TYPE, CamelMimeMessage))
 #define CAMEL_MIME_MESSAGE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_MIME_MESSAGE_TYPE, CamelMimeMessageClass))
 #define CAMEL_IS_MIME_MESSAGE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_MIME_MESSAGE_TYPE))
@@ -80,55 +80,55 @@ typedef struct {
 
 
 /* Standard Camel function */
-CamelType                   camel_mime_message_get_type           (void);
+CamelType                   camel_lite_mime_message_get_type           (void);
 
 
 /* public methods */
-CamelMimeMessage           *camel_mime_message_new                (void);
-void                        camel_mime_message_set_date           (CamelMimeMessage           *message,
+CamelMimeMessage           *camel_lite_mime_message_new                (void);
+void                        camel_lite_mime_message_set_date           (CamelMimeMessage           *message,
 								   time_t                      date,
 								   int                         offset);
-time_t                      camel_mime_message_get_date           (CamelMimeMessage           *message,
+time_t                      camel_lite_mime_message_get_date           (CamelMimeMessage           *message,
 								   int                        *offset);
-time_t                      camel_mime_message_get_date_received  (CamelMimeMessage           *message,
+time_t                      camel_lite_mime_message_get_date_received  (CamelMimeMessage           *message,
 								   int                        *offset);
-void                        camel_mime_message_set_message_id     (CamelMimeMessage           *message,
+void                        camel_lite_mime_message_set_message_id     (CamelMimeMessage           *message,
 								   const char                 *message_id);
-const char                 *camel_mime_message_get_message_id     (CamelMimeMessage           *message);
-void                        camel_mime_message_set_reply_to       (CamelMimeMessage           *message,
+const char                 *camel_lite_mime_message_get_message_id     (CamelMimeMessage           *message);
+void                        camel_lite_mime_message_set_reply_to       (CamelMimeMessage           *message,
 								   const CamelInternetAddress *reply_to);
-const CamelInternetAddress *camel_mime_message_get_reply_to       (CamelMimeMessage           *message);
+const CamelInternetAddress *camel_lite_mime_message_get_reply_to       (CamelMimeMessage           *message);
 
-void                        camel_mime_message_set_subject        (CamelMimeMessage           *message,
+void                        camel_lite_mime_message_set_subject        (CamelMimeMessage           *message,
 								   const char                 *subject);
-const char                 *camel_mime_message_get_subject        (CamelMimeMessage           *message);
-void                        camel_mime_message_set_from           (CamelMimeMessage           *message,
+const char                 *camel_lite_mime_message_get_subject        (CamelMimeMessage           *message);
+void                        camel_lite_mime_message_set_from           (CamelMimeMessage           *message,
 								   const CamelInternetAddress *from);
-const CamelInternetAddress *camel_mime_message_get_from           (CamelMimeMessage           *message);
+const CamelInternetAddress *camel_lite_mime_message_get_from           (CamelMimeMessage           *message);
 
-const CamelInternetAddress *camel_mime_message_get_recipients     (CamelMimeMessage           *message,
+const CamelInternetAddress *camel_lite_mime_message_get_recipients     (CamelMimeMessage           *message,
 								   const char                 *type);
-void                        camel_mime_message_set_recipients     (CamelMimeMessage           *message,
+void                        camel_lite_mime_message_set_recipients     (CamelMimeMessage           *message,
 								   const char                 *type,
 								   const CamelInternetAddress *recipients);
 
-void                        camel_mime_message_set_source         (CamelMimeMessage           *message,
+void                        camel_lite_mime_message_set_source         (CamelMimeMessage           *message,
 								   const char                 *identity);
-const char                 *camel_mime_message_get_source         (CamelMimeMessage           *message);
+const char                 *camel_lite_mime_message_get_source         (CamelMimeMessage           *message);
 
 
 /* utility functions */
-gboolean                    camel_mime_message_has_8bit_parts     (CamelMimeMessage           *message);
-void                        camel_mime_message_set_best_encoding  (CamelMimeMessage           *message,
+gboolean                    camel_lite_mime_message_has_8bit_parts     (CamelMimeMessage           *message);
+void                        camel_lite_mime_message_set_best_encoding  (CamelMimeMessage           *message,
 								   CamelBestencRequired        required,
 								   CamelBestencEncoding        enctype);
-void                        camel_mime_message_encode_8bit_parts  (CamelMimeMessage           *message);
+void                        camel_lite_mime_message_encode_8bit_parts  (CamelMimeMessage           *message);
 
-CamelMimePart              *camel_mime_message_get_part_by_content_id (CamelMimeMessage *message, const char *content_id);
+CamelMimePart              *camel_lite_mime_message_get_part_by_content_id (CamelMimeMessage *message, const char *content_id);
 
-char                       *camel_mime_message_build_mbox_from    (CamelMimeMessage           *message);
+char                       *camel_lite_mime_message_build_mbox_from    (CamelMimeMessage           *message);
 
-void camel_mime_message_dump(CamelMimeMessage *msg, int body);
+void camel_lite_mime_message_dump(CamelMimeMessage *msg, int body);
 
 G_END_DECLS
 

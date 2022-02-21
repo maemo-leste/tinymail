@@ -27,9 +27,9 @@
 #include <camel/camel-index.h>
 #include "camel-mbox-summary.h"
 
-#define CAMEL_SPOOL_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_spool_summary_get_type (), CamelSpoolSummary)
-#define CAMEL_SPOOL_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_spool_summary_get_type (), CamelSpoolSummaryClass)
-#define CAMEL_IS_SPOOL_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_spool_summary_get_type ())
+#define CAMEL_SPOOL_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_lite_spool_summary_get_type (), CamelSpoolSummary)
+#define CAMEL_SPOOL_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_spool_summary_get_type (), CamelSpoolSummaryClass)
+#define CAMEL_IS_SPOOL_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_spool_summary_get_type ())
 
 G_BEGIN_DECLS
 
@@ -45,27 +45,27 @@ struct _CamelSpoolSummaryClass {
 	CamelMboxSummaryClass parent_class;
 };
 
-CamelType	camel_spool_summary_get_type	(void);
-void	camel_spool_summary_construct	(CamelSpoolSummary *new, const char *filename, const char *spool_name, CamelIndex *index);
+CamelType	camel_lite_spool_summary_get_type	(void);
+void	camel_lite_spool_summary_construct	(CamelSpoolSummary *new, const char *filename, const char *spool_name, CamelIndex *index);
 
 /* create the summary, in-memory only */
-CamelSpoolSummary *camel_spool_summary_new(struct _CamelFolder *, const char *filename);
+CamelSpoolSummary *camel_lite_spool_summary_new(struct _CamelFolder *, const char *filename);
 
 /* load/check the summary */
-int camel_spool_summary_load(CamelSpoolSummary *cls, int forceindex, CamelException *ex);
+int camel_lite_spool_summary_load(CamelSpoolSummary *cls, int forceindex, CamelException *ex);
 /* check for new/removed messages */
-int camel_spool_summary_check(CamelSpoolSummary *cls, CamelFolderChangeInfo *, CamelException *ex);
+int camel_lite_spool_summary_check(CamelSpoolSummary *cls, CamelFolderChangeInfo *, CamelException *ex);
 /* perform a folder sync or expunge, if needed */
-int camel_spool_summary_sync(CamelSpoolSummary *cls, gboolean expunge, CamelFolderChangeInfo *, CamelException *ex);
+int camel_lite_spool_summary_sync(CamelSpoolSummary *cls, gboolean expunge, CamelFolderChangeInfo *, CamelException *ex);
 /* add a new message to the summary */
-CamelMessageInfo *camel_spool_summary_add(CamelSpoolSummary *cls, CamelMimeMessage *msg, const CamelMessageInfo *info, CamelFolderChangeInfo *, CamelException *ex);
+CamelMessageInfo *camel_lite_spool_summary_add(CamelSpoolSummary *cls, CamelMimeMessage *msg, const CamelMessageInfo *info, CamelFolderChangeInfo *, CamelException *ex);
 
 /* generate an X-Evolution header line */
-char *camel_spool_summary_encode_x_evolution(CamelSpoolSummary *cls, const CamelMessageInfo *info);
-int camel_spool_summary_decode_x_evolution(CamelSpoolSummary *cls, const char *xev, CamelMessageInfo *info);
+char *camel_lite_spool_summary_encode_x_evolution(CamelSpoolSummary *cls, const CamelMessageInfo *info);
+int camel_lite_spool_summary_decode_x_evolution(CamelSpoolSummary *cls, const char *xev, CamelMessageInfo *info);
 
 /* utility functions - write headers to a file with optional X-Evolution header */
-int camel_spool_summary_write_headers(int fd, struct _camel_header_raw *header, char *xevline);
+int camel_lite_spool_summary_write_headers(int fd, struct _camel_lite_header_raw *header, char *xevline);
 
 G_END_DECLS
 

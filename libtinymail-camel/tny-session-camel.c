@@ -115,7 +115,7 @@ get_password_destroy(gpointer user_data)
 	HadToWaitForPasswordInfo *info = (HadToWaitForPasswordInfo *) user_data;
 
 	g_object_unref (info->account);
-	camel_object_unref (info->self);
+	camel_lite_object_unref (info->self);
 
 	g_mutex_lock (info->mutex);
 	g_cond_broadcast (info->condition);
@@ -163,7 +163,7 @@ tny_session_camel_get_password (CamelSession *session, CamelService *service, co
 		info->had_callback = FALSE;
 
 		info->flags = flags;
-		camel_object_ref (self);
+		camel_lite_object_ref (self);
 		info->self = self;
 		info->account = TNY_ACCOUNT (g_object_ref (account));
 		info->prompt = prmpt;
@@ -207,12 +207,12 @@ tny_session_camel_get_password (CamelSession *session, CamelService *service, co
 
 			if (CAMEL_IS_DISCO_STORE (apriv->service)) {
 				CamelException tex = CAMEL_EXCEPTION_INITIALISER;
-				camel_disco_store_set_status (CAMEL_DISCO_STORE (apriv->service),
+				camel_lite_disco_store_set_status (CAMEL_DISCO_STORE (apriv->service),
 						CAMEL_DISCO_STORE_OFFLINE, &tex);
 			}
 		}
 
-		camel_exception_set (ex, CAMEL_EXCEPTION_USER_CANCEL,
+		camel_lite_exception_set (ex, CAMEL_EXCEPTION_USER_CANCEL,
 			_("You cancelled when you had to enter a password"));
 
 		if (retval)
@@ -271,7 +271,7 @@ forget_password_destroy(gpointer user_data)
 	HadToWaitForForgetInfo *info = (HadToWaitForForgetInfo *) user_data;
 
 	g_object_unref (info->account);
-	camel_object_unref (info->self);
+	camel_lite_object_unref (info->self);
 
 	g_mutex_lock (info->mutex);
 	g_cond_broadcast (info->condition);
@@ -305,7 +305,7 @@ tny_session_camel_forget_password (CamelSession *session, CamelService *service,
 		info->condition = g_cond_new ();
 		info->had_callback = FALSE;
 
-		camel_object_ref (self);
+		camel_lite_object_ref (self);
 		info->self = self;
 		info->account = TNY_ACCOUNT (g_object_ref (account));
 		info->func = func;
@@ -382,7 +382,7 @@ alert_destroy(gpointer user_data)
 
 	if (info->account)
 		g_object_unref (info->account);
-	camel_object_unref (info->self);
+	camel_lite_object_unref (info->self);
 
 	g_mutex_lock (info->mutex);
 	g_cond_broadcast (info->condition);
@@ -404,7 +404,7 @@ tny_session_camel_do_an_error (TnySessionCamel *self, TnyAccount *account, TnyAl
 	info->condition = g_cond_new ();
 	info->had_callback = FALSE;
 
-	camel_object_ref (self);
+	camel_lite_object_ref (self);
 	info->self = self;
 	info->account = account?TNY_ACCOUNT (g_object_ref (account)):NULL;
 	info->tnytype = tnytype;
@@ -438,7 +438,7 @@ tny_session_camel_do_an_error (TnySessionCamel *self, TnyAccount *account, TnyAl
 }
 
 /* tny_session_camel_alert_user will for example be called by camel when SSL is on and 
- * camel_session_get_service is issued (for example TnyCamelTransportAccount and
+ * camel_lite_session_get_service is issued (for example TnyCamelTransportAccount and
  * TnyCamelStore account issue this function). Its implementation is often done
  * with GUI components (it should therefore not be called from a thread). */
 
@@ -533,7 +533,7 @@ mail_tool_uri_to_folder (CamelSession *session, const char *uri, guint32 flags, 
 
 	g_return_val_if_fail (uri != NULL, NULL);
 	
-	url = camel_url_new (uri /*+ offset*/, ex);
+	url = camel_lite_url_new (uri /*+ offset*/, ex);
 
 	if (G_UNLIKELY (!url))
 	{
@@ -541,7 +541,7 @@ mail_tool_uri_to_folder (CamelSession *session, const char *uri, guint32 flags, 
 		return NULL;
 	}
 
-	store = (CamelStore *)camel_session_get_service(session, uri /* + offset */, CAMEL_PROVIDER_STORE, ex);
+	store = (CamelStore *)camel_lite_session_get_service(session, uri /* + offset */, CAMEL_PROVIDER_STORE, ex);
 	if (G_LIKELY (store))
 	{
 		const char *name;
@@ -565,11 +565,11 @@ mail_tool_uri_to_folder (CamelSession *session, const char *uri, guint32 flags, 
 			else
 				g_assert (FALSE);
 		} else*/
-			folder = (CamelFolder*)camel_store_get_folder (store, name, flags, ex);
-		camel_object_unref (store);
+			folder = (CamelFolder*)camel_lite_store_get_folder (store, name, flags, ex);
+		camel_lite_object_unref (store);
 	}
 
-	camel_url_free (url);
+	camel_lite_url_free (url);
 	g_free(curi);
 
 	return folder;
@@ -586,8 +586,8 @@ get_folder (CamelFilterDriver *d, const char *uri, void *data, CamelException *e
 static CamelFilterDriver *
 tny_session_camel_get_filter_driver (CamelSession *session, const char *type, CamelException *ex)
 {
-	CamelFilterDriver *driver = camel_filter_driver_new (session);
-	camel_filter_driver_set_folder_func (driver, get_folder, session);
+	CamelFilterDriver *driver = camel_lite_filter_driver_new (session);
+	camel_lite_filter_driver_set_folder_func (driver, get_folder, session);
 	return driver; 
 }
 
@@ -621,7 +621,7 @@ tny_session_camel_ms_thread_msg_new (CamelSession *session, CamelSessionThreadOp
 	msg->ops->free = my_free_func;
 	msg->ops->receive = my_receive_func;
 	msg->data = NULL;
-	msg->op = camel_operation_new (my_cancel_func, NULL);
+	msg->op = camel_lite_operation_new (my_cancel_func, NULL);
 #endif
 
 	return msg;
@@ -644,7 +644,7 @@ tny_session_camel_ms_thread_status (CamelSession *session, CamelSessionThreadMsg
 
 
 static void
-tny_session_camel_init (TnySessionCamel *instance)
+tny_session_camel_lite_init (TnySessionCamel *instance)
 {
 	TnySessionCamelPriv *priv;
 	instance->priv = g_slice_new (TnySessionCamelPriv);
@@ -729,7 +729,7 @@ on_account_connect_done (TnyCamelAccount *account, gboolean canceled, GError *er
 		}
 	}
 
-	camel_object_unref (self);
+	camel_lite_object_unref (self);
 
 	return;
 }
@@ -756,7 +756,7 @@ static void
 set_online_happened_destroy (gpointer user_data)
 {
 	SetOnlHapInfo *info = (SetOnlHapInfo *) user_data;
-	camel_object_unref (info->self);
+	camel_lite_object_unref (info->self);
 	g_object_unref (info->account);
 	g_slice_free (SetOnlHapInfo, info);
 }
@@ -770,9 +770,9 @@ tny_session_queue_going_online_for_account (TnySessionCamel *self, TnyCamelAccou
 	 * method in TnyCamelStoreAccount. Go take a look! */
 
 	if (TNY_IS_CAMEL_STORE_ACCOUNT (account)) {
-		camel_object_ref (self);
+		camel_lite_object_ref (self);
 		if (online)
-			camel_session_set_online ((CamelSession *) self, TRUE);
+			camel_lite_session_set_online ((CamelSession *) self, TRUE);
 		_tny_camel_store_account_queue_going_online (
 			TNY_CAMEL_STORE_ACCOUNT (account), self, online,
 			on_account_connect_done, self);
@@ -788,7 +788,7 @@ tny_session_queue_going_online_for_account (TnySessionCamel *self, TnyCamelAccou
 		SetOnlHapInfo *info = g_slice_new (SetOnlHapInfo);
 
 		info->self = self;
-		camel_object_ref (info->self);
+		camel_lite_object_ref (info->self);
 		info->account = TNY_ACCOUNT (g_object_ref (account));
 		info->online = online;
 
@@ -899,7 +899,7 @@ tny_session_camel_connection_changed (TnyDevice *device, gboolean online, gpoint
 	/* This Camel API exists, I haven't yet figured out what exactly it does
 	 * or change in terms of behaviour. */
 
-	camel_session_set_online ((CamelSession *) self, online); 
+	camel_lite_session_set_online ((CamelSession *) self, online); 
 
 
 	/* As said, we can issue this signal. We can't issue when connecting 
@@ -1010,7 +1010,7 @@ tny_session_camel_set_account_store (TnySessionCamel *self, TnyAccountStore *acc
 
 	base_directory = g_strdup (tny_account_store_get_cache_dir (account_store));
 
-	if (camel_init (base_directory, TRUE) != 0)
+	if (camel_lite_init (base_directory, TRUE) != 0)
 	{
 		g_error (_("Critical ERROR: Cannot init %s as camel directory\n"), base_directory);
 		g_object_unref (G_OBJECT (device));
@@ -1018,11 +1018,11 @@ tny_session_camel_set_account_store (TnySessionCamel *self, TnyAccountStore *acc
 	}
 
 	camel_dir = g_build_filename (base_directory, "mail", NULL);
-	camel_provider_init();
-	camel_session_construct (session, camel_dir);
+	camel_lite_provider_init();
+	camel_lite_session_construct (session, camel_dir);
 
 	online = tny_device_is_online (device);
-	camel_session_set_online ((CamelSession *) session, online); 
+	camel_lite_session_set_online ((CamelSession *) session, online); 
 	priv->camel_dir = camel_dir;
 	g_free (base_directory);
 	tny_session_camel_set_device (self, device);
@@ -1065,7 +1065,7 @@ TnySessionCamel*
 tny_session_camel_new (TnyAccountStore *account_store)
 {
 	TnySessionCamel *retval = TNY_SESSION_CAMEL 
-			(camel_object_new (TNY_TYPE_SESSION_CAMEL));
+			(camel_lite_object_new (TNY_TYPE_SESSION_CAMEL));
 
 	tny_session_camel_set_account_store (retval, account_store);
 
@@ -1153,21 +1153,21 @@ tny_session_camel_get_type (void)
 	{
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 
 	if (G_UNLIKELY (tny_session_camel_type == CAMEL_INVALID_TYPE)) 
 	{
-		ms_parent_class = (CamelSessionClass *)camel_session_get_type();
-		tny_session_camel_type = camel_type_register (
-			camel_session_get_type (),
+		ms_parent_class = (CamelSessionClass *)camel_lite_session_get_type();
+		tny_session_camel_type = camel_lite_type_register (
+			camel_lite_session_get_type (),
 			"TnySessionCamel",
 			sizeof (TnySessionCamel),
 			sizeof (TnySessionCamelClass),
 			(CamelObjectClassInitFunc) tny_session_camel_class_init,
 			NULL,
-			(CamelObjectInitFunc) tny_session_camel_init,
+			(CamelObjectInitFunc) tny_session_camel_lite_init,
 			(CamelObjectFinalizeFunc) tny_session_camel_finalise);
 	}
 

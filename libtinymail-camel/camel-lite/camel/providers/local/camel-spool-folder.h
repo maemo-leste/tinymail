@@ -30,7 +30,7 @@
 
 /*  #include "camel-store.h" */
 
-#define CAMEL_SPOOL_FOLDER_TYPE     (camel_spool_folder_get_type ())
+#define CAMEL_SPOOL_FOLDER_TYPE     (camel_lite_spool_folder_get_type ())
 #define CAMEL_SPOOL_FOLDER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SPOOL_FOLDER_TYPE, CamelSpoolFolder))
 #define CAMEL_SPOOL_FOLDER_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SPOOL_FOLDER_TYPE, CamelSpoolFolderClass))
 #define CAMEL_IS_SPOOL_FOLDER(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SPOOL_FOLDER_TYPE))
@@ -50,9 +50,9 @@ typedef struct {
 } CamelSpoolFolderClass;
 
 /* Standard Camel function */
-CamelType camel_spool_folder_get_type(void);
+CamelType camel_lite_spool_folder_get_type(void);
 
-CamelFolder *camel_spool_folder_new(CamelStore *parent_store, const char *full_name, guint32 flags, CamelException *ex);
+CamelFolder *camel_lite_spool_folder_new(CamelStore *parent_store, const char *full_name, guint32 flags, CamelException *ex);
 
 G_END_DECLS
 

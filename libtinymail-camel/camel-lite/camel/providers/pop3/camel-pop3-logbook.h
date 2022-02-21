@@ -27,7 +27,7 @@
 #include <camel/camel-store.h>
 #include "camel-pop3-store.h"
 
-#define CAMEL_POP3_LOGBOOK_TYPE     (camel_pop3_logbook_get_type ())
+#define CAMEL_POP3_LOGBOOK_TYPE     (camel_lite_pop3_logbook_get_type ())
 #define CAMEL_POP3_LOGBOOK(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_POP3_LOGBOOK_TYPE, CamelPOP3Logbook))
 #define CAMEL_POP3_LOGBOOK_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_POP3_LOGBOOK_TYPE, CamelPOP3LogbookClass))
 #define CAMEL_IS_POP3_LOGBOOK(o)    (CAMEL_CHECK_TYPE((o), CAMEL_POP3_LOGBOOK_TYPE))
@@ -49,17 +49,17 @@ typedef struct {
 
 
 /* Standard Camel function */
-CamelType camel_pop3_logbook_get_type (void);
-CamelPOP3Logbook* camel_pop3_logbook_new (gpointer store_in);
+CamelType camel_lite_pop3_logbook_get_type (void);
+CamelPOP3Logbook* camel_lite_pop3_logbook_new (gpointer store_in);
 
-void camel_pop3_logbook_register (CamelPOP3Logbook *book, const gchar *uid);
-gboolean camel_pop3_logbook_is_registered (CamelPOP3Logbook *book, const gchar *uid);
+void camel_lite_pop3_logbook_register (CamelPOP3Logbook *book, const gchar *uid);
+gboolean camel_lite_pop3_logbook_is_registered (CamelPOP3Logbook *book, const gchar *uid);
 
-void camel_pop3_logbook_open (CamelPOP3Logbook *book);
-gboolean camel_pop3_logbook_is_open (CamelPOP3Logbook *book, const gchar *uid);
-void camel_pop3_logbook_close (CamelPOP3Logbook *book);
+void camel_lite_pop3_logbook_open (CamelPOP3Logbook *book);
+gboolean camel_lite_pop3_logbook_is_open (CamelPOP3Logbook *book, const gchar *uid);
+void camel_lite_pop3_logbook_close (CamelPOP3Logbook *book);
 
-void camel_pop3_logbook_set_rootpath (CamelPOP3Logbook *book, const gchar *path);
+void camel_lite_pop3_logbook_set_rootpath (CamelPOP3Logbook *book, const gchar *path);
 
 G_END_DECLS
 

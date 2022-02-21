@@ -36,16 +36,16 @@ enum {
 	IS_WILDCARD   = (1 << 5),
 };
 
-extern unsigned char camel_imap4_specials[256];
+extern unsigned char camel_lite_imap4_specials[256];
 
-#define is_atom(x) ((camel_imap4_specials[(unsigned char)(x)] & (IS_ASPECIAL|IS_SPACE|IS_CTRL|IS_WILDCARD|IS_QSPECIAL)) == 0)
-#define is_ctrl(x) ((camel_imap4_specials[(unsigned char)(x)] & IS_CTRL) != 0)
-#define is_lwsp(x) ((camel_imap4_specials[(unsigned char)(x)] & IS_LWSP) != 0)
-#define is_type(x, t) ((camel_imap4_specials[(unsigned char)(x)] & (t)) != 0)
-#define is_qsafe(x) ((camel_imap4_specials[(unsigned char)(x)] & (IS_QSPECIAL|IS_CTRL)) == 0)
-#define is_wild(x)  ((camel_imap4_specials[(unsigned char)(x)] & IS_WILDCARD) != 0)
+#define is_atom(x) ((camel_lite_imap4_specials[(unsigned char)(x)] & (IS_ASPECIAL|IS_SPACE|IS_CTRL|IS_WILDCARD|IS_QSPECIAL)) == 0)
+#define is_ctrl(x) ((camel_lite_imap4_specials[(unsigned char)(x)] & IS_CTRL) != 0)
+#define is_lwsp(x) ((camel_lite_imap4_specials[(unsigned char)(x)] & IS_LWSP) != 0)
+#define is_type(x, t) ((camel_lite_imap4_specials[(unsigned char)(x)] & (t)) != 0)
+#define is_qsafe(x) ((camel_lite_imap4_specials[(unsigned char)(x)] & (IS_QSPECIAL|IS_CTRL)) == 0)
+#define is_wild(x)  ((camel_lite_imap4_specials[(unsigned char)(x)] & IS_WILDCARD) != 0)
 
-void camel_imap4_specials_init (void);
+void camel_lite_imap4_specials_init (void);
 
 G_END_DECLS
 

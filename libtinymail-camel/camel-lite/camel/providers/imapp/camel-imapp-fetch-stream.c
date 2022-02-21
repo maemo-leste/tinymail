@@ -51,7 +51,7 @@ stream_read(CamelStream *stream, char *buffer, size_t n)
 	ssize_t max;
 
 	/* make sure we have all the data read in */
-	while (camel_imapp_engine_iterate(is->engine, is->command)>0)
+	while (camel_lite_imapp_engine_iterate(is->engine, is->command)>0)
 		;
 
 	if (is->literal == 0 || n == 0)
@@ -65,7 +65,7 @@ stream_read(CamelStream *stream, char *buffer, size_t n)
 		is->ptr += max;
 	} else {
 		max = MIN(is->literal, n);
-		max = camel_stream_read(is->source, buffer, max);
+		max = camel_lite_stream_read(is->source, buffer, max);
 		if (max <= 0)
 			return max;
 	}
@@ -80,7 +80,7 @@ stream_write(CamelStream *stream, const char *buffer, size_t n)
 {
 	CamelIMAPPFetchStream *is = (CamelIMAPPFetchStream *)stream;
 
-	return camel_stream_write(is->source, buffer, n);
+	return camel_lite_stream_write(is->source, buffer, n);
 }
 
 static int
@@ -113,70 +113,70 @@ stream_reset(CamelStream *stream)
 }
 
 static void
-camel_imapp_fetch_stream_class_init (CamelStreamClass *camel_imapp_fetch_stream_class)
+camel_lite_imapp_fetch_stream_class_init (CamelStreamClass *camel_lite_imapp_fetch_stream_class)
 {
-	CamelStreamClass *camel_stream_class = (CamelStreamClass *)camel_imapp_fetch_stream_class;
+	CamelStreamClass *camel_lite_stream_class = (CamelStreamClass *)camel_lite_imapp_fetch_stream_class;
 
-	parent_class = camel_type_get_global_classfuncs( CAMEL_OBJECT_TYPE );
+	parent_class = camel_lite_type_get_global_classfuncs( CAMEL_OBJECT_TYPE );
 
 	/* virtual method definition */
-	camel_stream_class->read = stream_read;
-	camel_stream_class->write = stream_write;
-	camel_stream_class->close = stream_close;
-	camel_stream_class->flush = stream_flush;
-	camel_stream_class->eos = stream_eos;
-	camel_stream_class->reset = stream_reset;
+	camel_lite_stream_class->read = stream_read;
+	camel_lite_stream_class->write = stream_write;
+	camel_lite_stream_class->close = stream_close;
+	camel_lite_stream_class->flush = stream_flush;
+	camel_lite_stream_class->eos = stream_eos;
+	camel_lite_stream_class->reset = stream_reset;
 }
 
 static void
-camel_imapp_fetch_stream_init(CamelIMAPPFetchStream *is, CamelIMAPPFetchStreamClass *isclass)
+camel_lite_imapp_fetch_stream_init(CamelIMAPPFetchStream *is, CamelIMAPPFetchStreamClass *isclass)
 {
 	;
 }
 
 static void
-camel_imapp_fetch_stream_finalise(CamelIMAPPFetchStream *is)
+camel_lite_imapp_fetch_stream_finalise(CamelIMAPPFetchStream *is)
 {
 	if (is->engine)
-		camel_object_unref(is->engine);
+		camel_lite_object_unref(is->engine);
 }
 
 CamelType
-camel_imapp_fetch_stream_get_type (void)
+camel_lite_imapp_fetch_stream_get_type (void)
 {
-	static CamelType camel_imapp_fetch_stream_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_imapp_fetch_stream_type = CAMEL_INVALID_TYPE;
 
-	if (camel_imapp_fetch_stream_type == CAMEL_INVALID_TYPE) {
+	if (camel_lite_imapp_fetch_stream_type == CAMEL_INVALID_TYPE) {
 		setup_table();
-		camel_imapp_fetch_stream_type = camel_type_register( camel_stream_get_type(),
-							    "CamelIMAPPFetchStream",
+		camel_lite_imapp_fetch_stream_type = camel_lite_type_register( camel_lite_stream_get_type(),
+							    "CamelLiteIMAPPFetchStream",
 							    sizeof( CamelIMAPPFetchStream ),
 							    sizeof( CamelIMAPPFetchStreamClass ),
-							    (CamelObjectClassInitFunc) camel_imapp_fetch_stream_class_init,
+							    (CamelObjectClassInitFunc) camel_lite_imapp_fetch_stream_class_init,
 							    NULL,
-							    (CamelObjectInitFunc) camel_imapp_fetch_stream_init,
-							    (CamelObjectFinalizeFunc) camel_imapp_fetch_stream_finalise );
+							    (CamelObjectInitFunc) camel_lite_imapp_fetch_stream_init,
+							    (CamelObjectFinalizeFunc) camel_lite_imapp_fetch_stream_finalise );
 	}
 
-	return camel_imapp_fetch_stream_type;
+	return camel_lite_imapp_fetch_stream_type;
 }
 
 /**
- * camel_imapp_fetch_stream_new:
+ * camel_lite_imapp_fetch_stream_new:
  *
  * Return value: the stream
  **/
 CamelStream *
-camel_imapp_fetch_stream_new(CamelIMAPPEngine *ie, const char *uid, const char *body)
+camel_lite_imapp_fetch_stream_new(CamelIMAPPEngine *ie, const char *uid, const char *body)
 {
 	CamelIMAPPFetchStream *is;
 
-	is = (CamelIMAPPFetchStream *)camel_object_new(camel_imapp_fetch_stream_get_type ());
+	is = (CamelIMAPPFetchStream *)camel_lite_object_new(camel_lite_imapp_fetch_stream_get_type ());
 	is->engine = ie;
-	camel_object_ref(ie);
+	camel_lite_object_ref(ie);
 
-	is->command = camel_imapp_engine_command_new(ie, "FETCH", NULL, "FETCH %t (BODY[%t]<0.4096>", uid, body);
-	camel_imapp_engine_command_queue(ie, command);
+	is->command = camel_lite_imapp_engine_command_new(ie, "FETCH", NULL, "FETCH %t (BODY[%t]<0.4096>", uid, body);
+	camel_lite_imapp_engine_command_queue(ie, command);
 
 	return (CamelStream *)is;
 }

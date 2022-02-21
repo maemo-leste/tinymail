@@ -76,17 +76,17 @@ static pthread_once_t setup_once = PTHREAD_ONCE_INIT;
 static void
 provider_setup(void)
 {
-	module_table = g_hash_table_new(camel_strcase_hash, camel_strcase_equal);
-	provider_table = g_hash_table_new(camel_strcase_hash, camel_strcase_equal);
+	module_table = g_hash_table_new(camel_lite_strcase_hash, camel_lite_strcase_equal);
+	provider_table = g_hash_table_new(camel_lite_strcase_hash, camel_lite_strcase_equal);
 
-	vee_provider.object_types[CAMEL_PROVIDER_STORE] = camel_vee_store_get_type ();
-	vee_provider.url_hash = camel_url_hash;
-	vee_provider.url_equal = camel_url_equal;
-	camel_provider_register(&vee_provider);
+	vee_provider.object_types[CAMEL_PROVIDER_STORE] = camel_lite_vee_store_get_type ();
+	vee_provider.url_hash = camel_lite_url_hash;
+	vee_provider.url_equal = camel_lite_url_equal;
+	camel_lite_provider_register(&vee_provider);
 }
 
 /**
- * camel_provider_init:
+ * camel_lite_provider_init:
  *
  * Initialize the Camel provider system by reading in the .urls
  * files in the provider directory and creating a hash table mapping
@@ -100,7 +100,7 @@ provider_setup(void)
  * TODO: This should be plugin-d?
  **/
 void
-camel_provider_init (void)
+camel_lite_provider_init (void)
 {
 	GDir *dir;
 	const char *entry;
@@ -166,7 +166,7 @@ camel_provider_init (void)
 }
 
 /**
- * camel_provider_load:
+ * camel_lite_provider_load:
  * @session: the current session
  * @path: the path to a shared library
  * @ex: a CamelException
@@ -176,15 +176,15 @@ camel_provider_init (void)
  * itself with @session.
  **/
 void
-camel_provider_load(const char *path, CamelException *ex)
+camel_lite_provider_load(const char *path, CamelException *ex)
 {
 	GModule *module;
-	CamelProvider *(*camel_provider_module_init) (void);
+	CamelProvider *(*camel_lite_provider_module_init) (void);
 
 	pthread_once(&setup_once, provider_setup);
 
 	if (!g_module_supported ()) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Could not load %s: Module loading "
 				      "not supported on this system."),
 				      path);
@@ -193,32 +193,32 @@ camel_provider_load(const char *path, CamelException *ex)
 
 	module = g_module_open (path, G_MODULE_BIND_LAZY);
 	if (!module) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Could not load %s: %s"),
 				      path, g_module_error ());
 		return;
 	}
 
-	if (!g_module_symbol (module, "camel_provider_module_init",
-			      (gpointer *)&camel_provider_module_init)) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
+	if (!g_module_symbol (module, "camel_lite_provider_module_init",
+			      (gpointer *)&camel_lite_provider_module_init)) {
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Could not load %s: No initialization "
 					"code in module."), path);
 		g_module_close (module);
 		return;
 	}
 
-	camel_provider_module_init ();
+	camel_lite_provider_module_init ();
 }
 
 /**
- * camel_provider_register:
+ * camel_lite_provider_register:
  * @provider: provider object
  *
  * Registers a provider.
  **/
 void
-camel_provider_register(CamelProvider *provider)
+camel_lite_provider_register(CamelProvider *provider)
 {
 	int i;
 	CamelProviderConfEntry *conf;
@@ -238,8 +238,8 @@ camel_provider_register(CamelProvider *provider)
 
 	for (i = 0; i < CAMEL_NUM_PROVIDER_TYPES; i++) {
 		if (provider->object_types[i])
-			provider->service_cache[i] = camel_object_bag_new (provider->url_hash, provider->url_equal,
-									   (CamelCopyFunc)camel_url_copy, (GFreeFunc)camel_url_free);
+			provider->service_cache[i] = camel_lite_object_bag_new (provider->url_hash, provider->url_equal,
+									   (CamelCopyFunc)camel_lite_url_copy, (GFreeFunc)camel_lite_url_free);
 	}
 
 	/* Translate all strings here */
@@ -287,7 +287,7 @@ add_to_list (gpointer key, gpointer value, gpointer user_data)
 }
 
 /**
- * camel_session_list_providers:
+ * camel_lite_session_list_providers:
  * @session: the session
  * @load: whether or not to load in providers that are not already loaded
  *
@@ -298,7 +298,7 @@ add_to_list (gpointer key, gpointer value, gpointer user_data)
  * Return value: a GList of providers, which the caller must free.
  **/
 GList *
-camel_provider_list(gboolean load)
+camel_lite_provider_list(gboolean load)
 {
 	GList *list = NULL;
 
@@ -314,7 +314,7 @@ camel_provider_list(gboolean load)
 			CamelProviderModule *m = w->data;
 
 			if (!m->loaded) {
-				camel_provider_load(m->path, NULL);
+				camel_lite_provider_load(m->path, NULL);
 				m->loaded = 1;
 			}
 		}
@@ -332,7 +332,7 @@ camel_provider_list(gboolean load)
 }
 
 /**
- * camel_provider_get:
+ * camel_lite_provider_get:
  * @url_string: the URL for the service whose provider you want
  * @ex: a CamelException
  *
@@ -342,7 +342,7 @@ camel_provider_list(gboolean load)
  * Return value: the provider, or %NULL, in which case @ex will be set.
  **/
 CamelProvider *
-camel_provider_get(const char *url_string, CamelException *ex)
+camel_lite_provider_get(const char *url_string, CamelException *ex)
 {
 	CamelProvider *provider = NULL;
 	char *protocol;
@@ -365,15 +365,15 @@ camel_provider_get(const char *url_string, CamelException *ex)
 		m = g_hash_table_lookup(module_table, protocol);
 		if (m && !m->loaded) {
 			m->loaded = 1;
-			camel_provider_load(m->path, ex);
-			if (camel_exception_is_set (ex))
+			camel_lite_provider_load(m->path, ex);
+			if (camel_lite_exception_is_set (ex))
 				goto fail;
 		}
 		provider = g_hash_table_lookup(provider_table, protocol);
 	}
 
 	if (provider == NULL)
-		camel_exception_setv(ex, CAMEL_EXCEPTION_SERVICE_URL_INVALID,
+		camel_lite_exception_setv(ex, CAMEL_EXCEPTION_SERVICE_URL_INVALID,
 				     _("No provider available for protocol `%s'"),
 				     protocol);
 fail:
@@ -384,7 +384,7 @@ fail:
 
 
 /**
- * camel_provider_auto_detect:
+ * camel_lite_provider_auto_detect:
  * @provider: camel provider
  * @settings: currently set settings
  * @auto_detected: output hash table of auto-detected values
@@ -405,7 +405,7 @@ fail:
  * Returns 0 on success or -1 on fail.
  **/
 int
-camel_provider_auto_detect (CamelProvider *provider, CamelURL *url,
+camel_lite_provider_auto_detect (CamelProvider *provider, CamelURL *url,
 			    GHashTable **auto_detected, CamelException *ex)
 {
 	g_return_val_if_fail (provider != NULL, -1);

@@ -31,10 +31,10 @@ static char * nntp_encode		(CamelAddress *);
 static int    nntp_cat		(CamelAddress *dest, const CamelAddress *source);
 static void   nntp_remove		(CamelAddress *, int index);
 
-static void camel_nntp_address_class_init (CamelNNTPAddressClass *klass);
-static void camel_nntp_address_init       (CamelNNTPAddress *obj);
+static void camel_lite_nntp_address_class_init (CamelNNTPAddressClass *klass);
+static void camel_lite_nntp_address_init       (CamelNNTPAddress *obj);
 
-static CamelAddressClass *camel_nntp_address_parent;
+static CamelAddressClass *camel_lite_nntp_address_parent;
 
 struct _address {
 	char *name;
@@ -42,11 +42,11 @@ struct _address {
 };
 
 static void
-camel_nntp_address_class_init(CamelNNTPAddressClass *klass)
+camel_lite_nntp_address_class_init(CamelNNTPAddressClass *klass)
 {
 	CamelAddressClass *address = (CamelAddressClass *) klass;
 
-	camel_nntp_address_parent = CAMEL_ADDRESS_CLASS(camel_type_get_global_classfuncs(camel_address_get_type()));
+	camel_lite_nntp_address_parent = CAMEL_ADDRESS_CLASS(camel_lite_type_get_global_classfuncs(camel_lite_address_get_type()));
 
 	address->decode = nntp_decode;
 	address->encode = nntp_encode;
@@ -57,22 +57,22 @@ camel_nntp_address_class_init(CamelNNTPAddressClass *klass)
 }
 
 static void
-camel_nntp_address_init(CamelNNTPAddress *obj)
+camel_lite_nntp_address_init(CamelNNTPAddress *obj)
 {
 }
 
 CamelType
-camel_nntp_address_get_type(void)
+camel_lite_nntp_address_get_type(void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register(camel_address_get_type(), "CamelNNTPAddress",
+		type = camel_lite_type_register(camel_lite_address_get_type(), "CamelLiteNNTPAddress",
 					   sizeof (CamelNNTPAddress),
 					   sizeof (CamelNNTPAddressClass),
-					   (CamelObjectClassInitFunc) camel_nntp_address_class_init,
+					   (CamelObjectClassInitFunc) camel_lite_nntp_address_class_init,
 					   NULL,
-					   (CamelObjectInitFunc) camel_nntp_address_init,
+					   (CamelObjectInitFunc) camel_lite_nntp_address_init,
 					   NULL);
 	}
 
@@ -83,14 +83,14 @@ camel_nntp_address_get_type(void)
 static int
 nntp_decode(CamelAddress *a, const char *raw)
 {
-	struct _camel_header_newsgroup *ha, *n;
+	struct _camel_lite_header_newsgroup *ha, *n;
 	int count = a->addresses->len;
 
-	ha = camel_header_newsgroups_decode(raw);
+	ha = camel_lite_header_newsgroups_decode(raw);
 	if (ha) {
 		for (n = ha;n;n=n->next)
-			camel_nntp_address_add((CamelNNTPAddress *)a, n->newsgroup);
-		camel_header_newsgroups_free(ha);
+			camel_lite_nntp_address_add((CamelNNTPAddress *)a, n->newsgroup);
+		camel_lite_header_newsgroups_free(ha);
 	}
 
 	return a->addresses->len - count;
@@ -130,7 +130,7 @@ nntp_cat (CamelAddress *dest, const CamelAddress *source)
 	g_assert(CAMEL_IS_NNTP_ADDRESS(source));
 
 	for (i=0;i<source->addresses->len;i++)
-		camel_nntp_address_add((CamelNNTPAddress *)dest, g_ptr_array_index(source->addresses, i));
+		camel_lite_nntp_address_add((CamelNNTPAddress *)dest, g_ptr_array_index(source->addresses, i));
 
 	return i;
 }
@@ -146,21 +146,21 @@ nntp_remove	(CamelAddress *a, int index)
 }
 
 /**
- * camel_nntp_address_new:
+ * camel_lite_nntp_address_new:
  *
  * Create a new CamelNNTPAddress object.
  *
  * Return value: A new CamelNNTPAddress object.
  **/
 CamelNNTPAddress *
-camel_nntp_address_new (void)
+camel_lite_nntp_address_new (void)
 {
-	CamelNNTPAddress *new = CAMEL_NNTP_ADDRESS(camel_object_new(camel_nntp_address_get_type()));
+	CamelNNTPAddress *new = CAMEL_NNTP_ADDRESS(camel_lite_object_new(camel_lite_nntp_address_get_type()));
 	return new;
 }
 
 /**
- * camel_nntp_address_add:
+ * camel_lite_nntp_address_add:
  * @a: nntp address object
  * @name:
  *
@@ -169,7 +169,7 @@ camel_nntp_address_new (void)
  * Return value: Index of added entry, or existing matching entry.
  **/
 int
-camel_nntp_address_add (CamelNNTPAddress *a, const char *name)
+camel_lite_nntp_address_add (CamelNNTPAddress *a, const char *name)
 {
 	int index, i;
 
@@ -186,7 +186,7 @@ camel_nntp_address_add (CamelNNTPAddress *a, const char *name)
 }
 
 /**
- * camel_nntp_address_get:
+ * camel_lite_nntp_address_get:
  * @a: nntp address object
  * @index: address's array index
  * @addressp: Holder for the returned address, or NULL, if not required.
@@ -196,7 +196,7 @@ camel_nntp_address_add (CamelNNTPAddress *a, const char *name)
  * Return value: TRUE if such an address exists, or FALSE otherwise.
  **/
 gboolean
-camel_nntp_address_get (const CamelNNTPAddress *a, int index, const char **namep)
+camel_lite_nntp_address_get (const CamelNNTPAddress *a, int index, const char **namep)
 {
 	g_assert(CAMEL_IS_NNTP_ADDRESS(a));
 

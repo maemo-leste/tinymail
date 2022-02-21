@@ -48,7 +48,7 @@
 #define d(x)
 
 static inline guint32
-camel_utf8_getc(const unsigned char **ptr)
+camel_lite_utf8_getc(const unsigned char **ptr)
 {
 	register unsigned char *p = (unsigned char *)*ptr;
 	register unsigned char c, r;
@@ -93,7 +93,7 @@ loop:
 
    A small issue is that case-insenstivity wont work entirely correct for utf8 strings. */
 int
-camel_search_build_match_regex (regex_t *pattern, camel_search_flags_t type, int argc,
+camel_lite_search_build_match_regex (regex_t *pattern, camel_lite_search_flags_t type, int argc,
 				void *argv_in, CamelException *ex)
 {
 	struct _ESExpResult **argv = argv_in;
@@ -147,7 +147,7 @@ camel_search_build_match_regex (regex_t *pattern, camel_search_flags_t type, int
 		char *buffer = g_malloc0 (len + 1);
 
 		regerror (err, pattern, buffer, len);
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Regular expression compilation failed: %s: %s"),
 				      match->str, buffer);
 
@@ -233,7 +233,7 @@ header_soundex (const char *header, const char *match)
 }
 
 const char *
-camel_ustrstrcase (const char *haystack, const char *needle)
+camel_lite_ustrstrcase (const char *haystack, const char *needle)
 {
 	gunichar *nuni, *puni;
 	gunichar u;
@@ -250,7 +250,7 @@ camel_ustrstrcase (const char *haystack, const char *needle)
 	puni = nuni = g_alloca (sizeof (gunichar) * strlen (needle));
 
 	p = (const unsigned char *) needle;
-	while ((u = camel_utf8_getc(&p)))
+	while ((u = camel_lite_utf8_getc(&p)))
 		*puni++ = g_unichar_tolower (u);
 
 	/* NULL means there was illegal utf-8 sequence */
@@ -258,7 +258,7 @@ camel_ustrstrcase (const char *haystack, const char *needle)
 		return NULL;
 
 	p = (const unsigned char *)haystack;
-	while ((u = camel_utf8_getc(&p))) {
+	while ((u = camel_lite_utf8_getc(&p))) {
 		gunichar c;
 
 		c = g_unichar_tolower (u);
@@ -268,7 +268,7 @@ camel_ustrstrcase (const char *haystack, const char *needle)
 			gint npos = 1;
 
 			while (nuni + npos < puni) {
-				u = camel_utf8_getc(&q);
+				u = camel_lite_utf8_getc(&q);
 				if (!q || !u)
 					return NULL;
 
@@ -298,7 +298,7 @@ camel_ustrstrcase (const char *haystack, const char *needle)
 } G_STMT_END
 
 static int
-camel_ustrcasecmp (const char *ps1, const char *ps2)
+camel_lite_ustrcasecmp (const char *ps1, const char *ps2)
 {
 	gunichar u1, u2 = 0;
 	const unsigned char *s1 = (const unsigned char *)ps1;
@@ -306,8 +306,8 @@ camel_ustrcasecmp (const char *ps1, const char *ps2)
 
 	CAMEL_SEARCH_COMPARE (s1, s2, NULL);
 
-	u1 = camel_utf8_getc(&s1);
-	u2 = camel_utf8_getc(&s2);
+	u1 = camel_lite_utf8_getc(&s1);
+	u2 = camel_lite_utf8_getc(&s2);
 	while (u1 && u2) {
 		u1 = g_unichar_tolower (u1);
 		u2 = g_unichar_tolower (u2);
@@ -316,8 +316,8 @@ camel_ustrcasecmp (const char *ps1, const char *ps2)
 		else if (u1 > u2)
 			return 1;
 
-		u1 = camel_utf8_getc(&s1);
-		u2 = camel_utf8_getc(&s2);
+		u1 = camel_lite_utf8_getc(&s1);
+		u2 = camel_lite_utf8_getc(&s2);
 	}
 
 	/* end of one of the strings ? */
@@ -330,7 +330,7 @@ camel_ustrcasecmp (const char *ps1, const char *ps2)
 }
 
 static int
-camel_ustrncasecmp (const char *ps1, const char *ps2, size_t len)
+camel_lite_ustrncasecmp (const char *ps1, const char *ps2, size_t len)
 {
 	gunichar u1, u2 = 0;
 	const unsigned char *s1 = (const unsigned char *)ps1;
@@ -338,8 +338,8 @@ camel_ustrncasecmp (const char *ps1, const char *ps2, size_t len)
 
 	CAMEL_SEARCH_COMPARE (s1, s2, NULL);
 
-	u1 = camel_utf8_getc(&s1);
-	u2 = camel_utf8_getc(&s2);
+	u1 = camel_lite_utf8_getc(&s1);
+	u2 = camel_lite_utf8_getc(&s2);
 	while (len > 0 && u1 && u2) {
 		u1 = g_unichar_tolower (u1);
 		u2 = g_unichar_tolower (u2);
@@ -349,8 +349,8 @@ camel_ustrncasecmp (const char *ps1, const char *ps2, size_t len)
 			return 1;
 
 		len--;
-		u1 = camel_utf8_getc(&s1);
-		u2 = camel_utf8_getc(&s2);
+		u1 = camel_lite_utf8_getc(&s1);
+		u2 = camel_lite_utf8_getc(&s2);
 	}
 
 	if (len == 0)
@@ -367,7 +367,7 @@ camel_ustrncasecmp (const char *ps1, const char *ps2, size_t len)
 
 /* value is the match value suitable for exact match if required */
 static int
-header_match(const char *value, const char *match, camel_search_match_t how)
+header_match(const char *value, const char *match, camel_lite_search_match_t how)
 {
 	const unsigned char *p;
 	int vlen, mlen;
@@ -385,7 +385,7 @@ header_match(const char *value, const char *match, camel_search_match_t how)
 	   otherwise not */
 	p = (const unsigned char *)match;
 
-	c = camel_utf8_getc (&p);
+	c = camel_lite_utf8_getc (&p);
 	while (c)
 	{
 		if (g_unichar_isupper(c)) {
@@ -403,18 +403,18 @@ header_match(const char *value, const char *match, camel_search_match_t how)
 			}
 			return FALSE;
 		}
-		c = camel_utf8_getc (&p);
+		c = camel_lite_utf8_getc (&p);
 	}
 
 	switch (how) {
 	case CAMEL_SEARCH_MATCH_EXACT:
-		return camel_ustrcasecmp(value, match) == 0;
+		return camel_lite_ustrcasecmp(value, match) == 0;
 	case CAMEL_SEARCH_MATCH_CONTAINS:
-		return camel_ustrstrcase(value, match) != NULL;
+		return camel_lite_ustrstrcase(value, match) != NULL;
 	case CAMEL_SEARCH_MATCH_STARTS:
-		return camel_ustrncasecmp(value, match, mlen) == 0;
+		return camel_lite_ustrncasecmp(value, match, mlen) == 0;
 	case CAMEL_SEARCH_MATCH_ENDS:
-		return camel_ustrcasecmp(value + vlen - mlen, match) == 0;
+		return camel_lite_ustrcasecmp(value + vlen - mlen, match) == 0;
 	default:
 		break;
 	}
@@ -425,7 +425,7 @@ header_match(const char *value, const char *match, camel_search_match_t how)
 /* searhces for match inside value, if match is mixed case, hten use case-sensitive,
    else insensitive */
 gboolean
-camel_search_header_match (const char *value, const char *match, camel_search_match_t how, camel_search_t type, const char *default_charset)
+camel_lite_search_header_match (const char *value, const char *match, camel_lite_search_match_t how, camel_lite_search_t type, const char *default_charset)
 {
 	const char *name, *addr;
 	const unsigned char *ptr;
@@ -435,12 +435,12 @@ camel_search_header_match (const char *value, const char *match, camel_search_ma
 	gunichar c;
 
 	ptr = (const unsigned char *)value;
-	while ((c = camel_utf8_getc(&ptr)) && g_unichar_isspace(c))
+	while ((c = camel_lite_utf8_getc(&ptr)) && g_unichar_isspace(c))
 		value = (const char *)ptr;
 
 	switch(type) {
 	case CAMEL_SEARCH_TYPE_ENCODED:
-		v = camel_header_decode_string(value, default_charset); /* FIXME: Find header charset */
+		v = camel_lite_header_decode_string(value, default_charset); /* FIXME: Find header charset */
 		truth = header_match(v, match, how);
 		g_free(v);
 		break;
@@ -473,16 +473,16 @@ camel_search_header_match (const char *value, const char *match, camel_search_ma
 			return TRUE;
 
 		/* Now we decode any addresses, and try asis matches on name and address parts */
-		cia = camel_internet_address_new();
+		cia = camel_lite_internet_address_new();
 		if (type == CAMEL_SEARCH_TYPE_ADDRESS_ENCODED)
-			camel_address_decode((CamelAddress *)cia, value);
+			camel_lite_address_decode((CamelAddress *)cia, value);
 		else
-			camel_address_unformat((CamelAddress *)cia, value);
+			camel_lite_address_unformat((CamelAddress *)cia, value);
 
-		for (i=0; !truth && camel_internet_address_get(cia, i, &name, &addr);i++)
+		for (i=0; !truth && camel_lite_internet_address_get(cia, i, &name, &addr);i++)
 			truth = (name && header_match(name, match, how)) || (addr && header_match(addr, match, how));
 
-		camel_object_unref (cia);
+		camel_lite_object_unref (cia);
 		break;
 	}
 
@@ -492,36 +492,36 @@ camel_search_header_match (const char *value, const char *match, camel_search_ma
 /* performs a 'slow' content-based match */
 /* there is also an identical copy of this in camel-filter-search.c */
 gboolean
-camel_search_message_body_contains (CamelDataWrapper *object, regex_t *pattern)
+camel_lite_search_message_body_contains (CamelDataWrapper *object, regex_t *pattern)
 {
 	CamelDataWrapper *containee;
 	int truth = FALSE;
 	int parts, i;
 
-	containee = camel_medium_get_content_object (CAMEL_MEDIUM (object));
+	containee = camel_lite_medium_get_content_object (CAMEL_MEDIUM (object));
 
 	if (containee == NULL)
 		return FALSE;
 
 	/* using the object types is more accurate than using the mime/types */
 	if (CAMEL_IS_MULTIPART (containee)) {
-		parts = camel_multipart_get_number (CAMEL_MULTIPART (containee));
+		parts = camel_lite_multipart_get_number (CAMEL_MULTIPART (containee));
 		for (i = 0; i < parts && truth == FALSE; i++) {
-			CamelDataWrapper *part = (CamelDataWrapper *)camel_multipart_get_part (CAMEL_MULTIPART (containee), i);
+			CamelDataWrapper *part = (CamelDataWrapper *)camel_lite_multipart_get_part (CAMEL_MULTIPART (containee), i);
 			if (part)
-				truth = camel_search_message_body_contains (part, pattern);
+				truth = camel_lite_search_message_body_contains (part, pattern);
 		}
 	} else if (CAMEL_IS_MIME_MESSAGE (containee)) {
 		/* for messages we only look at its contents */
-		truth = camel_search_message_body_contains ((CamelDataWrapper *)containee, pattern);
-	} else if (camel_content_type_is(CAMEL_DATA_WRAPPER (containee)->mime_type, "text", "*")) {
+		truth = camel_lite_search_message_body_contains ((CamelDataWrapper *)containee, pattern);
+	} else if (camel_lite_content_type_is(CAMEL_DATA_WRAPPER (containee)->mime_type, "text", "*")) {
 		/* for all other text parts, we look inside, otherwise we dont care */
-		CamelStreamMem *mem = (CamelStreamMem *)camel_stream_mem_new ();
+		CamelStreamMem *mem = (CamelStreamMem *)camel_lite_stream_mem_new ();
 
-		camel_data_wrapper_write_to_stream (containee, CAMEL_STREAM (mem));
-		camel_stream_write (CAMEL_STREAM (mem), "", 1);
+		camel_lite_data_wrapper_write_to_stream (containee, CAMEL_STREAM (mem));
+		camel_lite_stream_write (CAMEL_STREAM (mem), "", 1);
 		truth = regexec (pattern, (char *) mem->buffer->data, 0, NULL, 0) == 0;
-		camel_object_unref (mem);
+		camel_lite_object_unref (mem);
 	}
 
 	return truth;
@@ -541,7 +541,7 @@ output_c(GString *w, guint32 c, int *type)
 	if (c > 0x80)
 		*type |= CAMEL_SEARCH_WORD_8BIT;
 
-	/* FIXME: use camel_utf8_putc */
+	/* FIXME: use camel_lite_utf8_putc */
 	utf8len = g_unichar_to_utf8(c, utf8);
 	utf8[utf8len] = 0;
 	g_string_append(w, utf8);
@@ -550,7 +550,7 @@ output_c(GString *w, guint32 c, int *type)
 static void
 output_w(GString *w, GPtrArray *list, int type)
 {
-	struct _camel_search_word *word;
+	struct _camel_lite_search_word *word;
 
 	if (w->len) {
 		word = g_malloc0(sizeof(*word));
@@ -561,12 +561,12 @@ output_w(GString *w, GPtrArray *list, int type)
 	}
 }
 
-struct _camel_search_words *
-camel_search_words_split(const unsigned char *in)
+struct _camel_lite_search_words *
+camel_lite_search_words_split(const unsigned char *in)
 {
 	int type = CAMEL_SEARCH_WORD_SIMPLE, all = 0;
 	GString *w;
-	struct _camel_search_words *words;
+	struct _camel_lite_search_words *words;
 	GPtrArray *list = g_ptr_array_new();
 	guint32 c;
 	int inquote = 0;
@@ -575,7 +575,7 @@ camel_search_words_split(const unsigned char *in)
 	w = g_string_new("");
 
 	do {
-		c = camel_utf8_getc(&in);
+		c = camel_lite_utf8_getc(&in);
 
 		if (c == 0
 		    || (inquote && c == '"')
@@ -586,7 +586,7 @@ camel_search_words_split(const unsigned char *in)
 			inquote = 0;
 		} else {
 			if (c == '\\') {
-				c = camel_utf8_getc(&in);
+				c = camel_lite_utf8_getc(&in);
 				if (c)
 					output_c(w, c, &type);
 				else {
@@ -603,7 +603,7 @@ camel_search_words_split(const unsigned char *in)
 
 	g_string_free(w, TRUE);
 	words->len = list->len;
-	words->words = (struct _camel_search_word **)list->pdata;
+	words->words = (struct _camel_lite_search_word **)list->pdata;
 	words->type = all;
 	g_ptr_array_free(list, FALSE);
 
@@ -612,15 +612,15 @@ camel_search_words_split(const unsigned char *in)
 
 /* takes an existing 'words' list, and converts it to another consisting of
    only simple words, with any punctuation etc stripped */
-struct _camel_search_words *
-camel_search_words_simple(struct _camel_search_words *wordin)
+struct _camel_lite_search_words *
+camel_lite_search_words_simple(struct _camel_lite_search_words *wordin)
 {
 	int i;
 	const unsigned char *ptr, *start, *last;
 	int type = CAMEL_SEARCH_WORD_SIMPLE, all = 0;
 	GPtrArray *list = g_ptr_array_new();
-	struct _camel_search_word *word;
-	struct _camel_search_words *words;
+	struct _camel_lite_search_word *word;
+	struct _camel_lite_search_words *words;
 	guint32 c;
 
 	words = g_malloc0(sizeof(*words));
@@ -635,7 +635,7 @@ camel_search_words_simple(struct _camel_search_words *wordin)
 			ptr = (const unsigned char *) wordin->words[i]->word;
 			start = last = ptr;
 			do {
-				c = camel_utf8_getc(&ptr);
+				c = camel_lite_utf8_getc(&ptr);
 				if (c == 0 || !g_unichar_isalnum(c)) {
 					if (last > start) {
 						word = g_malloc0(sizeof(*word));
@@ -655,7 +655,7 @@ camel_search_words_simple(struct _camel_search_words *wordin)
 	}
 
 	words->len = list->len;
-	words->words = (struct _camel_search_word **)list->pdata;
+	words->words = (struct _camel_lite_search_word **)list->pdata;
 	words->type = all;
 	g_ptr_array_free(list, FALSE);
 
@@ -663,12 +663,12 @@ camel_search_words_simple(struct _camel_search_words *wordin)
 }
 
 void
-camel_search_words_free(struct _camel_search_words *words)
+camel_lite_search_words_free(struct _camel_lite_search_words *words)
 {
 	int i;
 
 	for (i=0;i<words->len;i++) {
-		struct _camel_search_word *word = words->words[i];
+		struct _camel_lite_search_word *word = words->words[i];
 
 		g_free(word->word);
 		g_free(word);

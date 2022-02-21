@@ -27,10 +27,10 @@
 #include <sys/types.h>
 #include <camel/camel-object.h>
 
-#define CAMEL_MIME_FILTER_TYPE         (camel_mime_filter_get_type ())
-#define CAMEL_MIME_FILTER(obj)         CAMEL_CHECK_CAST (obj, camel_mime_filter_get_type (), CamelMimeFilter)
-#define CAMEL_MIME_FILTER_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_mime_filter_get_type (), CamelMimeFilterClass)
-#define CAMEL_IS_MIME_FILTER(obj)      CAMEL_CHECK_TYPE (obj, camel_mime_filter_get_type ())
+#define CAMEL_MIME_FILTER_TYPE         (camel_lite_mime_filter_get_type ())
+#define CAMEL_MIME_FILTER(obj)         CAMEL_CHECK_CAST (obj, camel_lite_mime_filter_get_type (), CamelMimeFilter)
+#define CAMEL_MIME_FILTER_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_mime_filter_get_type (), CamelMimeFilterClass)
+#define CAMEL_IS_MIME_FILTER(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_mime_filter_get_type ())
 
 G_BEGIN_DECLS
 
@@ -65,24 +65,24 @@ struct _CamelMimeFilterClass {
 	void (*reset)(CamelMimeFilter *f);
 };
 
-CamelType	      camel_mime_filter_get_type	(void);
-CamelMimeFilter      *camel_mime_filter_new	(void);
+CamelType	      camel_lite_mime_filter_get_type	(void);
+CamelMimeFilter      *camel_lite_mime_filter_new	(void);
 
-void camel_mime_filter_filter(CamelMimeFilter *filter,
+void camel_lite_mime_filter_filter(CamelMimeFilter *filter,
 			      char *in, size_t len, size_t prespace,
 			      char **out, size_t *outlen, size_t *outprespace);
 
-void camel_mime_filter_complete(CamelMimeFilter *filter,
+void camel_lite_mime_filter_complete(CamelMimeFilter *filter,
 				char *in, size_t len, size_t prespace,
 				char **out, size_t *outlen, size_t *outprespace);
 
-void camel_mime_filter_reset(CamelMimeFilter *filter);
+void camel_lite_mime_filter_reset(CamelMimeFilter *filter);
 
 /* sets/returns number of bytes backed up on the input */
-void camel_mime_filter_backup(CamelMimeFilter *filter, const char *data, size_t length);
+void camel_lite_mime_filter_backup(CamelMimeFilter *filter, const char *data, size_t length);
 
 /* ensure this much size available for filter output */
-void camel_mime_filter_set_size(CamelMimeFilter *filter, size_t size, int keep);
+void camel_lite_mime_filter_set_size(CamelMimeFilter *filter, size_t size, int keep);
 
 G_END_DECLS
 

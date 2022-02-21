@@ -30,7 +30,7 @@
 
 #include "camel-sasl-ntlm.h"
 
-CamelServiceAuthType camel_sasl_ntlm_authtype = {
+CamelServiceAuthType camel_lite_sasl_ntlm_authtype = {
 	N_("NTLM / SPA"),
 
 	N_("This option will connect to a Windows-based server using "
@@ -45,27 +45,27 @@ static CamelSaslClass *parent_class = NULL;
 static GByteArray *ntlm_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex);
 
 static void
-camel_sasl_ntlm_class_init (CamelSaslNTLMClass *camel_sasl_ntlm_class)
+camel_lite_sasl_ntlm_class_init (CamelSaslNTLMClass *camel_lite_sasl_ntlm_class)
 {
-	CamelSaslClass *camel_sasl_class = CAMEL_SASL_CLASS (camel_sasl_ntlm_class);
+	CamelSaslClass *camel_lite_sasl_class = CAMEL_SASL_CLASS (camel_lite_sasl_ntlm_class);
 
-	parent_class = CAMEL_SASL_CLASS (camel_type_get_global_classfuncs (camel_sasl_get_type ()));
+	parent_class = CAMEL_SASL_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_sasl_get_type ()));
 
 	/* virtual method overload */
-	camel_sasl_class->challenge = ntlm_challenge;
+	camel_lite_sasl_class->challenge = ntlm_challenge;
 }
 
 CamelType
-camel_sasl_ntlm_get_type (void)
+camel_lite_sasl_ntlm_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (
-			camel_sasl_get_type (), "CamelSaslNTLM",
+		type = camel_lite_type_register (
+			camel_lite_sasl_get_type (), "CamelLiteSaslNTLM",
 			sizeof (CamelSaslNTLM),
 			sizeof (CamelSaslNTLMClass),
-			(CamelObjectClassInitFunc) camel_sasl_ntlm_class_init,
+			(CamelObjectClassInitFunc) camel_lite_sasl_ntlm_class_init,
 			NULL, NULL, NULL);
 	}
 

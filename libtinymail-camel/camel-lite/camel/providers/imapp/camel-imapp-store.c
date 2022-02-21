@@ -84,56 +84,56 @@ static void imap_rename_folder(CamelStore *store, const char *old, const char *n
 static CamelFolderInfo *imap_create_folder(CamelStore *store, const char *parent_name, const char *folder_name, CamelException *ex);
 
 /* yet to see if this should go global or not */
-void camel_imapp_store_folder_selected(CamelIMAPPStore *store, CamelIMAPPFolder *folder, CamelIMAPPSelectResponse *select);
+void camel_lite_imapp_store_folder_selected(CamelIMAPPStore *store, CamelIMAPPFolder *folder, CamelIMAPPSelectResponse *select);
 
 static void
-camel_imapp_store_class_init (CamelIMAPPStoreClass *camel_imapp_store_class)
+camel_lite_imapp_store_class_init (CamelIMAPPStoreClass *camel_lite_imapp_store_class)
 {
-	CamelServiceClass *camel_service_class = CAMEL_SERVICE_CLASS(camel_imapp_store_class);
-	CamelStoreClass *camel_store_class = CAMEL_STORE_CLASS(camel_imapp_store_class);
+	CamelServiceClass *camel_lite_service_class = CAMEL_SERVICE_CLASS(camel_lite_imapp_store_class);
+	CamelStoreClass *camel_lite_store_class = CAMEL_STORE_CLASS(camel_lite_imapp_store_class);
 
-	parent_class = CAMEL_STORE_CLASS(camel_type_get_global_classfuncs(camel_store_get_type()));
+	parent_class = CAMEL_STORE_CLASS(camel_lite_type_get_global_classfuncs(camel_lite_store_get_type()));
 
 	/* virtual method overload */
-	camel_service_class->construct = imap_construct;
-	/*camel_service_class->get_name = imap_get_name;*/
-	camel_service_class->query_auth_types = imap_query_auth_types;
-	camel_service_class->connect = imap_connect;
-	camel_service_class->disconnect = imap_disconnect;
+	camel_lite_service_class->construct = imap_construct;
+	/*camel_lite_service_class->get_name = imap_get_name;*/
+	camel_lite_service_class->query_auth_types = imap_query_auth_types;
+	camel_lite_service_class->connect = imap_connect;
+	camel_lite_service_class->disconnect = imap_disconnect;
 
-	camel_store_class->get_trash = imap_get_trash;
-	camel_store_class->get_folder = imap_get_folder;
-	camel_store_class->get_inbox = imap_get_inbox;
+	camel_lite_store_class->get_trash = imap_get_trash;
+	camel_lite_store_class->get_folder = imap_get_folder;
+	camel_lite_store_class->get_inbox = imap_get_inbox;
 
-	camel_store_class->create_folder = imap_create_folder;
-	camel_store_class->rename_folder = imap_rename_folder;
-	camel_store_class->delete_folder = imap_delete_folder;
-	camel_store_class->get_folder_info = imap_get_folder_info;
+	camel_lite_store_class->create_folder = imap_create_folder;
+	camel_lite_store_class->rename_folder = imap_rename_folder;
+	camel_lite_store_class->delete_folder = imap_delete_folder;
+	camel_lite_store_class->get_folder_info = imap_get_folder_info;
 }
 
 static void
-camel_imapp_store_init (gpointer object, gpointer klass)
+camel_lite_imapp_store_init (gpointer object, gpointer klass)
 {
 	/*CamelIMAPPStore *istore = object;*/
 }
 
 CamelType
-camel_imapp_store_get_type (void)
+camel_lite_imapp_store_get_type (void)
 {
-	static CamelType camel_imapp_store_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_imapp_store_type = CAMEL_INVALID_TYPE;
 
-	if (!camel_imapp_store_type) {
-		camel_imapp_store_type = camel_type_register(CAMEL_STORE_TYPE,
-							    "CamelIMAPPStore",
+	if (!camel_lite_imapp_store_type) {
+		camel_lite_imapp_store_type = camel_lite_type_register(CAMEL_STORE_TYPE,
+							    "CamelLiteIMAPPStore",
 							    sizeof (CamelIMAPPStore),
 							    sizeof (CamelIMAPPStoreClass),
-							    (CamelObjectClassInitFunc) camel_imapp_store_class_init,
+							    (CamelObjectClassInitFunc) camel_lite_imapp_store_class_init,
 							    NULL,
-							    (CamelObjectInitFunc) camel_imapp_store_init,
+							    (CamelObjectInitFunc) camel_lite_imapp_store_init,
 							    finalize);
 	}
 
-	return camel_imapp_store_type;
+	return camel_lite_imapp_store_type;
 }
 
 static void
@@ -144,12 +144,12 @@ finalize (CamelObject *object)
 	/* force disconnect so we dont have it run later, after we've cleaned up some stuff */
 	/* SIGH */
 
-	camel_service_disconnect((CamelService *)imap_store, TRUE, NULL);
+	camel_lite_service_disconnect((CamelService *)imap_store, TRUE, NULL);
 
 	if (imap_store->driver)
-		camel_object_unref(imap_store->driver);
+		camel_lite_object_unref(imap_store->driver);
 	if (imap_store->cache)
-		camel_object_unref(imap_store->cache);
+		camel_lite_object_unref(imap_store->cache);
 }
 
 static void imap_construct(CamelService *service, CamelSession *session, CamelProvider *provider, CamelURL *url, CamelException *ex)
@@ -158,21 +158,21 @@ static void imap_construct(CamelService *service, CamelSession *session, CamelPr
 	CamelIMAPPStore *store = (CamelIMAPPStore *)service;
 
 	CAMEL_SERVICE_CLASS (parent_class)->construct (service, session, provider, url, ex);
-	if (camel_exception_is_set(ex))
+	if (camel_lite_exception_is_set(ex))
 		return;
 
 	CAMEL_TRY {
-		store->summary = camel_imapp_store_summary_new();
-		root = camel_session_get_storage_path(service->session, service, ex);
+		store->summary = camel_lite_imapp_store_summary_new();
+		root = camel_lite_session_get_storage_path(service->session, service, ex);
 		if (root) {
 			summary = g_build_filename(root, ".ev-store-summary", NULL);
-			camel_store_summary_set_filename((CamelStoreSummary *)store->summary, summary);
+			camel_lite_store_summary_set_filename((CamelStoreSummary *)store->summary, summary);
 			/* FIXME: need to remove params, passwords, etc */
-			camel_store_summary_set_uri_base((CamelStoreSummary *)store->summary, service->url);
-			camel_store_summary_load((CamelStoreSummary *)store->summary);
+			camel_lite_store_summary_set_uri_base((CamelStoreSummary *)store->summary, service->url);
+			camel_lite_store_summary_load((CamelStoreSummary *)store->summary);
 		}
 	} CAMEL_CATCH(e) {
-		camel_exception_xfer(ex, e);
+		camel_lite_exception_xfer(ex, e);
 	} CAMEL_DONE;
 }
 
@@ -195,7 +195,7 @@ connect_to_server (CamelService *service, int ssl_mode, int try_starttls)
 	int ret;
 	CamelException *ex;
 
-	ex = camel_exception_new();
+	ex = camel_lite_exception_new();
 	CAMEL_TRY {
 		char *serv;
 		const char *port = NULL;
@@ -204,7 +204,7 @@ connect_to_server (CamelService *service, int ssl_mode, int try_starttls)
 		/* parent class connect initialization */
 		CAMEL_SERVICE_CLASS (parent_class)->connect (service, ex);
 		if (ex->id)
-			camel_exception_throw_ex(ex);
+			camel_lite_exception_throw_ex(ex);
 
 		if (service->url->port) {
 			serv = g_alloca(16);
@@ -215,58 +215,58 @@ connect_to_server (CamelService *service, int ssl_mode, int try_starttls)
 		}
 
 #ifdef HAVE_SSL
-		if (camel_url_get_param (service->url, "use_ssl")) {
+		if (camel_lite_url_get_param (service->url, "use_ssl")) {
 			if (try_starttls)
-				tcp_stream = camel_tcp_stream_ssl_new_raw (service, service->url->host, STARTTLS_FLAGS);
+				tcp_stream = camel_lite_tcp_stream_ssl_new_raw (service, service->url->host, STARTTLS_FLAGS);
 			else {
 				if (service->url->port == 0) {
 					serv = "imaps";
 					port = "993";
 				}
-				tcp_stream = camel_tcp_stream_ssl_new (service, service->url->host, SSL_PORT_FLAGS);
+				tcp_stream = camel_lite_tcp_stream_ssl_new (service, service->url->host, SSL_PORT_FLAGS);
 			}
 		} else {
-			tcp_stream = camel_tcp_stream_raw_new ();
+			tcp_stream = camel_lite_tcp_stream_raw_new ();
 		}
 #else
-		tcp_stream = camel_tcp_stream_raw_new ();
+		tcp_stream = camel_lite_tcp_stream_raw_new ();
 #endif /* HAVE_SSL */
 
 		hints.ai_socktype = SOCK_STREAM;
-		ai = camel_getaddrinfo(service->url->host, serv, &hints, ex);
+		ai = camel_lite_getaddrinfo(service->url->host, serv, &hints, ex);
 		if (ex->id && ex->id != CAMEL_EXCEPTION_USER_CANCEL && port != NULL) {
-			camel_exception_clear(ex);
-			ai = camel_getaddrinfo(service->url->host, port, &hints, ex);
+			camel_lite_exception_clear(ex);
+			ai = camel_lite_getaddrinfo(service->url->host, port, &hints, ex);
 		}
 
 		if (ex->id)
-			camel_exception_throw_ex(ex);
+			camel_lite_exception_throw_ex(ex);
 
-		ret = camel_tcp_stream_connect(CAMEL_TCP_STREAM(tcp_stream), ai);
-		camel_freeaddrinfo(ai);
+		ret = camel_lite_tcp_stream_connect(CAMEL_TCP_STREAM(tcp_stream), ai);
+		camel_lite_freeaddrinfo(ai);
 		if (ret == -1) {
 			if (errno == EINTR)
-				camel_exception_throw(CAMEL_EXCEPTION_USER_CANCEL, _("Connection canceled"));
+				camel_lite_exception_throw(CAMEL_EXCEPTION_USER_CANCEL, _("Connection canceled"));
 			else
-				camel_exception_throw(CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
+				camel_lite_exception_throw(CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
 						      _("Could not connect to %s (port %s): %s"),
 						      service->url->host, serv, strerror(errno));
 		}
 
-		imap_stream = (CamelIMAPPStream *)camel_imapp_stream_new(tcp_stream);
-		store->driver = camel_imapp_driver_new(imap_stream);
+		imap_stream = (CamelIMAPPStream *)camel_lite_imapp_stream_new(tcp_stream);
+		store->driver = camel_lite_imapp_driver_new(imap_stream);
 
-		camel_object_unref(imap_stream);
-		camel_object_unref(tcp_stream);
+		camel_lite_object_unref(imap_stream);
+		camel_lite_object_unref(tcp_stream);
 	} CAMEL_CATCH(e) {
 		if (tcp_stream)
-			camel_object_unref(tcp_stream);
+			camel_lite_object_unref(tcp_stream);
 		if (imap_stream)
-			camel_object_unref((CamelObject *)imap_stream);
-		camel_exception_throw_ex(e);
+			camel_lite_object_unref((CamelObject *)imap_stream);
+		camel_lite_exception_throw_ex(e);
 	} CAMEL_DONE;
 
-	camel_exception_free(ex);
+	camel_lite_exception_free(ex);
 }
 
 #if 0
@@ -292,7 +292,7 @@ connect_to_server_wrapper (CamelService *service, CamelException *ex)
 	const char *use_ssl;
 	int i, ssl_mode;
 
-	use_ssl = camel_url_get_param (service->url, "use_ssl");
+	use_ssl = camel_lite_url_get_param (service->url, "use_ssl");
 	if (use_ssl) {
 		for (i = 0; ssl_options[i].value; i++)
 			if (!strcmp (ssl_options[i].value, use_ssl))
@@ -304,9 +304,9 @@ connect_to_server_wrapper (CamelService *service, CamelException *ex)
 	if (ssl_mode == USE_SSL_ALWAYS) {
 		/* First try the ssl port */
 		if (!connect_to_server (service, ssl_mode, FALSE, ex)) {
-			if (camel_exception_get_id (ex) == CAMEL_EXCEPTION_SERVICE_UNAVAILABLE) {
+			if (camel_lite_exception_get_id (ex) == CAMEL_EXCEPTION_SERVICE_UNAVAILABLE) {
 				/* The ssl port seems to be unavailable, lets try STARTTLS */
-				camel_exception_clear (ex);
+				camel_lite_exception_clear (ex);
 				return connect_to_server (service, ssl_mode, TRUE, ex);
 			} else {
 				return FALSE;
@@ -327,8 +327,8 @@ connect_to_server_wrapper (CamelService *service, CamelException *ex)
 }
 #endif
 
-extern CamelServiceAuthType camel_imapp_password_authtype;
-extern CamelServiceAuthType camel_imapp_apop_authtype;
+extern CamelServiceAuthType camel_lite_imapp_password_authtype;
+extern CamelServiceAuthType camel_lite_imapp_apop_authtype;
 
 static GList *
 imap_query_auth_types (CamelService *service, CamelException *ex)
@@ -345,7 +345,7 @@ imap_query_auth_types (CamelService *service, CamelException *ex)
 		types = g_list_concat(types, g_list_copy(store->engine->auth));
 		imap_disconnect (service, TRUE, NULL);
 	} else {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
 				      _("Could not connect to POP server on %s"),
 				      service->url->host);
 	}
@@ -361,9 +361,9 @@ store_get_pass(CamelIMAPPStore *store)
 		char *full_prompt;
 		CamelException ex;
 
-		camel_exception_init(&ex);
+		camel_lite_exception_init(&ex);
 
-		base_prompt = camel_session_build_password_prompt (
+		base_prompt = camel_lite_session_build_password_prompt (
 			"IMAP", ((CamelService *) store)->url->user,
 			((CamelService *) store)->url->host);
 
@@ -372,15 +372,15 @@ store_get_pass(CamelIMAPPStore *store)
 		else
 			full_prompt = g_strdup (base_prompt);
 
-		((CamelService *)store)->url->passwd = camel_session_get_password (
-			camel_service_get_session ((CamelService *) store),
+		((CamelService *)store)->url->passwd = camel_lite_session_get_password (
+			camel_lite_service_get_session ((CamelService *) store),
 			(CamelService *) store, NULL, full_prompt, "password",
 			CAMEL_SESSION_PASSWORD_SECRET, &ex);
 
 		g_free (base_prompt);
 		g_free (full_prompt);
-		if (camel_exception_is_set(&ex))
-			camel_exception_throw_ex(&ex);
+		if (camel_lite_exception_is_set(&ex))
+			camel_lite_exception_throw_ex(&ex);
 	}
 }
 
@@ -390,7 +390,7 @@ store_get_sasl(struct _CamelIMAPPDriver *driver, CamelIMAPPStore *store)
 	store_get_pass(store);
 
 	if (((CamelService *)store)->url->authmech)
-		return camel_sasl_new("imap", ((CamelService *)store)->url->authmech, (CamelService *)store);
+		return camel_lite_sasl_new("imap", ((CamelService *)store)->url->authmech, (CamelService *)store);
 
 	return NULL;
 }
@@ -416,30 +416,30 @@ imap_connect (CamelService *service, CamelException *ex)
 		if (store->cache == NULL) {
 			char *root;
 
-			root = camel_session_get_storage_path(service->session, service, ex);
+			root = camel_lite_session_get_storage_path(service->session, service, ex);
 			if (root) {
-				store->cache = camel_data_cache_new(root, 0, ex);
+				store->cache = camel_lite_data_cache_new(root, 0, ex);
 				g_free(root);
 				if (store->cache) {
 					/* Default cache expiry - 1 week or not visited in a day */
-					camel_data_cache_set_expire_age(store->cache, 60*60*24*7);
-					camel_data_cache_set_expire_access(store->cache, 60*60*24);
+					camel_lite_data_cache_set_expire_age(store->cache, 60*60*24*7);
+					camel_lite_data_cache_set_expire_access(store->cache, 60*60*24);
 				}
 			}
-			if (camel_exception_is_set(ex))
-				camel_exception_throw_ex(ex);
+			if (camel_lite_exception_is_set(ex))
+				camel_lite_exception_throw_ex(ex);
 		}
 
 		connect_to_server(service, USE_SSL_NEVER, FALSE);
 
-		camel_imapp_driver_set_sasl_factory(store->driver, (CamelIMAPPSASLFunc)store_get_sasl, store);
-		camel_imapp_driver_set_login_query(store->driver, (CamelIMAPPLoginFunc)store_get_login, store);
+		camel_lite_imapp_driver_set_sasl_factory(store->driver, (CamelIMAPPSASLFunc)store_get_sasl, store);
+		camel_lite_imapp_driver_set_login_query(store->driver, (CamelIMAPPLoginFunc)store_get_login, store);
 		store->login_error = NULL;
 
 		do {
 			CAMEL_TRY {
 				if (store->driver->engine->state != IMAP_ENGINE_AUTH)
-					camel_imapp_driver_login(store->driver);
+					camel_lite_imapp_driver_login(store->driver);
 				ret = TRUE;
 				retry = FALSE;
 			} CAMEL_CATCH(e) {
@@ -448,18 +448,18 @@ imap_connect (CamelService *service, CamelException *ex)
 				switch (e->id) {
 				case CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE:
 					store->login_error = g_markup_printf_escaped("%s\n\n", e->desc);
-					camel_session_forget_password(service->session, service, NULL, "password", ex);
-					camel_url_set_passwd(service->url, NULL);
+					camel_lite_session_forget_password(service->session, service, NULL, "password", ex);
+					camel_lite_url_set_passwd(service->url, NULL);
 					break;
 				default:
-					camel_exception_throw_ex(e);
+					camel_lite_exception_throw_ex(e);
 					break;
 				}
 			} CAMEL_DONE;
 		} while (retry);
 	} CAMEL_CATCH(e) {
-		camel_exception_xfer(ex, e);
-		camel_service_disconnect(service, TRUE, NULL);
+		camel_lite_exception_xfer(ex, e);
+		camel_lite_service_disconnect(service, TRUE, NULL);
 		ret = FALSE;
 	} CAMEL_DONE;
 
@@ -481,7 +481,7 @@ imap_disconnect (CamelService *service, gboolean clean, CamelException *ex)
 
 	/* logout/disconnect */
 	if (store->driver) {
-		camel_object_unref(store->driver);
+		camel_lite_object_unref(store->driver);
 		store->driver = NULL;
 	}
 
@@ -508,14 +508,14 @@ imap_get_folder (CamelStore *store, const char *folder_name, guint32 flags, Came
 	/* 3. update the folder */
 
 	CAMEL_TRY {
-		folder = (CamelIMAPPFolder *)camel_imapp_folder_new(store, folder_name);
-		camel_imapp_driver_select(istore->driver, folder);
+		folder = (CamelIMAPPFolder *)camel_lite_imapp_folder_new(store, folder_name);
+		camel_lite_imapp_driver_select(istore->driver, folder);
 	} CAMEL_CATCH (e) {
 		if (folder) {
-			camel_object_unref(folder);
+			camel_lite_object_unref(folder);
 			folder = NULL;
 		}
-		camel_exception_xfer(ex, e);
+		camel_lite_exception_xfer(ex, e);
 	} CAMEL_DONE;
 
 	return (CamelFolder *)folder;
@@ -524,7 +524,7 @@ imap_get_folder (CamelStore *store, const char *folder_name, guint32 flags, Came
 static CamelFolder *
 imap_get_inbox(CamelStore *store, CamelException *ex)
 {
-	camel_exception_setv(ex, 1, "get_inbox::unimplemented");
+	camel_lite_exception_setv(ex, 1, "get_inbox::unimplemented");
 
 	return NULL;
 }
@@ -567,10 +567,10 @@ folders_build_info(CamelURL *base, struct _list_info *li)
 
 	path = alloca(strlen(full_name)+2);
 	sprintf(path, "/%s", full_name);
-	camel_url_set_path(base, path);
+	camel_lite_url_set_path(base, path);
 
 	fi = g_malloc0(sizeof(*fi));
-	fi->uri = camel_url_to_string(base, CAMEL_URL_HIDE_ALL);
+	fi->uri = camel_lite_url_to_string(base, CAMEL_URL_HIDE_ALL);
 	fi->name = g_strdup(name);
 	fi->full_name = full_name;
 	fi->unread = -1;
@@ -582,7 +582,7 @@ folders_build_info(CamelURL *base, struct _list_info *li)
 
 	/* TODO: could look up count here ... */
 	/* ?? */
-	/*folder = camel_object_bag_get(store->folders, "INBOX");*/
+	/*folder = camel_lite_object_bag_get(store->folders, "INBOX");*/
 
 	return fi;
 }
@@ -688,7 +688,7 @@ imap_get_folder_info(CamelStore *store, const char *top, guint32 flags, CamelExc
 
 	/* FIXME: temporary, since this is not a disco store */
 	if (istore->driver == NULL
-	    && !camel_service_connect((CamelService *)store, ex))
+	    && !camel_lite_service_connect((CamelService *)store, ex))
 		return NULL;
 
 	name = (char *)top;
@@ -705,19 +705,19 @@ imap_get_folder_info(CamelStore *store, const char *top, guint32 flags, CamelExc
 		GPtrArray *folders;
 
 		/* FIXME: subscriptions? lsub? */
-		folders = camel_imapp_driver_list(istore->driver, name, flags);
+		folders = camel_lite_imapp_driver_list(istore->driver, name, flags);
 
 		/* this greatly simplifies the tree algorithm ... but it might
 		   be faster just to use a hashtable to find parents? */
 		qsort(folders->pdata, folders->len, sizeof(folders->pdata[0]), folders_build_cmp);
 
 		i = 0;
-		base = camel_url_copy(((CamelService *)store)->url);
+		base = camel_lite_url_copy(((CamelService *)store)->url);
 		fi = folders_build_rec(base, folders, &i, NULL, NULL);
-		camel_url_free(base);
+		camel_lite_url_free(base);
 		g_ptr_array_free(folders, TRUE);
 	} CAMEL_CATCH(e) {
-		camel_exception_xfer(ex, e);
+		camel_lite_exception_xfer(ex, e);
 	} CAMEL_DONE;
 
 	printf("built folder info:\n");
@@ -727,27 +727,27 @@ imap_get_folder_info(CamelStore *store, const char *top, guint32 flags, CamelExc
 
 #if 0
 	if (top == NULL || !g_ascii_strcasecmp(top, "inbox")) {
-		CamelURL *uri = camel_url_copy(((CamelService *)store)->url);
+		CamelURL *uri = camel_lite_url_copy(((CamelService *)store)->url);
 
-		camel_url_set_path(uri, "/INBOX");
+		camel_lite_url_set_path(uri, "/INBOX");
 		fi = g_malloc0(sizeof(*fi));
-		fi->url = camel_url_to_string(uri, CAMEL_URL_HIDE_ALL);
-		camel_url_free(uri);
+		fi->url = camel_lite_url_to_string(uri, CAMEL_URL_HIDE_ALL);
+		camel_lite_url_free(uri);
 		fi->name = g_strdup("INBOX");
 		fi->full_name = g_strdup("INBOX");
 		fi->path = g_strdup("/INBOX");
 		fi->unread_message_count = -1;
 		fi->flags = 0;
 
-		folder = camel_object_bag_get(store->folders, "INBOX");
+		folder = camel_lite_object_bag_get(store->folders, "INBOX");
 		if (folder) {
 			/*if (!cflags & FAST)*/
-			camel_imapp_driver_update(istore->driver, (CamelIMAPPFolder *)folder);
-			fi->unread_message_count = camel_folder_get_unread_message_count(folder);
-			camel_object_unref(folder);
+			camel_lite_imapp_driver_update(istore->driver, (CamelIMAPPFolder *)folder);
+			fi->unread_message_count = camel_lite_folder_get_unread_message_count(folder);
+			camel_lite_object_unref(folder);
 		}
 	} else {
-		camel_exception_setv(ex, 1, "not implemented");
+		camel_lite_exception_setv(ex, 1, "not implemented");
 	}
 #endif
 	return fi;
@@ -756,18 +756,18 @@ imap_get_folder_info(CamelStore *store, const char *top, guint32 flags, CamelExc
 	istore->pending_list = g_ptr_array_new();
 
 	CAMEL_TRY {
-		ic = camel_imapp_engine_command_new(istore->driver->engine, "LIST", NULL, "LIST \"\" %f", top);
-		camel_imapp_engine_command_queue(istore->driver->engine, ic);
-		while (camel_imapp_engine_iterate(istore->driver->engine, ic) > 0)
+		ic = camel_lite_imapp_engine_command_new(istore->driver->engine, "LIST", NULL, "LIST \"\" %f", top);
+		camel_lite_imapp_engine_command_queue(istore->driver->engine, ic);
+		while (camel_lite_imapp_engine_iterate(istore->driver->engine, ic) > 0)
 			;
 
 		if (ic->status->result != IMAP_OK)
-			camel_exception_throw(1, "list failed: %s", ic->status->text);
+			camel_lite_exception_throw(1, "list failed: %s", ic->status->text);
 	} CAMEL_CATCH (e) {
-		camel_exception_xfer(ex, e);
+		camel_lite_exception_xfer(ex, e);
 	} CAMEL_DONE;
 
-	camel_imapp_engine_command_free(istore->driver->engine, ic);
+	camel_lite_imapp_engine_command_free(istore->driver->engine, ic);
 
 	printf("got folder list:\n");
 	for (i=0;i<(int)istore->pending_list->len;i++) {
@@ -785,19 +785,19 @@ imap_get_folder_info(CamelStore *store, const char *top, guint32 flags, CamelExc
 static void
 imap_delete_folder(CamelStore *store, const char *folder_name, CamelException *ex)
 {
-	camel_exception_setv(ex, 1, "delete_folder::unimplemented");
+	camel_lite_exception_setv(ex, 1, "delete_folder::unimplemented");
 }
 
 static void
 imap_rename_folder(CamelStore *store, const char *old, const char *new, CamelException *ex)
 {
-	camel_exception_setv(ex, 1, "rename_folder::unimplemented");
+	camel_lite_exception_setv(ex, 1, "rename_folder::unimplemented");
 }
 
 static CamelFolderInfo *
 imap_create_folder(CamelStore *store, const char *parent_name, const char *folder_name, CamelException *ex)
 {
-	camel_exception_setv(ex, 1, "create_folder::unimplemented");
+	camel_lite_exception_setv(ex, 1, "create_folder::unimplemented");
 	return NULL;
 }
 
@@ -815,14 +815,14 @@ static int store_resp_fetch(CamelIMAPPEngine *ie, guint32 id, void *data)
 		if ((finfo->got & FETCH_UID) == 0) {
 			printf("didn't get uid in fetch response?\n");
 		} else {
-			info = camel_folder_summary_index(((CamelFolder *)istore->selected)->summary, id-1);
+			info = camel_lite_folder_summary_index(((CamelFolder *)istore->selected)->summary, id-1);
 			/* exists, check/update */
 			if (info) {
-				if (strcmp(finfo->uid, camel_message_info_uid(info)) != 0) {
-					printf("summary at index %d has uid %s expected %s\n", id, camel_message_info_uid(info), finfo->uid);
+				if (strcmp(finfo->uid, camel_lite_message_info_uid(info)) != 0) {
+					printf("summary at index %d has uid %s expected %s\n", id, camel_lite_message_info_uid(info), finfo->uid);
 					/* uid mismatch???  try do it based on uid instead? try to reorder?  i dont know? */
-					camel_message_info_free(info);
-					info = camel_folder_summary_uid(((CamelFolder *)istore->selected)->summary, finfo->uid);
+					camel_lite_message_info_free(info);
+					info = camel_lite_folder_summary_uid(((CamelFolder *)istore->selected)->summary, finfo->uid);
 				}
 			}
 
@@ -830,7 +830,7 @@ static int store_resp_fetch(CamelIMAPPEngine *ie, guint32 id, void *data)
 				if (finfo->got & (FETCH_FLAGS)) {
 					printf("updating flags for uid '%s'\n", finfo->uid);
 					info->flags = finfo->flags;
-					camel_folder_change_info_change_uid(istore->selected->changes, finfo->uid);
+					camel_lite_folder_change_info_change_uid(istore->selected->changes, finfo->uid);
 				}
 				if (finfo->got & FETCH_MINFO) {
 					printf("got envelope unexpectedly?\n");
@@ -844,8 +844,8 @@ static int store_resp_fetch(CamelIMAPPEngine *ie, guint32 id, void *data)
 				if (pending)
 					info = pending->info;
 				else {
-					info = camel_folder_summary_info_new(((CamelFolder *)istore->selected)->summary);
-					camel_message_info_set_uid(info, g_strdup(finfo->uid));
+					info = camel_lite_folder_summary_info_new(((CamelFolder *)istore->selected)->summary);
+					camel_lite_message_info_set_uid(info, g_strdup(finfo->uid));
 				}
 
 				if (finfo->got & FETCH_FLAGS)
@@ -853,13 +853,13 @@ static int store_resp_fetch(CamelIMAPPEngine *ie, guint32 id, void *data)
 
 				if (finfo->got & FETCH_MINFO) {
 					/* if we only use ENVELOPE? */
-					camel_message_info_set_subject(info, g_strdup(camel_message_info_subject(finfo->minfo)));
-					camel_message_info_set_from(info, g_strdup(camel_message_info_from(finfo->minfo)));
-					camel_message_info_set_to(info, g_strdup(camel_message_info_to(finfo->minfo)));
-					camel_message_info_set_cc(info, g_strdup(camel_message_info_cc(finfo->minfo)));
+					camel_lite_message_info_set_subject(info, g_strdup(camel_lite_message_info_subject(finfo->minfo)));
+					camel_lite_message_info_set_from(info, g_strdup(camel_lite_message_info_from(finfo->minfo)));
+					camel_lite_message_info_set_to(info, g_strdup(camel_lite_message_info_to(finfo->minfo)));
+					camel_lite_message_info_set_cc(info, g_strdup(camel_lite_message_info_cc(finfo->minfo)));
 					info->date_sent = finfo->minfo->date_sent;
-					camel_folder_summary_add(((CamelFolder *)istore->selected)->summary, info);
-					camel_folder_change_info_add_uid(istore->selected->changes, finfo->uid);
+					camel_lite_folder_summary_add(((CamelFolder *)istore->selected)->summary, info);
+					camel_lite_folder_change_info_add_uid(istore->selected->changes, finfo->uid);
 					if (pending) {
 						e_dlist_remove((EDListNode *)pending);
 						g_hash_table_remove(istore->pending_fetch_table, finfo->uid);
@@ -870,32 +870,32 @@ static int store_resp_fetch(CamelIMAPPEngine *ie, guint32 id, void *data)
 					CamelMimeParser *mp;
 
 					if (pending == NULL)
-						camel_message_info_free(info);
-					mp = camel_mime_parser_new();
-					camel_mime_parser_init_with_stream(mp, finfo->header);
-					info = camel_folder_summary_info_new_from_parser(((CamelFolder *)istore->selected)->summary, mp);
-					camel_object_unref(mp);
-					camel_message_info_set_uid(info, g_strdup(finfo->uid));
+						camel_lite_message_info_free(info);
+					mp = camel_lite_mime_parser_new();
+					camel_lite_mime_parser_init_with_stream(mp, finfo->header);
+					info = camel_lite_folder_summary_info_new_from_parser(((CamelFolder *)istore->selected)->summary, mp);
+					camel_lite_object_unref(mp);
+					camel_lite_message_info_set_uid(info, g_strdup(finfo->uid));
 
-					camel_folder_summary_add(((CamelFolder *)istore->selected)->summary, info);
-					camel_folder_change_info_add_uid(istore->selected->changes, finfo->uid);
+					camel_lite_folder_summary_add(((CamelFolder *)istore->selected)->summary, info);
+					camel_lite_folder_change_info_add_uid(istore->selected->changes, finfo->uid);
 					if (pending) {
 						/* FIXME: use a dlist */
 						e_dlist_remove((EDListNode *)pending);
-						g_hash_table_remove(istore->pending_fetch_table, camel_message_info_uid(pending->info));
-						camel_message_info_free(pending->info);
+						g_hash_table_remove(istore->pending_fetch_table, camel_lite_message_info_uid(pending->info));
+						camel_lite_message_info_free(pending->info);
 						/*e_memchunk_free(istore->pending_fetch_chunks, pending);*/
 					}
 				} else if (finfo->got & FETCH_FLAGS) {
 					if (pending == NULL) {
 						pending = e_memchunk_alloc(istore->pending_fetch_chunks);
 						pending->info = info;
-						g_hash_table_insert(istore->pending_fetch_table, (char *)camel_message_info_uid(info), pending);
+						g_hash_table_insert(istore->pending_fetch_table, (char *)camel_lite_message_info_uid(info), pending);
 						e_dlist_addtail(&istore->pending_fetch_list, (EDListNode *)pending);
 					}
 				} else {
 					if (pending == NULL)
-						camel_message_info_free(info);
+						camel_lite_message_info_free(info);
 					printf("got unexpected fetch response?\n");
 					imap_dump_fetch(finfo);
 				}
@@ -907,7 +907,7 @@ static int store_resp_fetch(CamelIMAPPEngine *ie, guint32 id, void *data)
 	/*imap_dump_fetch(finfo);*/
 	imap_free_fetch(finfo);
 
-	return camel_imapp_engine_skip(ie);
+	return camel_lite_imapp_engine_skip(ie);
 }
 #endif
 
@@ -920,7 +920,7 @@ static int store_resp_fetch(CamelIMAPPEngine *ie, guint32 id, void *data)
 
 #if 0
 void
-camel_imapp_store_folder_selected(CamelIMAPPStore *store, CamelIMAPPFolder *folder, CamelIMAPPSelectResponse *select)
+camel_lite_imapp_store_folder_selected(CamelIMAPPStore *store, CamelIMAPPFolder *folder, CamelIMAPPSelectResponse *select)
 {
 	CamelIMAPPCommand * volatile ic = NULL;
 	CamelIMAPPStore *istore = (CamelIMAPPStore *)store;
@@ -945,35 +945,35 @@ camel_imapp_store_folder_selected(CamelIMAPPStore *store, CamelIMAPPFolder *fold
 
 	/* perform an update - flags first (and see what we have) */
 	CAMEL_TRY {
-		ic = camel_imapp_engine_command_new(istore->engine, "FETCH", NULL, "FETCH 1:%d (UID FLAGS)", select->exists);
-		camel_imapp_engine_command_queue(istore->engine, ic);
-		while (camel_imapp_engine_iterate(istore->engine, ic) > 0)
+		ic = camel_lite_imapp_engine_command_new(istore->engine, "FETCH", NULL, "FETCH 1:%d (UID FLAGS)", select->exists);
+		camel_lite_imapp_engine_command_queue(istore->engine, ic);
+		while (camel_lite_imapp_engine_iterate(istore->engine, ic) > 0)
 			;
 
 		if (ic->status->result != IMAP_OK)
-			camel_exception_throw(1, "fetch failed: %s", ic->status->text);
+			camel_lite_exception_throw(1, "fetch failed: %s", ic->status->text);
 
 		/* pending_fetch_list now contains any new messages */
 		/* FIXME: how do we work out no-longer present messages? */
 		printf("now fetching info for messages?\n");
 		uidset_init(&ss, store->engine);
-		ic = camel_imapp_engine_command_new(istore->engine, "FETCH", NULL, "UID FETCH ");
+		ic = camel_lite_imapp_engine_command_new(istore->engine, "FETCH", NULL, "UID FETCH ");
 		fw = (struct _pending_fetch *)istore->pending_fetch_list.head;
 		fn = fw->next;
 		while (fn) {
 			info = fw->info;
 			/* if the uid set fills, then flush the command out */
-			if (uidset_add(&ss, ic, camel_message_info_uid(info))
+			if (uidset_add(&ss, ic, camel_lite_message_info_uid(info))
 			    || (fn->next == NULL && uidset_done(&ss, ic))) {
-				camel_imapp_engine_command_add(istore->engine, ic, " (FLAGS RFC822.HEADER)");
-				camel_imapp_engine_command_queue(istore->engine, ic);
-				while (camel_imapp_engine_iterate(istore->engine, ic) > 0)
+				camel_lite_imapp_engine_command_add(istore->engine, ic, " (FLAGS RFC822.HEADER)");
+				camel_lite_imapp_engine_command_queue(istore->engine, ic);
+				while (camel_lite_imapp_engine_iterate(istore->engine, ic) > 0)
 					;
 				if (ic->status->result != IMAP_OK)
-					camel_exception_throw(1, "fetch failed: %s", ic->status->text);
+					camel_lite_exception_throw(1, "fetch failed: %s", ic->status->text);
 				/* if not end ... */
-				camel_imapp_engine_command_free(istore->engine, ic);
-				ic = camel_imapp_engine_command_new(istore->engine, "FETCH", NULL, "UID FETCH ");
+				camel_lite_imapp_engine_command_free(istore->engine, ic);
+				ic = camel_lite_imapp_engine_command_new(istore->engine, "FETCH", NULL, "UID FETCH ");
 			}
 			fw = fn;
 			fn = fn->next;
@@ -981,23 +981,23 @@ camel_imapp_store_folder_selected(CamelIMAPPStore *store, CamelIMAPPFolder *fold
 
 		printf("The pending list should now be empty: %s\n", e_dlist_empty(&istore->pending_fetch_list)?"TRUE":"FALSE");
 		for (i=0;i<10;i++) {
-			info = camel_folder_summary_index(((CamelFolder *)istore->selected)->summary, i);
+			info = camel_lite_folder_summary_index(((CamelFolder *)istore->selected)->summary, i);
 			if (info) {
 				printf("message info [%d] =\n", i);
-				camel_message_info_dump(info);
-				camel_message_info_free(info);
+				camel_lite_message_info_dump(info);
+				camel_lite_message_info_free(info);
 			}
 		}
 	} CAMEL_CATCH (e) {
 		/* FIXME: cleanup */
-		camel_exception_throw_ex(e);
+		camel_lite_exception_throw_ex(e);
 	} CAMEL_DONE;
 
 	g_hash_table_destroy(istore->pending_fetch_table);
 	istore->pending_fetch_table = NULL;
 	e_memchunk_destroy(istore->pending_fetch_chunks);
 
-	camel_imapp_engine_command_free(istore->engine, ic);
+	camel_lite_imapp_engine_command_free(istore->engine, ic);
 }
 #endif
 
@@ -1013,7 +1013,7 @@ uidset_test(CamelIMAPPEngine *ie)
 	CamelIMAPPCommand *ic;
 	int i;
 
-	/*ic = camel_imapp_engine_command_new(ie, 0, "FETCH", NULL, "FETCH ");*/
+	/*ic = camel_lite_imapp_engine_command_new(ie, 0, "FETCH", NULL, "FETCH ");*/
 	uidset_init(&ss, 0, 0);
 	for (i=0;uids[i];i++) {
 		if (uidset_add(&ss, uids[i])) {

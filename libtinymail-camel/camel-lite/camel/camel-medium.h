@@ -29,7 +29,7 @@
 
 #include <camel/camel-data-wrapper.h>
 
-#define CAMEL_MEDIUM_TYPE     (camel_medium_get_type ())
+#define CAMEL_MEDIUM_TYPE     (camel_lite_medium_get_type ())
 #define CAMEL_MEDIUM(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_MEDIUM_TYPE, CamelMedium))
 #define CAMEL_MEDIUM_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_MEDIUM_TYPE, CamelMediumClass))
 #define CAMEL_IS_MEDIUM(o)    (CAMEL_CHECK_TYPE((o), CAMEL_MEDIUM_TYPE))
@@ -68,20 +68,20 @@ typedef struct {
 } CamelMediumClass;
 
 /* Standard Camel function */
-CamelType camel_medium_get_type (void);
+CamelType camel_lite_medium_get_type (void);
 
 /* Header get/set interface */
-void camel_medium_add_header (CamelMedium *medium, const char *name, const void *value);
-void camel_medium_set_header (CamelMedium *medium, const char *name, const void *value);
-void camel_medium_remove_header (CamelMedium *medium, const char *name);
-const void *camel_medium_get_header (CamelMedium *medium, const char *name);
+void camel_lite_medium_add_header (CamelMedium *medium, const char *name, const void *value);
+void camel_lite_medium_set_header (CamelMedium *medium, const char *name, const void *value);
+void camel_lite_medium_remove_header (CamelMedium *medium, const char *name);
+const void *camel_lite_medium_get_header (CamelMedium *medium, const char *name);
 
-GArray *camel_medium_get_headers (CamelMedium *medium);
-void camel_medium_free_headers (CamelMedium *medium, GArray *headers);
+GArray *camel_lite_medium_get_headers (CamelMedium *medium);
+void camel_lite_medium_free_headers (CamelMedium *medium, GArray *headers);
 
 /* accessor methods */
-CamelDataWrapper *camel_medium_get_content_object (CamelMedium *medium);
-void camel_medium_set_content_object (CamelMedium *medium,
+CamelDataWrapper *camel_lite_medium_get_content_object (CamelMedium *medium);
+void camel_lite_medium_set_content_object (CamelMedium *medium,
 				      CamelDataWrapper *content);
 
 G_END_DECLS

@@ -29,7 +29,7 @@
 #include <camel/camel-folder.h>
 #include <camel/camel-disco-folder.h>
 
-#define CAMEL_POP3_FOLDER_TYPE     (camel_pop3_folder_get_type ())
+#define CAMEL_POP3_FOLDER_TYPE     (camel_lite_pop3_folder_get_type ())
 #define CAMEL_POP3_FOLDER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_POP3_FOLDER_TYPE, CamelPOP3Folder))
 #define CAMEL_POP3_FOLDER_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_POP3_FOLDER_TYPE, CamelPOP3FolderClass))
 #define CAMEL_IS_POP3_FOLDER(o)    (CAMEL_CHECK_TYPE((o), CAMEL_POP3_FOLDER_TYPE))
@@ -58,12 +58,12 @@ typedef struct {
 } CamelPOP3FolderClass;
 
 /* public methods */
-CamelFolder *camel_pop3_folder_new (CamelStore *parent, CamelException *ex);
+CamelFolder *camel_lite_pop3_folder_new (CamelStore *parent, CamelException *ex);
 
 /* Standard Camel function */
-CamelType camel_pop3_folder_get_type (void);
+CamelType camel_lite_pop3_folder_get_type (void);
 
-int camel_pop3_delete_old(CamelFolder *folder, int days_to_delete, CamelException *ex);
+int camel_lite_pop3_delete_old(CamelFolder *folder, int days_to_delete, CamelException *ex);
 
 G_END_DECLS
 

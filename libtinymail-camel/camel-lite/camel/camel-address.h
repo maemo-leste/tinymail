@@ -25,9 +25,9 @@
 #include <glib.h>
 #include <camel/camel-object.h>
 
-#define CAMEL_ADDRESS(obj)         CAMEL_CHECK_CAST (obj, camel_address_get_type (), CamelAddress)
-#define CAMEL_ADDRESS_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_address_get_type (), CamelAddressClass)
-#define CAMEL_IS_ADDRESS(obj)      CAMEL_CHECK_TYPE (obj, camel_address_get_type ())
+#define CAMEL_ADDRESS(obj)         CAMEL_CHECK_CAST (obj, camel_lite_address_get_type (), CamelAddress)
+#define CAMEL_ADDRESS_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_address_get_type (), CamelAddressClass)
+#define CAMEL_IS_ADDRESS(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_address_get_type ())
 
 G_BEGIN_DECLS
 
@@ -55,20 +55,20 @@ struct _CamelAddressClass {
 	void  (*remove)		(CamelAddress *, int index);
 };
 
-CamelType	camel_address_get_type	(void);
-CamelAddress   *camel_address_new	(void);
-CamelAddress   *camel_address_new_clone	(const CamelAddress *addr);
-int		camel_address_length	(CamelAddress *addr);
+CamelType	camel_lite_address_get_type	(void);
+CamelAddress   *camel_lite_address_new	(void);
+CamelAddress   *camel_lite_address_new_clone	(const CamelAddress *addr);
+int		camel_lite_address_length	(CamelAddress *addr);
 
-int	        camel_address_decode	(CamelAddress *addr, const char *raw);
-char	       *camel_address_encode	(CamelAddress *addr);
-int	        camel_address_unformat	(CamelAddress *addr, const char *raw);
-char	       *camel_address_format	(CamelAddress *addr);
+int	        camel_lite_address_decode	(CamelAddress *addr, const char *raw);
+char	       *camel_lite_address_encode	(CamelAddress *addr);
+int	        camel_lite_address_unformat	(CamelAddress *addr, const char *raw);
+char	       *camel_lite_address_format	(CamelAddress *addr);
 
-int		camel_address_cat	(CamelAddress *dest, const CamelAddress *source);
-int		camel_address_copy	(CamelAddress *dest, const CamelAddress *source);
+int		camel_lite_address_cat	(CamelAddress *dest, const CamelAddress *source);
+int		camel_lite_address_copy	(CamelAddress *dest, const CamelAddress *source);
 
-void		camel_address_remove	(CamelAddress *addr, int index);
+void		camel_lite_address_remove	(CamelAddress *addr, int index);
 
 G_END_DECLS
 

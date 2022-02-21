@@ -62,7 +62,7 @@ struct CamelNNTPNewsrc {
 
 
 static NewsrcGroup *
-camel_nntp_newsrc_group_add (CamelNNTPNewsrc *newsrc, const char *group_name, gboolean subscribed)
+camel_lite_nntp_newsrc_group_add (CamelNNTPNewsrc *newsrc, const char *group_name, gboolean subscribed)
 {
 	NewsrcGroup *new_group = g_malloc(sizeof(NewsrcGroup));
 
@@ -78,7 +78,7 @@ camel_nntp_newsrc_group_add (CamelNNTPNewsrc *newsrc, const char *group_name, gb
 }
 
 static int
-camel_nntp_newsrc_group_get_highest_article_read(CamelNNTPNewsrc *newsrc, NewsrcGroup *group)
+camel_lite_nntp_newsrc_group_get_highest_article_read(CamelNNTPNewsrc *newsrc, NewsrcGroup *group)
 {
 	if (!group || group->ranges->len == 0)
 		return 0;
@@ -87,7 +87,7 @@ camel_nntp_newsrc_group_get_highest_article_read(CamelNNTPNewsrc *newsrc, Newsrc
 }
 
 static int
-camel_nntp_newsrc_group_get_num_articles_read(CamelNNTPNewsrc *newsrc, NewsrcGroup *group)
+camel_lite_nntp_newsrc_group_get_num_articles_read(CamelNNTPNewsrc *newsrc, NewsrcGroup *group)
 {
 	int i;
 	int count = 0;
@@ -104,7 +104,7 @@ camel_nntp_newsrc_group_get_num_articles_read(CamelNNTPNewsrc *newsrc, NewsrcGro
 
 
 static void
-camel_nntp_newsrc_group_mark_range_read(CamelNNTPNewsrc *newsrc, NewsrcGroup *group, long low, long high)
+camel_lite_nntp_newsrc_group_mark_range_read(CamelNNTPNewsrc *newsrc, NewsrcGroup *group, long low, long high)
 {
 	int i;
 
@@ -189,7 +189,7 @@ camel_nntp_newsrc_group_mark_range_read(CamelNNTPNewsrc *newsrc, NewsrcGroup *gr
 }
 
 int
-camel_nntp_newsrc_get_highest_article_read (CamelNNTPNewsrc *newsrc, const char *group_name)
+camel_lite_nntp_newsrc_get_highest_article_read (CamelNNTPNewsrc *newsrc, const char *group_name)
 {
 	NewsrcGroup *group;
 	int ret;
@@ -199,7 +199,7 @@ camel_nntp_newsrc_get_highest_article_read (CamelNNTPNewsrc *newsrc, const char 
 	group = g_hash_table_lookup (newsrc->groups, group_name);
 
 	if (group)
-		ret = camel_nntp_newsrc_group_get_highest_article_read (newsrc, group);
+		ret = camel_lite_nntp_newsrc_group_get_highest_article_read (newsrc, group);
 	else
 		ret = 0;
 
@@ -209,7 +209,7 @@ camel_nntp_newsrc_get_highest_article_read (CamelNNTPNewsrc *newsrc, const char 
 }
 
 int
-camel_nntp_newsrc_get_num_articles_read (CamelNNTPNewsrc *newsrc, const char *group_name)
+camel_lite_nntp_newsrc_get_num_articles_read (CamelNNTPNewsrc *newsrc, const char *group_name)
 {
 	NewsrcGroup *group;
 	int ret;
@@ -219,7 +219,7 @@ camel_nntp_newsrc_get_num_articles_read (CamelNNTPNewsrc *newsrc, const char *gr
 	group = g_hash_table_lookup (newsrc->groups, group_name);
 
 	if (group)
-		ret = camel_nntp_newsrc_group_get_num_articles_read (newsrc, group);
+		ret = camel_lite_nntp_newsrc_group_get_num_articles_read (newsrc, group);
 	else
 		ret = 0;
 
@@ -229,13 +229,13 @@ camel_nntp_newsrc_get_num_articles_read (CamelNNTPNewsrc *newsrc, const char *gr
 }
 
 void
-camel_nntp_newsrc_mark_article_read (CamelNNTPNewsrc *newsrc, const char *group_name, int num)
+camel_lite_nntp_newsrc_mark_article_read (CamelNNTPNewsrc *newsrc, const char *group_name, int num)
 {
-	camel_nntp_newsrc_mark_range_read (newsrc, group_name, num, num);
+	camel_lite_nntp_newsrc_mark_range_read (newsrc, group_name, num, num);
 }
 
 void
-camel_nntp_newsrc_mark_range_read(CamelNNTPNewsrc *newsrc, const char *group_name, long low, long high)
+camel_lite_nntp_newsrc_mark_range_read(CamelNNTPNewsrc *newsrc, const char *group_name, long low, long high)
 {
 	NewsrcGroup *group;
 
@@ -252,12 +252,12 @@ camel_nntp_newsrc_mark_range_read(CamelNNTPNewsrc *newsrc, const char *group_nam
 	group = g_hash_table_lookup (newsrc->groups, group_name);
 
 	if (group)
-		camel_nntp_newsrc_group_mark_range_read (newsrc, group, low, high);
+		camel_lite_nntp_newsrc_group_mark_range_read (newsrc, group, low, high);
 	NEWSRC_UNLOCK(newsrc, lock);
 }
 
 gboolean
-camel_nntp_newsrc_article_is_read (CamelNNTPNewsrc *newsrc, const char *group_name, long num)
+camel_lite_nntp_newsrc_article_is_read (CamelNNTPNewsrc *newsrc, const char *group_name, long num)
 {
 	int i;
 	NewsrcGroup *group;
@@ -282,7 +282,7 @@ camel_nntp_newsrc_article_is_read (CamelNNTPNewsrc *newsrc, const char *group_na
 }
 
 gboolean
-camel_nntp_newsrc_group_is_subscribed (CamelNNTPNewsrc *newsrc, const char *group_name)
+camel_lite_nntp_newsrc_group_is_subscribed (CamelNNTPNewsrc *newsrc, const char *group_name)
 {
 	NewsrcGroup *group;
 	int ret = FALSE;
@@ -301,7 +301,7 @@ camel_nntp_newsrc_group_is_subscribed (CamelNNTPNewsrc *newsrc, const char *grou
 }
 
 void
-camel_nntp_newsrc_subscribe_group (CamelNNTPNewsrc *newsrc, const char *group_name)
+camel_lite_nntp_newsrc_subscribe_group (CamelNNTPNewsrc *newsrc, const char *group_name)
 {
 	NewsrcGroup *group;
 
@@ -315,14 +315,14 @@ camel_nntp_newsrc_subscribe_group (CamelNNTPNewsrc *newsrc, const char *group_na
 		group->subscribed = TRUE;
 	}
 	else {
-		camel_nntp_newsrc_group_add (newsrc, group_name, TRUE);
+		camel_lite_nntp_newsrc_group_add (newsrc, group_name, TRUE);
 	}
 
 	NEWSRC_UNLOCK(newsrc, lock);
 }
 
 void
-camel_nntp_newsrc_unsubscribe_group (CamelNNTPNewsrc *newsrc, const char *group_name)
+camel_lite_nntp_newsrc_unsubscribe_group (CamelNNTPNewsrc *newsrc, const char *group_name)
 {
 	NewsrcGroup *group;
 
@@ -335,7 +335,7 @@ camel_nntp_newsrc_unsubscribe_group (CamelNNTPNewsrc *newsrc, const char *group_
 		group->subscribed = FALSE;
 	}
 	else {
-		camel_nntp_newsrc_group_add (newsrc, group_name, FALSE);
+		camel_lite_nntp_newsrc_group_add (newsrc, group_name, FALSE);
 	}
 
 	NEWSRC_UNLOCK(newsrc, lock);
@@ -356,7 +356,7 @@ get_group_foreach (char *group_name, NewsrcGroup *group, struct newsrc_ptr_array
 }
 
 GPtrArray *
-camel_nntp_newsrc_get_subscribed_group_names (CamelNNTPNewsrc *newsrc)
+camel_lite_nntp_newsrc_get_subscribed_group_names (CamelNNTPNewsrc *newsrc)
 {
 	struct newsrc_ptr_array npa;
 
@@ -376,7 +376,7 @@ camel_nntp_newsrc_get_subscribed_group_names (CamelNNTPNewsrc *newsrc)
 }
 
 GPtrArray *
-camel_nntp_newsrc_get_all_group_names (CamelNNTPNewsrc *newsrc)
+camel_lite_nntp_newsrc_get_all_group_names (CamelNNTPNewsrc *newsrc)
 {
 	struct newsrc_ptr_array npa;
 
@@ -396,7 +396,7 @@ camel_nntp_newsrc_get_all_group_names (CamelNNTPNewsrc *newsrc)
 }
 
 void
-camel_nntp_newsrc_free_group_names (CamelNNTPNewsrc *newsrc, GPtrArray *group_names)
+camel_lite_nntp_newsrc_free_group_names (CamelNNTPNewsrc *newsrc, GPtrArray *group_names)
 {
 	g_ptr_array_free (group_names, TRUE);
 }
@@ -407,7 +407,7 @@ struct newsrc_fp {
 };
 
 static void
-camel_nntp_newsrc_write_group_line(gpointer key, NewsrcGroup *group, struct newsrc_fp *newsrc_fp)
+camel_lite_nntp_newsrc_write_group_line(gpointer key, NewsrcGroup *group, struct newsrc_fp *newsrc_fp)
 {
 	CamelNNTPNewsrc *newsrc;
 	FILE *fp;
@@ -454,7 +454,7 @@ camel_nntp_newsrc_write_group_line(gpointer key, NewsrcGroup *group, struct news
 }
 
 void
-camel_nntp_newsrc_write_to_file(CamelNNTPNewsrc *newsrc, FILE *fp)
+camel_lite_nntp_newsrc_write_to_file(CamelNNTPNewsrc *newsrc, FILE *fp)
 {
 	struct newsrc_fp newsrc_fp;
 
@@ -466,14 +466,14 @@ camel_nntp_newsrc_write_to_file(CamelNNTPNewsrc *newsrc, FILE *fp)
 	NEWSRC_LOCK(newsrc, lock);
 
 	g_hash_table_foreach (newsrc->groups,
-			      (GHFunc)camel_nntp_newsrc_write_group_line,
+			      (GHFunc)camel_lite_nntp_newsrc_write_group_line,
 			      &newsrc_fp);
 
 	NEWSRC_UNLOCK(newsrc, lock);
 }
 
 void
-camel_nntp_newsrc_write(CamelNNTPNewsrc *newsrc)
+camel_lite_nntp_newsrc_write(CamelNNTPNewsrc *newsrc)
 {
 	FILE *fp;
 
@@ -495,13 +495,13 @@ camel_nntp_newsrc_write(CamelNNTPNewsrc *newsrc)
 	newsrc->dirty = FALSE;
 	NEWSRC_UNLOCK(newsrc, lock);
 
-	camel_nntp_newsrc_write_to_file(newsrc, fp);
+	camel_lite_nntp_newsrc_write_to_file(newsrc, fp);
 
 	fclose(fp);
 }
 
 static void
-camel_nntp_newsrc_parse_line(CamelNNTPNewsrc *newsrc, char *line)
+camel_lite_nntp_newsrc_parse_line(CamelNNTPNewsrc *newsrc, char *line)
 {
 	char *p, *comma, *dash;
 	gboolean is_subscribed;
@@ -522,7 +522,7 @@ camel_nntp_newsrc_parse_line(CamelNNTPNewsrc *newsrc, char *line)
 
 	*p++ = '\0';
 
-	group = camel_nntp_newsrc_group_add (newsrc, line, is_subscribed);
+	group = camel_lite_nntp_newsrc_group_add (newsrc, line, is_subscribed);
 
 	do {
 		guint high, low;
@@ -545,7 +545,7 @@ camel_nntp_newsrc_parse_line(CamelNNTPNewsrc *newsrc, char *line)
 			high = atol(p);
 		}
 
-		camel_nntp_newsrc_group_mark_range_read (newsrc, group, low, high);
+		camel_lite_nntp_newsrc_group_mark_range_read (newsrc, group, low, high);
 
 		if (comma) {
 			*comma = ',';
@@ -597,7 +597,7 @@ get_line (char *buf, char **p)
 }
 
 CamelNNTPNewsrc *
-camel_nntp_newsrc_read_for_server (const char *server)
+camel_lite_nntp_newsrc_read_for_server (const char *server)
 {
 	int fd;
 	char buf[1024];
@@ -641,7 +641,7 @@ camel_nntp_newsrc_read_for_server (const char *server)
 
 	p = NULL;
 	while ((line = get_line (file_contents, &p))) {
-		camel_nntp_newsrc_parse_line(newsrc, line);
+		camel_lite_nntp_newsrc_parse_line(newsrc, line);
 		g_free (line);
 	}
 

@@ -52,26 +52,26 @@ static off_t stream_seek (CamelSeekableStream *stream, off_t offset,
 			  CamelStreamSeekPolicy policy);
 
 static void
-camel_stream_vfs_class_init (CamelStreamVFSClass *camel_stream_vfs_class)
+camel_lite_stream_vfs_class_init (CamelStreamVFSClass *camel_lite_stream_vfs_class)
 {
-	CamelSeekableStreamClass *camel_seekable_stream_class =
-		CAMEL_SEEKABLE_STREAM_CLASS (camel_stream_vfs_class);
-	CamelStreamClass *camel_stream_class =
-		CAMEL_STREAM_CLASS (camel_stream_vfs_class);
+	CamelSeekableStreamClass *camel_lite_seekable_stream_class =
+		CAMEL_SEEKABLE_STREAM_CLASS (camel_lite_stream_vfs_class);
+	CamelStreamClass *camel_lite_stream_class =
+		CAMEL_STREAM_CLASS (camel_lite_stream_vfs_class);
 
-	parent_class = CAMEL_SEEKABLE_STREAM_CLASS (camel_type_get_global_classfuncs (camel_seekable_stream_get_type ()));
+	parent_class = CAMEL_SEEKABLE_STREAM_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_seekable_stream_get_type ()));
 
 	/* virtual method overload */
-	camel_stream_class->read = stream_read;
-	camel_stream_class->write = stream_write;
-/* 	camel_stream_class->flush = stream_flush; */
-	camel_stream_class->close = stream_close;
+	camel_lite_stream_class->read = stream_read;
+	camel_lite_stream_class->write = stream_write;
+/* 	camel_lite_stream_class->flush = stream_flush; */
+	camel_lite_stream_class->close = stream_close;
 
-	camel_seekable_stream_class->seek = stream_seek;
+	camel_lite_seekable_stream_class->seek = stream_seek;
 }
 
 static void
-camel_stream_vfs_init (gpointer object, gpointer klass)
+camel_lite_stream_vfs_init (gpointer object, gpointer klass)
 {
 	CamelStreamVFS *stream = CAMEL_STREAM_VFS (object);
 
@@ -80,7 +80,7 @@ camel_stream_vfs_init (gpointer object, gpointer klass)
 }
 
 static void
-camel_stream_vfs_finalize (CamelObject *object)
+camel_lite_stream_vfs_finalize (CamelObject *object)
 {
 	CamelStreamVFS *stream_vfs = CAMEL_STREAM_VFS (object);
 
@@ -90,25 +90,25 @@ camel_stream_vfs_finalize (CamelObject *object)
 
 
 CamelType
-camel_stream_vfs_get_type (void)
+camel_lite_stream_vfs_get_type (void)
 {
-	static CamelType camel_stream_vfs_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_stream_vfs_type = CAMEL_INVALID_TYPE;
 
-	if (camel_stream_vfs_type == CAMEL_INVALID_TYPE) {
-		camel_stream_vfs_type = camel_type_register (camel_seekable_stream_get_type (), "CamelStreamVFS",
+	if (camel_lite_stream_vfs_type == CAMEL_INVALID_TYPE) {
+		camel_lite_stream_vfs_type = camel_lite_type_register (camel_lite_seekable_stream_get_type (), "CamelLiteStreamVFS",
 							    sizeof (CamelStreamVFS),
 							    sizeof (CamelStreamVFSClass),
-							    (CamelObjectClassInitFunc) camel_stream_vfs_class_init,
+							    (CamelObjectClassInitFunc) camel_lite_stream_vfs_class_init,
 							    NULL,
-							    (CamelObjectInitFunc) camel_stream_vfs_init,
-							    (CamelObjectFinalizeFunc) camel_stream_vfs_finalize);
+							    (CamelObjectInitFunc) camel_lite_stream_vfs_init,
+							    (CamelObjectFinalizeFunc) camel_lite_stream_vfs_finalize);
 	}
 
-	return camel_stream_vfs_type;
+	return camel_lite_stream_vfs_type;
 }
 
 /**
- * camel_stream_vfs_new_with_handle:
+ * camel_lite_stream_vfs_new_with_handle:
  * @handle: a GnomeVFS handle
  *
  * Creates a new fs stream using the given GnomeVFS handle @handle as the
@@ -118,7 +118,7 @@ camel_stream_vfs_get_type (void)
  * Returns a new #CamelStreamVFS
  **/
 CamelStream *
-camel_stream_vfs_new_with_handle (GnomeVFSHandle *handle)
+camel_lite_stream_vfs_new_with_handle (GnomeVFSHandle *handle)
 {
 	CamelStreamVFS *stream_vfs;
 	off_t offset;
@@ -126,7 +126,7 @@ camel_stream_vfs_new_with_handle (GnomeVFSHandle *handle)
 	if (!handle)
 		return NULL;
 
-	stream_vfs = CAMEL_STREAM_VFS (camel_object_new (camel_stream_vfs_get_type ()));
+	stream_vfs = CAMEL_STREAM_VFS (camel_lite_object_new (camel_lite_stream_vfs_get_type ()));
 	stream_vfs->handle = handle;
 	gnome_vfs_seek (handle, GNOME_VFS_SEEK_CURRENT, 0);
 	offset = 0;
@@ -136,7 +136,7 @@ camel_stream_vfs_new_with_handle (GnomeVFSHandle *handle)
 }
 
 /**
- * camel_stream_vfs_new_with_uri:
+ * camel_lite_stream_vfs_new_with_uri:
  * @name: a file uri
  * @flags: flags as in open(2)
  * @mode: a file mode
@@ -147,7 +147,7 @@ camel_stream_vfs_new_with_handle (GnomeVFSHandle *handle)
  * Returns the new stream, or %NULL on error.
  **/
 CamelStream *
-camel_stream_vfs_new_with_uri (const char *name, int flags, mode_t mode)
+camel_lite_stream_vfs_new_with_uri (const char *name, int flags, mode_t mode)
 {
 	GnomeVFSResult result;
 	GnomeVFSHandle *handle;
@@ -169,7 +169,7 @@ camel_stream_vfs_new_with_uri (const char *name, int flags, mode_t mode)
 		return NULL;
 	}
 
-	return camel_stream_vfs_new_with_handle (handle);
+	return camel_lite_stream_vfs_new_with_handle (handle);
 }
 
 static ssize_t

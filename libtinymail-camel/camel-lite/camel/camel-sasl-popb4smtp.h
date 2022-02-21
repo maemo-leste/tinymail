@@ -25,7 +25,7 @@
 
 #include <camel/camel-sasl.h>
 
-#define CAMEL_SASL_POPB4SMTP_TYPE     (camel_sasl_popb4smtp_get_type ())
+#define CAMEL_SASL_POPB4SMTP_TYPE     (camel_lite_sasl_popb4smtp_get_type ())
 #define CAMEL_SASL_POPB4SMTP(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SASL_POPB4SMTP_TYPE, CamelSaslPOPB4SMTP))
 #define CAMEL_SASL_POPB4SMTP_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SASL_POPB4SMTP_TYPE, CamelSaslPOPB4SMTPClass))
 #define CAMEL_IS_SASL_POPB4SMTP(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SASL_POPB4SMTP_TYPE))
@@ -45,9 +45,9 @@ typedef struct _CamelSaslPOPB4SMTPClass {
 
 
 /* Standard Camel function */
-CamelType camel_sasl_popb4smtp_get_type (void);
+CamelType camel_lite_sasl_popb4smtp_get_type (void);
 
-extern CamelServiceAuthType camel_sasl_popb4smtp_authtype;
+extern CamelServiceAuthType camel_lite_sasl_popb4smtp_authtype;
 
 G_END_DECLS
 

@@ -73,38 +73,38 @@ struct _CamelOperation {
 #endif
 };
 
-typedef enum _camel_operation_status_t {
+typedef enum _camel_lite_operation_status_t {
 	CAMEL_OPERATION_START = -1,
 	CAMEL_OPERATION_END = -2
-} camel_operation_status_t;
+} camel_lite_operation_status_t;
 
 /* main thread functions */
-CamelOperation *camel_operation_new(CamelOperationStatusFunc status, void *status_data);
-void camel_operation_mute(CamelOperation *cc);
-void camel_operation_ref(CamelOperation *cc);
-void camel_operation_unref(CamelOperation *cc);
-void camel_operation_cancel(CamelOperation *cc);
-void camel_operation_uncancel(CamelOperation *cc);
+CamelOperation *camel_lite_operation_new(CamelOperationStatusFunc status, void *status_data);
+void camel_lite_operation_mute(CamelOperation *cc);
+void camel_lite_operation_ref(CamelOperation *cc);
+void camel_lite_operation_unref(CamelOperation *cc);
+void camel_lite_operation_cancel(CamelOperation *cc);
+void camel_lite_operation_uncancel(CamelOperation *cc);
 /* subthread functions */
-CamelOperation *camel_operation_register(CamelOperation *cc);
-void camel_operation_unregister (CamelOperation *cc);
+CamelOperation *camel_lite_operation_register(CamelOperation *cc);
+void camel_lite_operation_unregister (CamelOperation *cc);
 
 /* called internally by camel, for the current thread */
-void camel_operation_cancel_block(CamelOperation *cc);
-void camel_operation_cancel_unblock(CamelOperation *cc);
-int camel_operation_cancel_check(CamelOperation *cc);
-int camel_operation_cancel_fd(CamelOperation *cc);
+void camel_lite_operation_cancel_block(CamelOperation *cc);
+void camel_lite_operation_cancel_unblock(CamelOperation *cc);
+int camel_lite_operation_cancel_check(CamelOperation *cc);
+int camel_lite_operation_cancel_fd(CamelOperation *cc);
 #ifdef HAVE_NSS
-struct PRFileDesc *camel_operation_cancel_prfd(CamelOperation *cc);
+struct PRFileDesc *camel_lite_operation_cancel_prfd(CamelOperation *cc);
 #endif
 /* return the registered operation for this thread, if there is one */
-CamelOperation *camel_operation_registered(void);
+CamelOperation *camel_lite_operation_registered(void);
 
-void camel_operation_start(CamelOperation *cc, char *what, ...);
-void camel_operation_start_transient(CamelOperation *cc, char *what, ...);
-void camel_operation_progress(CamelOperation *cc, int sofar, int oftotal);
-void camel_operation_progress_count(CamelOperation *cc, int sofar);
-void camel_operation_end(CamelOperation *cc);
+void camel_lite_operation_start(CamelOperation *cc, char *what, ...);
+void camel_lite_operation_start_transient(CamelOperation *cc, char *what, ...);
+void camel_lite_operation_progress(CamelOperation *cc, int sofar, int oftotal);
+void camel_lite_operation_progress_count(CamelOperation *cc, int sofar);
+void camel_lite_operation_end(CamelOperation *cc);
 
 G_END_DECLS
 

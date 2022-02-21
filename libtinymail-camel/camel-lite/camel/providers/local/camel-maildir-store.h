@@ -24,7 +24,7 @@
 
 #include "camel-local-store.h"
 
-#define CAMEL_MAILDIR_STORE_TYPE     (camel_maildir_store_get_type ())
+#define CAMEL_MAILDIR_STORE_TYPE     (camel_lite_maildir_store_get_type ())
 #define CAMEL_MAILDIR_STORE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_MAILDIR_STORE_TYPE, CamelMaildirStore))
 #define CAMEL_MAILDIR_STORE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_MAILDIR_STORE_TYPE, CamelMaildirStoreClass))
 #define CAMEL_IS_MAILDIR_STORE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_MAILDIR_STORE_TYPE))
@@ -44,7 +44,7 @@ typedef struct {
 /* public methods */
 
 /* Standard Camel function */
-CamelType camel_maildir_store_get_type(void);
+CamelType camel_lite_maildir_store_get_type(void);
 
 G_END_DECLS
 

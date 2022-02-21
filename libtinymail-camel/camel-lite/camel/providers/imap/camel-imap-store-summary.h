@@ -26,9 +26,9 @@
 #include <camel/camel-object.h>
 #include <camel/camel-store-summary.h>
 
-#define CAMEL_IMAP_STORE_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_imap_store_summary_get_type (), CamelImapStoreSummary)
-#define CAMEL_IMAP_STORE_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_imap_store_summary_get_type (), CamelImapStoreSummaryClass)
-#define CAMEL_IS_IMAP_STORE_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_imap_store_summary_get_type ())
+#define CAMEL_IMAP_STORE_SUMMARY(obj)         CAMEL_CHECK_CAST (obj, camel_lite_imap_store_summary_get_type (), CamelImapStoreSummary)
+#define CAMEL_IMAP_STORE_SUMMARY_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_imap_store_summary_get_type (), CamelImapStoreSummaryClass)
+#define CAMEL_IS_IMAP_STORE_SUMMARY(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_imap_store_summary_get_type ())
 
 G_BEGIN_DECLS
 
@@ -78,27 +78,27 @@ struct _CamelImapStoreSummaryClass {
 	CamelStoreSummaryClass summary_class;
 };
 
-CamelType			 camel_imap_store_summary_get_type	(void);
-CamelImapStoreSummary      *camel_imap_store_summary_new	(void);
+CamelType			 camel_lite_imap_store_summary_get_type	(void);
+CamelImapStoreSummary      *camel_lite_imap_store_summary_new	(void);
 
 /* TODO: this api needs some more work, needs to support lists */
-CamelImapStoreNamespace *camel_imap_store_summary_namespace_new(CamelImapStoreSummary *s, const char *full_name, char dir_sep, CamelImapStoreNamespaceType type);
-CamelImapStoreNamespace *camel_imap_store_summary_namespace_add(CamelImapStoreSummary *s, CamelImapStoreNamespace *ns);
-CamelImapStoreNamespace *camel_imap_store_summary_namespace_find_path(CamelImapStoreSummary *s, const char *path);
-CamelImapStoreNamespace *camel_imap_store_summary_namespace_find_full(CamelImapStoreSummary *s, const char *full_name);
+CamelImapStoreNamespace *camel_lite_imap_store_summary_namespace_new(CamelImapStoreSummary *s, const char *full_name, char dir_sep, CamelImapStoreNamespaceType type);
+CamelImapStoreNamespace *camel_lite_imap_store_summary_namespace_add(CamelImapStoreSummary *s, CamelImapStoreNamespace *ns);
+CamelImapStoreNamespace *camel_lite_imap_store_summary_namespace_find_path(CamelImapStoreSummary *s, const char *path);
+CamelImapStoreNamespace *camel_lite_imap_store_summary_namespace_find_full(CamelImapStoreSummary *s, const char *full_name);
 
 /* converts to/from utf8 canonical nasmes */
-char *camel_imap_store_summary_full_to_path(CamelImapStoreSummary *s, const char *full_name, char dir_sep);
-char *camel_imap_store_summary_path_to_full(CamelImapStoreSummary *s, const char *path, char dir_sep);
+char *camel_lite_imap_store_summary_full_to_path(CamelImapStoreSummary *s, const char *full_name, char dir_sep);
+char *camel_lite_imap_store_summary_path_to_full(CamelImapStoreSummary *s, const char *path, char dir_sep);
 
-CamelImapStoreInfo *camel_imap_store_summary_full_name(CamelImapStoreSummary *s, const char *full_name);
-CamelImapStoreInfo *camel_imap_store_summary_add_from_full(CamelImapStoreSummary *s, const char *full_name, char dir_sep);
+CamelImapStoreInfo *camel_lite_imap_store_summary_full_name(CamelImapStoreSummary *s, const char *full_name);
+CamelImapStoreInfo *camel_lite_imap_store_summary_add_from_full(CamelImapStoreSummary *s, const char *full_name, char dir_sep);
 
 /* a convenience lookup function. always use this if path known */
-char *camel_imap_store_summary_full_from_path(CamelImapStoreSummary *s, const char *path);
+char *camel_lite_imap_store_summary_full_from_path(CamelImapStoreSummary *s, const char *path);
 
 /* helper macro's */
-#define camel_imap_store_info_full_name(s, i) (camel_store_info_string((CamelStoreSummary *)s, (const CamelStoreInfo *)i, CAMEL_IMAP_STORE_INFO_FULL_NAME))
+#define camel_lite_imap_store_info_full_name(s, i) (camel_lite_store_info_string((CamelStoreSummary *)s, (const CamelStoreInfo *)i, CAMEL_IMAP_STORE_INFO_FULL_NAME))
 
 G_END_DECLS
 

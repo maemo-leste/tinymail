@@ -54,7 +54,7 @@ volatile gboolean nss_initialized = FALSE;
 static int initialized = FALSE;
 
 void
-camel_shutdown (void)
+camel_lite_shutdown (void)
 {
 	CamelCertDB *certdb;
 
@@ -62,10 +62,10 @@ camel_shutdown (void)
 		return;
 
 	initialized = FALSE;
-	certdb = camel_certdb_get_default ();
+	certdb = camel_lite_certdb_get_default ();
 	if (certdb) {
-		camel_certdb_save (certdb);
-		camel_object_unref (certdb);
+		camel_lite_certdb_save (certdb);
+		camel_lite_object_unref (certdb);
 	}
 
 #if defined (HAVE_NSS)
@@ -78,7 +78,7 @@ camel_shutdown (void)
 }
 
 int
-camel_init (const char *configdir, gboolean nss_init)
+camel_lite_init (const char *configdir, gboolean nss_init)
 {
 	CamelCertDB *certdb;
 	char *path;
@@ -89,10 +89,10 @@ camel_init (const char *configdir, gboolean nss_init)
 	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
-	camel_debug_init();
+	camel_lite_debug_init();
 
-	/* initialise global camel_object_type */
-	camel_object_get_type();
+	/* initialise global camel_lite_object_type */
+	camel_lite_object_get_type();
 
 #ifdef HAVE_NSS
 	if (nss_init) {
@@ -146,19 +146,19 @@ camel_init (const char *configdir, gboolean nss_init)
 #endif /* HAVE_NSS */
 
 	path = g_strdup_printf ("%s/camel-cert.db", configdir);
-	certdb = camel_certdb_new ();
-	camel_certdb_set_filename (certdb, path);
+	certdb = camel_lite_certdb_new ();
+	camel_lite_certdb_set_filename (certdb, path);
 	g_free (path);
 
 	/* if we fail to load, who cares? it'll just be a volatile certdb */
-	camel_certdb_load (certdb);
+	camel_lite_certdb_load (certdb);
 
 	/* set this certdb as the default db */
-	camel_certdb_set_default (certdb);
+	camel_lite_certdb_set_default (certdb);
 
-	camel_object_unref (certdb);
+	camel_lite_object_unref (certdb);
 
-	g_atexit (camel_shutdown);
+	g_atexit (camel_lite_shutdown);
 
 	initialized = TRUE;
 

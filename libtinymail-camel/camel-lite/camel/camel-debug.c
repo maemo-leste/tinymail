@@ -28,12 +28,12 @@
 
 #include "camel-debug.h"
 
-int camel_verbose_debug;
+int camel_lite_verbose_debug;
 
 static GHashTable *debug_table = NULL;
 
 /**
- * camel_debug_init:
+ * camel_lite_debug_init:
  * @void:
  *
  * Init camel debug.  Maintain legacy CAMEL_VERBOSE_DEBUG as well as the
@@ -47,13 +47,13 @@ static GHashTable *debug_table = NULL;
  * for imap debug, or 'imap:folder' for imap folder debug.  Additionaly,
  * ':folder' can be used for a wildcard for any folder operations.
  **/
-void camel_debug_init(void)
+void camel_lite_debug_init(void)
 {
 	char *d;
 
 	d = getenv("CAMEL_VERBOSE_DEBUG");
 	if (d)
-		camel_verbose_debug = atoi(d);
+		camel_lite_verbose_debug = atoi(d);
 
 	d = g_strdup(getenv("CAMEL_DEBUG"));
 	if (d) {
@@ -71,12 +71,12 @@ void camel_debug_init(void)
 		}
 
 		if (g_hash_table_lookup(debug_table, "all"))
-			camel_verbose_debug = 1;
+			camel_lite_verbose_debug = 1;
 	}
 }
 
 /**
- * camel_debug:
+ * camel_lite_debug:
  * @mode:
  *
  * Check to see if a debug mode is activated.  @mode takes one of two forms,
@@ -86,9 +86,9 @@ void camel_debug_init(void)
  *
  * Return value:
  **/
-gboolean camel_debug(const char *mode)
+gboolean camel_lite_debug(const char *mode)
 {
-	if (camel_verbose_debug)
+	if (camel_lite_verbose_debug)
 		return TRUE;
 
 	if (debug_table) {
@@ -120,7 +120,7 @@ gboolean camel_debug(const char *mode)
 
 static pthread_mutex_t debug_lock = PTHREAD_MUTEX_INITIALIZER;
 /**
- * camel_debug_start:
+ * camel_lite_debug_start:
  * @mode:
  *
  * Start debug output for a given mode, used to make sure debug output
@@ -130,9 +130,9 @@ static pthread_mutex_t debug_lock = PTHREAD_MUTEX_INITIALIZER;
  * call debug_end when finished any screen output.
  **/
 gboolean
-camel_debug_start(const char *mode)
+camel_lite_debug_start(const char *mode)
 {
-	if (camel_debug(mode)) {
+	if (camel_lite_debug(mode)) {
 		pthread_mutex_lock(&debug_lock);
 		printf("Thread %" G_GINT64_MODIFIER "x >\n", e_util_pthread_id(pthread_self()));
 		return TRUE;
@@ -142,13 +142,13 @@ camel_debug_start(const char *mode)
 }
 
 /**
- * camel_debug_end:
+ * camel_lite_debug_end:
  *
  * Call this when you're done with your debug output.  If and only if
- * you called camel_debug_start, and if it returns TRUE.
+ * you called camel_lite_debug_start, and if it returns TRUE.
  **/
 void
-camel_debug_end(void)
+camel_lite_debug_end(void)
 {
 	printf("< %" G_GINT64_MODIFIER "x >\n", e_util_pthread_id(pthread_self()));
 	pthread_mutex_unlock(&debug_lock);
@@ -222,7 +222,7 @@ Invalid hw breakpoint length %d in i386_length_and_rw_bits.\n", len);
 
 /* fine idea, but it doesn't work, crashes in get_dr :-/ */
 void
-camel_debug_hwatch(int wp, void *addr)
+camel_lite_debug_hwatch(int wp, void *addr)
 {
      guint32 control, rw;
 

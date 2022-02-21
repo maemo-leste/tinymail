@@ -46,9 +46,9 @@ tny_stream_camel_write_to_stream (TnyStreamCamel *self, TnyStream *output)
 	g_return_val_if_fail (CAMEL_IS_STREAM (stream), -1);
 	g_return_val_if_fail (TNY_IS_STREAM (output), -1);
 
-	while (G_LIKELY (!camel_stream_eos (stream)))
+	while (G_LIKELY (!camel_lite_stream_eos (stream)))
 	{
-		nb_read = camel_stream_read (stream, tmp_buf, sizeof (tmp_buf));
+		nb_read = camel_lite_stream_read (stream, tmp_buf, sizeof (tmp_buf));
 		if (G_UNLIKELY (nb_read < 0))
 			return -1;
 		else if (G_LIKELY (nb_read > 0))
@@ -151,7 +151,7 @@ tny_stream_camel_set_bouds (CamelSeekableStream *stream, off_t start, off_t end)
 }
 
 static void
-tny_stream_camel_init (CamelObject *object)
+tny_stream_camel_lite_init (CamelObject *object)
 {
 	TnyStreamCamel *self = (TnyStreamCamel *)object;
 	self->stream = NULL;
@@ -206,20 +206,20 @@ tny_stream_camel_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 
 	if (G_UNLIKELY (type == CAMEL_INVALID_TYPE)) 
 	{
-		parent_class = (CamelStreamClass *)camel_stream_get_type();
-		type = camel_type_register ((CamelType)parent_class,
+		parent_class = (CamelStreamClass *)camel_lite_stream_get_type();
+		type = camel_lite_type_register ((CamelType)parent_class,
 					    "TnyStreamCamel",
 					    sizeof (TnyStreamCamel),
 					    sizeof (TnyStreamCamelClass),
 					    (CamelObjectClassInitFunc) tny_stream_camel_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) tny_stream_camel_init,
+					    (CamelObjectInitFunc) tny_stream_camel_lite_init,
 					    (CamelObjectFinalizeFunc) tny_stream_camel_finalize);
 	}
 	
@@ -262,7 +262,7 @@ tny_stream_camel_set_stream (TnyStreamCamel *self, TnyStream *stream)
 CamelStream *
 tny_stream_camel_new (TnyStream *stream)
 {
-	TnyStreamCamel *self = (TnyStreamCamel *) camel_object_new (tny_stream_camel_get_type());
+	TnyStreamCamel *self = (TnyStreamCamel *) camel_lite_object_new (tny_stream_camel_get_type());
 
 	tny_stream_camel_set_stream (self, stream);
 

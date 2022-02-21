@@ -47,7 +47,7 @@ enum {
 };
 
 static void
-camel_mime_filter_pgp_class_init (CamelMimeFilterPgpClass *klass)
+camel_lite_mime_filter_pgp_class_init (CamelMimeFilterPgpClass *klass)
 {
 	CamelMimeFilterClass *mime_filter_class = (CamelMimeFilterClass *) klass;
 
@@ -57,16 +57,16 @@ camel_mime_filter_pgp_class_init (CamelMimeFilterPgpClass *klass)
 }
 
 CamelType
-camel_mime_filter_pgp_get_type (void)
+camel_lite_mime_filter_pgp_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_mime_filter_get_type (),
-					    "CamelMimeFilterPgp",
+		type = camel_lite_type_register (camel_lite_mime_filter_get_type (),
+					    "CamelLiteMimeFilterPgp",
 					    sizeof (CamelMimeFilterPgp),
 					    sizeof (CamelMimeFilterPgpClass),
-					    (CamelObjectClassInitFunc) camel_mime_filter_pgp_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_mime_filter_pgp_class_init,
 					    NULL,
 					    NULL,
 					    NULL);
@@ -88,7 +88,7 @@ filter_run(CamelMimeFilter *f, char *in, size_t len, size_t prespace, char **out
 	register char *o;
 
 	/* only need as much space as the input, we're stripping chars */
-	camel_mime_filter_set_size (f, len, FALSE);
+	camel_lite_mime_filter_set_size (f, len, FALSE);
 
 	o = f->outbuf;
 
@@ -100,7 +100,7 @@ filter_run(CamelMimeFilter *f, char *in, size_t len, size_t prespace, char **out
 
 		if (inptr == inend) {
 			if (!last) {
-				camel_mime_filter_backup (f, start, inend - start);
+				camel_lite_mime_filter_backup (f, start, inend - start);
 				inend = start;
 			}
 			break;
@@ -172,7 +172,7 @@ reset (CamelMimeFilter *f)
 }
 
 CamelMimeFilter *
-camel_mime_filter_pgp_new(void)
+camel_lite_mime_filter_pgp_new(void)
 {
-	return (CamelMimeFilter *) camel_object_new (camel_mime_filter_pgp_get_type ());
+	return (CamelMimeFilter *) camel_lite_object_new (camel_lite_mime_filter_pgp_get_type ());
 }

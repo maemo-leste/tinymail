@@ -42,8 +42,8 @@
 #define CAMEL_POP3_SEND_LIMIT (1024)
 
 
-extern int camel_verbose_debug;
-#define dd(x) (camel_verbose_debug?(x):0)
+extern int camel_lite_verbose_debug;
+#define dd(x) (camel_lite_verbose_debug?(x):0)
 
 static void get_capabilities(CamelPOP3Engine *pe);
 
@@ -53,13 +53,13 @@ static CamelObjectClass *parent_class = NULL;
 #define CS_CLASS(so) CAMEL_POP3_ENGINE_CLASS(CAMEL_OBJECT_GET_CLASS(so))
 
 static void
-camel_pop3_engine_class_init (CamelPOP3EngineClass *camel_pop3_engine_class)
+camel_lite_pop3_engine_class_init (CamelPOP3EngineClass *camel_lite_pop3_engine_class)
 {
-	parent_class = camel_type_get_global_classfuncs( CAMEL_OBJECT_TYPE );
+	parent_class = camel_lite_type_get_global_classfuncs( CAMEL_OBJECT_TYPE );
 }
 
 static void
-camel_pop3_engine_init(CamelPOP3Engine *pe, CamelPOP3EngineClass *peclass)
+camel_lite_pop3_engine_init(CamelPOP3Engine *pe, CamelPOP3EngineClass *peclass)
 {
 	pe->login_delay = 300;
 	pe->lock = g_new0 (GStaticRecMutex, 1);
@@ -72,14 +72,14 @@ camel_pop3_engine_init(CamelPOP3Engine *pe, CamelPOP3EngineClass *peclass)
 }
 
 static void
-camel_pop3_engine_finalise(CamelPOP3Engine *pe)
+camel_lite_pop3_engine_finalise(CamelPOP3Engine *pe)
 {
 	/* FIXME: Also flush/free any outstanding requests, etc */
 
 	g_static_rec_mutex_lock (pe->lock);
 
 	if (pe->stream)
-		camel_object_unref(pe->stream);
+		camel_lite_object_unref(pe->stream);
 
 	g_list_free(pe->auth);
 	if (pe->apop)
@@ -95,29 +95,29 @@ camel_pop3_engine_finalise(CamelPOP3Engine *pe)
 }
 
 CamelType
-camel_pop3_engine_get_type (void)
+camel_lite_pop3_engine_get_type (void)
 {
-	static CamelType camel_pop3_engine_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_pop3_engine_type = CAMEL_INVALID_TYPE;
 
-	if (camel_pop3_engine_type == CAMEL_INVALID_TYPE) {
-		camel_pop3_engine_type = camel_type_register(camel_object_get_type(),
-							     "CamelPOP3Engine",
+	if (camel_lite_pop3_engine_type == CAMEL_INVALID_TYPE) {
+		camel_lite_pop3_engine_type = camel_lite_type_register(camel_lite_object_get_type(),
+							     "CamelLitePOP3Engine",
 							     sizeof( CamelPOP3Engine ),
 							     sizeof( CamelPOP3EngineClass ),
-							     (CamelObjectClassInitFunc) camel_pop3_engine_class_init,
+							     (CamelObjectClassInitFunc) camel_lite_pop3_engine_class_init,
 							     NULL,
-							     (CamelObjectInitFunc) camel_pop3_engine_init,
-							     (CamelObjectFinalizeFunc) camel_pop3_engine_finalise );
+							     (CamelObjectInitFunc) camel_lite_pop3_engine_init,
+							     (CamelObjectFinalizeFunc) camel_lite_pop3_engine_finalise );
 	}
 
-	return camel_pop3_engine_type;
+	return camel_lite_pop3_engine_type;
 }
 
 static int
 read_greeting (CamelPOP3Engine *pe)
 {
-	extern CamelServiceAuthType camel_pop3_password_authtype;
-	extern CamelServiceAuthType camel_pop3_apop_authtype;
+	extern CamelServiceAuthType camel_lite_pop3_password_authtype;
+	extern CamelServiceAuthType camel_lite_pop3_apop_authtype;
 	unsigned char *line, *apop, *apopend;
 	unsigned int len;
 
@@ -125,7 +125,7 @@ read_greeting (CamelPOP3Engine *pe)
 	g_static_rec_mutex_lock (pe->lock);
 
 	/* first, read the greeting */
-	if (camel_pop3_stream_line (pe->stream, &line, &len) == -1
+	if (camel_lite_pop3_stream_line (pe->stream, &line, &len) == -1
 	    || strncmp ((char *) line, "+OK", 3) != 0) {
 		g_static_rec_mutex_unlock (pe->lock);
 		return -1;
@@ -136,10 +136,10 @@ read_greeting (CamelPOP3Engine *pe)
 		apopend[1] = 0;
 		pe->apop = g_strdup ((gchar *) apop);
 		pe->capa = CAMEL_POP3_CAP_APOP;
-		pe->auth = g_list_append (pe->auth, &camel_pop3_apop_authtype);
+		pe->auth = g_list_append (pe->auth, &camel_lite_pop3_apop_authtype);
 	}
 
-	pe->auth = g_list_prepend (pe->auth, &camel_pop3_password_authtype);
+	pe->auth = g_list_prepend (pe->auth, &camel_lite_pop3_password_authtype);
 
 	g_static_rec_mutex_unlock (pe->lock);
 
@@ -147,7 +147,7 @@ read_greeting (CamelPOP3Engine *pe)
 }
 
 /**
- * camel_pop3_engine_new:
+ * camel_lite_pop3_engine_new:
  * @source: source stream
  * @flags: engine flags
  *
@@ -157,21 +157,21 @@ read_greeting (CamelPOP3Engine *pe)
  * Return value: the stream
  **/
 CamelPOP3Engine *
-camel_pop3_engine_new(CamelStream *source, guint32 flags)
+camel_lite_pop3_engine_new(CamelStream *source, guint32 flags)
 {
 	CamelPOP3Engine *pe;
 
-	pe = (CamelPOP3Engine *)camel_object_new(camel_pop3_engine_get_type ());
+	pe = (CamelPOP3Engine *)camel_lite_object_new(camel_lite_pop3_engine_get_type ());
 
 	g_static_rec_mutex_lock (pe->lock);
 
-	pe->stream = (CamelPOP3Stream *)camel_pop3_stream_new(source);
+	pe->stream = (CamelPOP3Stream *)camel_lite_pop3_stream_new(source);
 	pe->state = CAMEL_POP3_ENGINE_AUTH;
 	pe->flags = flags;
 
 	if (read_greeting (pe) == -1) {
 		g_static_rec_mutex_unlock (pe->lock);
-		camel_object_unref (pe);
+		camel_lite_object_unref (pe);
 		return NULL;
 	}
 
@@ -183,13 +183,13 @@ camel_pop3_engine_new(CamelStream *source, guint32 flags)
 
 
 /**
- * camel_pop3_engine_reget_capabilities:
+ * camel_lite_pop3_engine_reget_capabilities:
  * @engine: pop3 engine
  *
  * Regets server capabilities (needed after a STLS command is issued for example).
  **/
 void
-camel_pop3_engine_reget_capabilities (CamelPOP3Engine *engine)
+camel_lite_pop3_engine_reget_capabilities (CamelPOP3Engine *engine)
 {
 	g_return_if_fail (CAMEL_IS_POP3_ENGINE (engine));
 
@@ -227,7 +227,7 @@ cmd_capa(CamelPOP3Engine *pe, CamelPOP3Stream *stream, void *data)
 	dd(printf("cmd_capa\n"));
 
 	do {
-		ret = camel_pop3_stream_line(stream, &line, &len);
+		ret = camel_lite_pop3_stream_line(stream, &line, &len);
 		if (ret >= 0) {
 			if (strncmp((char *) line, "SASL ", 5) == 0) {
 				tok = line+5;
@@ -236,7 +236,7 @@ cmd_capa(CamelPOP3Engine *pe, CamelPOP3Stream *stream, void *data)
 					next = (unsigned char *) strchr((char *) tok, ' ');
 					if (next)
 						*next++ = 0;
-					auth = camel_sasl_authtype((const char *) tok);
+					auth = camel_lite_sasl_authtype((const char *) tok);
 					if (auth) {
 						dd(printf("got auth type '%s'\n", tok));
 						pe->auth = g_list_prepend(pe->auth, auth);
@@ -245,7 +245,7 @@ cmd_capa(CamelPOP3Engine *pe, CamelPOP3Stream *stream, void *data)
 					}
 					tok = next;
 				}
-			} if (camel_strstrcase ((char *) line, "LOGIN-DELAY")) {
+			} if (camel_lite_strstrcase ((char *) line, "LOGIN-DELAY")) {
 				char *delay;
 				pe->capa |= CAMEL_POP3_CAP_LOGIN_DELAY;
 				delay = strchr ((const char *) line, ' ');
@@ -278,21 +278,21 @@ get_capabilities(CamelPOP3Engine *pe)
 	g_static_rec_mutex_lock (pe->lock);
 
 	if (!(pe->flags & CAMEL_POP3_ENGINE_DISABLE_EXTENSIONS)) {
-		pc = camel_pop3_engine_command_new(pe, CAMEL_POP3_COMMAND_MULTI, cmd_capa, NULL, "CAPA\r\n");
-		while (camel_pop3_engine_iterate(pe, pc) > 0)
+		pc = camel_lite_pop3_engine_command_new(pe, CAMEL_POP3_COMMAND_MULTI, cmd_capa, NULL, "CAPA\r\n");
+		while (camel_lite_pop3_engine_iterate(pe, pc) > 0)
 			;
-		camel_pop3_engine_command_free(pe, pc);
+		camel_lite_pop3_engine_command_free(pe, pc);
 
 		if (pe->state == CAMEL_POP3_ENGINE_TRANSACTION && !(pe->capa & CAMEL_POP3_CAP_UIDL)) {
 			/* check for UIDL support manually */
-			pc = camel_pop3_engine_command_new (pe, CAMEL_POP3_COMMAND_SIMPLE, NULL, NULL, "UIDL 1\r\n");
-			while (camel_pop3_engine_iterate (pe, pc) > 0)
+			pc = camel_lite_pop3_engine_command_new (pe, CAMEL_POP3_COMMAND_SIMPLE, NULL, NULL, "UIDL 1\r\n");
+			while (camel_lite_pop3_engine_iterate (pe, pc) > 0)
 				;
 
 			if (pc->state == CAMEL_POP3_COMMAND_OK)
 				pe->capa |= CAMEL_POP3_CAP_UIDL;
 
-			camel_pop3_engine_command_free (pe, pc);
+			camel_lite_pop3_engine_command_free (pe, pc);
 		}
 
 		if (pe->capa == 0) {
@@ -325,7 +325,7 @@ engine_command_queue(CamelPOP3Engine *pe, CamelPOP3Command *pc)
 	/* TNY TODO: Check online status here, else it will crash
 		Correction, it will not crash but will emit a SIGPIPE */
 
-	if (camel_stream_write((CamelStream *)pe->stream, pc->data, strlen(pc->data)) == -1) {
+	if (camel_lite_stream_write((CamelStream *)pe->stream, pc->data, strlen(pc->data)) == -1) {
 		e_dlist_addtail(&pe->queue, (EDListNode *)pc);
 		g_static_rec_mutex_unlock (pe->lock);
 		return FALSE;
@@ -347,7 +347,7 @@ engine_command_queue(CamelPOP3Engine *pe, CamelPOP3Command *pc)
 
 /* returns -1 on error (sets errno), 0 when no work to do, or >0 if work remaining */
 int
-camel_pop3_engine_iterate(CamelPOP3Engine *pe, CamelPOP3Command *pcwait)
+camel_lite_pop3_engine_iterate(CamelPOP3Engine *pe, CamelPOP3Command *pcwait)
 {
 	unsigned char *p;
 	unsigned int len;
@@ -357,10 +357,10 @@ camel_pop3_engine_iterate(CamelPOP3Engine *pe, CamelPOP3Command *pcwait)
 
 	g_static_rec_mutex_lock (pe->lock);
 
-	camel_object_ref (pe);
+	camel_lite_object_ref (pe);
 
 	if (pcwait && pcwait->state >= CAMEL_POP3_COMMAND_OK) {
-		camel_object_unref (pe);
+		camel_lite_object_unref (pe);
 
 		g_static_rec_mutex_unlock (pe->lock);
 		return 0;
@@ -368,12 +368,12 @@ camel_pop3_engine_iterate(CamelPOP3Engine *pe, CamelPOP3Command *pcwait)
 
 	pc = pe->current;
 	if (pc == NULL) {
-		camel_object_unref (pe);
+		camel_lite_object_unref (pe);
 		g_static_rec_mutex_unlock (pe->lock);
 		return 0;
 	}
 
-	if (camel_pop3_stream_line(pe->stream, &pe->line, &pe->linelen) == -1)
+	if (camel_lite_pop3_stream_line(pe->stream, &pe->line, &pe->linelen) == -1)
 		goto ioerror;
 
 	p = pe->line;
@@ -382,7 +382,7 @@ camel_pop3_engine_iterate(CamelPOP3Engine *pe, CamelPOP3Command *pcwait)
 		dd(printf("Got + response\n"));
 		if (pc->flags & CAMEL_POP3_COMMAND_MULTI) {
 			pc->state = CAMEL_POP3_COMMAND_DATA;
-			camel_pop3_stream_set_mode(pe->stream, CAMEL_POP3_STREAM_DATA);
+			camel_lite_pop3_stream_set_mode(pe->stream, CAMEL_POP3_STREAM_DATA);
 
 			if (pc->func)
 				if (pc->func(pe, pe->stream, pc->func_data) != 1) {
@@ -392,11 +392,11 @@ camel_pop3_engine_iterate(CamelPOP3Engine *pe, CamelPOP3Command *pcwait)
 
 			/* Make sure we get all data before going back to command mode */
 			if (!pe->partial_happening)
-				while (camel_pop3_stream_getd(pe->stream, &p, &len) > 0)
+				while (camel_lite_pop3_stream_getd(pe->stream, &p, &len) > 0)
 					;
 
 			if (!pe->partial_happening)
-				camel_pop3_stream_set_mode(pe->stream, CAMEL_POP3_STREAM_LINE);
+				camel_lite_pop3_stream_set_mode(pe->stream, CAMEL_POP3_STREAM_LINE);
 
 			pe->partial_happening = FALSE;
 		} else {
@@ -437,7 +437,7 @@ camel_pop3_engine_iterate(CamelPOP3Engine *pe, CamelPOP3Command *pcwait)
 		    && pe->current != NULL)
 			break;
 
-		if (camel_stream_write((CamelStream *)pe->stream, pw->data, strlen(pw->data)) == -1)
+		if (camel_lite_stream_write((CamelStream *)pe->stream, pw->data, strlen(pw->data)) == -1)
 			goto ioerror;
 
 		e_dlist_remove((EDListNode *)pw);
@@ -456,17 +456,17 @@ camel_pop3_engine_iterate(CamelPOP3Engine *pe, CamelPOP3Command *pcwait)
 
 	if (pcwait && pcwait->state >= CAMEL_POP3_COMMAND_OK) {
 		if (have_err)
-			camel_service_disconnect (CAMEL_SERVICE (pe->store), FALSE, &ex);
+			camel_lite_service_disconnect (CAMEL_SERVICE (pe->store), FALSE, &ex);
 
-		camel_object_unref (pe);
+		camel_lite_object_unref (pe);
 		g_static_rec_mutex_unlock (pe->lock);
 		return 0;
 	}
 
 	if (have_err)
-		camel_service_disconnect (CAMEL_SERVICE (pe->store), FALSE, &ex);
+		camel_lite_service_disconnect (CAMEL_SERVICE (pe->store), FALSE, &ex);
 
-	camel_object_unref (pe);
+	camel_lite_object_unref (pe);
 	g_static_rec_mutex_unlock (pe->lock);
 
 	return pe->current==NULL?0:1;
@@ -492,16 +492,16 @@ ioerror:
 	}
 
 	if (pe->store && CAMEL_IS_SERVICE (pe->store))
-		camel_service_disconnect ((CamelService *) pe->store, FALSE, &ex);
+		camel_lite_service_disconnect ((CamelService *) pe->store, FALSE, &ex);
 
-	camel_object_unref (pe);
+	camel_lite_object_unref (pe);
 	g_static_rec_mutex_unlock (pe->lock);
 
 	return -1;
 }
 
 CamelPOP3Command *
-camel_pop3_engine_command_new(CamelPOP3Engine *pe, guint32 flags, CamelPOP3CommandFunc func, void *data, const char *fmt, ...)
+camel_lite_pop3_engine_command_new(CamelPOP3Engine *pe, guint32 flags, CamelPOP3CommandFunc func, void *data, const char *fmt, ...)
 {
 	CamelPOP3Command *pc;
 	va_list ap;
@@ -523,7 +523,7 @@ camel_pop3_engine_command_new(CamelPOP3Engine *pe, guint32 flags, CamelPOP3Comma
 }
 
 void
-camel_pop3_engine_command_free(CamelPOP3Engine *pe, CamelPOP3Command *pc)
+camel_lite_pop3_engine_command_free(CamelPOP3Engine *pe, CamelPOP3Command *pc)
 {
 
 	if (pe)

@@ -26,7 +26,7 @@
 
 #include <camel/camel-cipher-context.h>
 
-#define CAMEL_GPG_CONTEXT_TYPE     (camel_gpg_context_get_type ())
+#define CAMEL_GPG_CONTEXT_TYPE     (camel_lite_gpg_context_get_type ())
 #define CAMEL_GPG_CONTEXT(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_GPG_CONTEXT_TYPE, CamelGpgContext))
 #define CAMEL_GPG_CONTEXT_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_GPG_CONTEXT_TYPE, CamelGpgContextClass))
 #define CAMEL_IS_GPG_CONTEXT(o)    (CAMEL_CHECK_TYPE((o), CAMEL_GPG_CONTEXT_TYPE))
@@ -48,11 +48,11 @@ struct _CamelGpgContextClass {
 };
 
 
-CamelType camel_gpg_context_get_type (void);
+CamelType camel_lite_gpg_context_get_type (void);
 
-CamelCipherContext *camel_gpg_context_new (CamelSession *session);
+CamelCipherContext *camel_lite_gpg_context_new (CamelSession *session);
 
-void camel_gpg_context_set_always_trust (CamelGpgContext *ctx, gboolean trust);
+void camel_lite_gpg_context_set_always_trust (CamelGpgContext *ctx, gboolean trust);
 
 G_END_DECLS
 

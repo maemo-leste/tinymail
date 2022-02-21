@@ -37,17 +37,17 @@
 #include "camel-nntp-resp-codes.h"
 
 static CamelNNTPGroupList *
-camel_nntp_get_grouplist_from_server (CamelNNTPStore *store, CamelException *ex)
+camel_lite_nntp_get_grouplist_from_server (CamelNNTPStore *store, CamelException *ex)
 {
 	int status;
 	gboolean done = FALSE;
 	CamelNNTPGroupList *list;
 
 	CAMEL_NNTP_STORE_LOCK(store);
-	status = camel_nntp_command (store, ex, NULL, &line, "LIST");
+	status = camel_lite_nntp_command (store, ex, NULL, &line, "LIST");
 
 	if (status != NNTP_LIST_FOLLOWS) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
 				      _("Could not get group list from server."));
 		return NULL;
 	}
@@ -58,7 +58,7 @@ camel_nntp_get_grouplist_from_server (CamelNNTPStore *store, CamelException *ex)
 	while (!done) {
 		char *line;
 
-		if (camel_remote_store_recv_line (CAMEL_REMOTE_STORE (store), &line, ex) < 0) {
+		if (camel_lite_remote_store_recv_line (CAMEL_REMOTE_STORE (store), &line, ex) < 0) {
 			list->group_list = g_list_reverse(list->group_list);
 			return list;
 		}
@@ -86,9 +86,9 @@ camel_nntp_get_grouplist_from_server (CamelNNTPStore *store, CamelException *ex)
 }
 
 static CamelNNTPGroupList*
-camel_nntp_get_grouplist_from_file (CamelNNTPStore *store, CamelException *ex)
+camel_lite_nntp_get_grouplist_from_file (CamelNNTPStore *store, CamelException *ex)
 {
-	gchar *root_dir = camel_nntp_store_get_toplevel_dir(CAMEL_NNTP_STORE(store));
+	gchar *root_dir = camel_lite_nntp_store_get_toplevel_dir(CAMEL_NNTP_STORE(store));
 	gchar *grouplist_file = g_strdup_printf ("%s/grouplist", root_dir);
 	CamelNNTPGroupList *list;
 	FILE *fp;
@@ -100,7 +100,7 @@ camel_nntp_get_grouplist_from_file (CamelNNTPStore *store, CamelException *ex)
 	g_free (grouplist_file);
 
 	if (fp == NULL) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
 				      _("Unable to load grouplist file for %s: %s"),
 				      CAMEL_SERVICE(store)->url->host,
 				      strerror(errno));
@@ -109,7 +109,7 @@ camel_nntp_get_grouplist_from_file (CamelNNTPStore *store, CamelException *ex)
 
 	/* read the time */
 	if (!fgets (buf, sizeof (buf), fp)) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
 				      _("Unable to load grouplist file for %s: %s"),
 				      CAMEL_SERVICE(store)->url->host,
 				      strerror(errno));
@@ -149,10 +149,10 @@ save_entry (CamelNNTPGroupListEntry *entry, FILE *fp)
 }
 
 void
-camel_nntp_grouplist_save (CamelNNTPGroupList *group_list, CamelException *ex)
+camel_lite_nntp_grouplist_save (CamelNNTPGroupList *group_list, CamelException *ex)
 {
 	FILE *fp;
-	gchar *root_dir = camel_nntp_store_get_toplevel_dir(CAMEL_NNTP_STORE(group_list->store));
+	gchar *root_dir = camel_lite_nntp_store_get_toplevel_dir(CAMEL_NNTP_STORE(group_list->store));
 	gchar *grouplist_file = g_strdup_printf ("%s/grouplist", root_dir);
 
 	g_free (root_dir);
@@ -160,7 +160,7 @@ camel_nntp_grouplist_save (CamelNNTPGroupList *group_list, CamelException *ex)
 	g_free (grouplist_file);
 
 	if (fp == NULL) {
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_UNAVAILABLE,
 				      _("Unable to save grouplist file for %s: %s"),
 				      CAMEL_SERVICE(group_list->store)->url->host,
 				      strerror(errno));
@@ -182,7 +182,7 @@ free_entry (CamelNNTPGroupListEntry *entry, void *data)
 }
 
 void
-camel_nntp_grouplist_free (CamelNNTPGroupList *group_list)
+camel_lite_nntp_grouplist_free (CamelNNTPGroupList *group_list)
 {
 	g_return_if_fail (group_list);
 
@@ -192,25 +192,25 @@ camel_nntp_grouplist_free (CamelNNTPGroupList *group_list)
 }
 
 CamelNNTPGroupList*
-camel_nntp_grouplist_fetch (CamelNNTPStore *store, CamelException *ex)
+camel_lite_nntp_grouplist_fetch (CamelNNTPStore *store, CamelException *ex)
 {
 	CamelNNTPGroupList *list;
 
-	list = camel_nntp_get_grouplist_from_file (store, ex);
+	list = camel_lite_nntp_get_grouplist_from_file (store, ex);
 
-	printf ("camel_nntp_get_grouplist_from_file returned %p\n", list);
+	printf ("camel_lite_nntp_get_grouplist_from_file returned %p\n", list);
 
 	if (!list) {
-		camel_exception_clear (ex);
+		camel_lite_exception_clear (ex);
 
-		list = camel_nntp_get_grouplist_from_server (store, ex);
+		list = camel_lite_nntp_get_grouplist_from_server (store, ex);
 
 		if (!list) {
-			camel_nntp_grouplist_free (list);
+			camel_lite_nntp_grouplist_free (list);
 		}
 		else {
 			list->store = store;
-			camel_nntp_grouplist_save (list, ex);
+			camel_lite_nntp_grouplist_save (list, ex);
 			return list;
 		}
 	}
@@ -219,7 +219,7 @@ camel_nntp_grouplist_fetch (CamelNNTPStore *store, CamelException *ex)
 }
 
 gint
-camel_nntp_grouplist_update (CamelNNTPGroupList *group_list, CamelException *ex)
+camel_lite_nntp_grouplist_update (CamelNNTPGroupList *group_list, CamelException *ex)
 {
 	return 0;
 }

@@ -56,7 +56,7 @@ static int ignorent (char *name)
 	return 0;
 }
 
-void camel_du (char *name, int *my_size)
+void camel_lite_du (char *name, int *my_size)
 {
 	DIR *dir;
 	struct dirent *ent;
@@ -74,7 +74,7 @@ void camel_du (char *name, int *my_size)
 		if (/*ent->d_name && */ !ignorent (ent->d_name)) {
 			char *p = g_strdup_printf ("%s/%s", name, ent->d_name);
 			if (isdir (p))
-				camel_du (p, my_size);
+				camel_lite_du (p, my_size);
 			else
 			{
 				struct stat st;
@@ -100,7 +100,7 @@ static int ignorentd (char *name)
 }
 
 void
-camel_rm (char *name)
+camel_lite_rm (char *name)
 {
 	DIR *dir;
 	struct dirent *ent;
@@ -116,7 +116,7 @@ camel_rm (char *name)
 		{
 			char *p = g_strdup_printf ("%s/%s", name, ent->d_name);
 			if (isdir (p))
-				camel_rm (p);
+				camel_lite_rm (p);
 			else
 				remove (p);
 			g_free (p);
@@ -128,13 +128,13 @@ camel_rm (char *name)
 }
 
 int
-camel_strcase_equal (gconstpointer a, gconstpointer b)
+camel_lite_strcase_equal (gconstpointer a, gconstpointer b)
 {
 	return (g_ascii_strcasecmp ((const char *) a, (const char *) b) == 0);
 }
 
 guint
-camel_strcase_hash (gconstpointer v)
+camel_lite_strcase_hash (gconstpointer v)
 {
 	const char *p = (char *) v;
 	guint h = 0, g;
@@ -158,7 +158,7 @@ free_string (gpointer string, gpointer user_data)
 }
 
 void
-camel_string_list_free (GList *string_list)
+camel_lite_string_list_free (GList *string_list)
 {
 	if (string_list == NULL)
 		return;
@@ -168,7 +168,7 @@ camel_string_list_free (GList *string_list)
 }
 
 char *
-camel_strstrcase (const char *haystack, const char *needle)
+camel_lite_strstrcase (const char *haystack, const char *needle)
 {
 	/* find the needle in the haystack neglecting case */
 	const char *ptr;
@@ -193,7 +193,7 @@ camel_strstrcase (const char *haystack, const char *needle)
 
 
 const char *
-camel_strdown (char *str)
+camel_lite_strdown (char *str)
 {
 	register char *s = str;
 
@@ -207,14 +207,14 @@ camel_strdown (char *str)
 }
 
 /**
- * camel_tolower:
+ * camel_lite_tolower:
  * @c:
  *
  * ASCII to-lower function.
  *
  * Return value:
  **/
-char camel_tolower(char c)
+char camel_lite_tolower(char c)
 {
 	if (c >= 'A' && c <= 'Z')
 		c |= 0x20;
@@ -223,14 +223,14 @@ char camel_tolower(char c)
 }
 
 /**
- * camel_toupper:
+ * camel_lite_toupper:
  * @c:
  *
  * ASCII to-upper function.
  *
  * Return value:
  **/
-char camel_toupper(char c)
+char camel_lite_toupper(char c)
 {
 	if (c >= 'a' && c <= 'z')
 		c &= ~0x20;
@@ -247,7 +247,7 @@ static pthread_mutex_t pstring_lock = PTHREAD_MUTEX_INITIALIZER;
 static GHashTable *pstring_table = NULL;
 
 /**
- * camel_pstring_add:
+ * camel_lite_pstring_add:
  * @str: string to add to the string pool
  * @own: whether the string pool will own the memory pointed to by @str, if @str is not yet in the pool
  *
@@ -256,10 +256,10 @@ static GHashTable *pstring_table = NULL;
  * The NULL and empty strings are special cased to constant values.
  *
  * Return value: A pointer to an equivalent string of @s.  Use
- * camel_pstring_free() when it is no longer needed.
+ * camel_lite_pstring_free() when it is no longer needed.
  **/
 const char *
-camel_pstring_add (char *str, gboolean own)
+camel_lite_pstring_add (char *str, gboolean own)
 {
 	void *pcount;
 	char *pstr;
@@ -300,7 +300,7 @@ camel_pstring_add (char *str, gboolean own)
 
 
 /**
- * camel_pstring_strdup:
+ * camel_lite_pstring_strdup:
  * @s: String to copy.
  *
  * Create a new pooled string entry for the string @s.  A pooled
@@ -311,17 +311,17 @@ camel_pstring_add (char *str, gboolean own)
  * The NULL and empty strings are special cased to constant values.
  *
  * Return value: A pointer to an equivalent string of @s.  Use
- * camel_pstring_free() when it is no longer needed.
+ * camel_lite_pstring_free() when it is no longer needed.
  **/
 const char *
-camel_pstring_strdup (const char *s)
+camel_lite_pstring_strdup (const char *s)
 {
-	return camel_pstring_add ((char *) s, FALSE);
+	return camel_lite_pstring_add ((char *) s, FALSE);
 }
 
 
 /**
- * camel_pstring_free:
+ * camel_lite_pstring_free:
  * @s: String to free.
  *
  * De-ref a pooled string. If no more refs exist to this string, it will be deallocated.
@@ -329,7 +329,7 @@ camel_pstring_strdup (const char *s)
  * NULL and the empty string are special cased.
  **/
 void
-camel_pstring_free(const char *s)
+camel_lite_pstring_free(const char *s)
 {
 	char *p;
 	void *pcount;

@@ -55,7 +55,7 @@ _tny_camel_bs_decode_raw_header (TnyCamelBsMsgHeader *me, const char *str)
 	while (isspace ((unsigned) *str))
 		str++;
 
-	return camel_header_decode_string (str, charset);
+	return camel_lite_header_decode_string (str, charset);
 }
 
 
@@ -174,14 +174,14 @@ static time_t
 tny_camel_bs_msg_header_get_date_received (TnyHeader *self)
 {
 	TnyCamelBsMsgHeader *me = TNY_CAMEL_BS_MSG_HEADER (self);
-	return camel_header_decode_date (me->envelope->date, NULL);
+	return camel_lite_header_decode_date (me->envelope->date, NULL);
 }
 
 static time_t
 tny_camel_bs_msg_header_get_date_sent (TnyHeader *self)
 {
 	TnyCamelBsMsgHeader *me = TNY_CAMEL_BS_MSG_HEADER (self);
-	return camel_header_decode_date (me->envelope->date, NULL);
+	return camel_lite_header_decode_date (me->envelope->date, NULL);
 }
 
 static gchar*
@@ -365,7 +365,7 @@ tny_camel_bs_msg_header_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

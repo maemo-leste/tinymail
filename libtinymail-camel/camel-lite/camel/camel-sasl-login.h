@@ -25,7 +25,7 @@
 
 #include <camel/camel-sasl.h>
 
-#define CAMEL_SASL_LOGIN_TYPE     (camel_sasl_login_get_type ())
+#define CAMEL_SASL_LOGIN_TYPE     (camel_lite_sasl_login_get_type ())
 #define CAMEL_SASL_LOGIN(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SASL_LOGIN_TYPE, CamelSaslLogin))
 #define CAMEL_SASL_LOGIN_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SASL_LOGIN_TYPE, CamelSaslLoginClass))
 #define CAMEL_IS_SASL_LOGIN(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SASL_LOGIN_TYPE))
@@ -47,9 +47,9 @@ typedef struct _CamelSaslLoginClass {
 
 
 /* Standard Camel function */
-CamelType camel_sasl_login_get_type (void);
+CamelType camel_lite_sasl_login_get_type (void);
 
-extern CamelServiceAuthType camel_sasl_login_authtype;
+extern CamelServiceAuthType camel_lite_sasl_login_authtype;
 
 G_END_DECLS
 

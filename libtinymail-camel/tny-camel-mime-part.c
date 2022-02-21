@@ -45,6 +45,7 @@ static GObjectClass *parent_class = NULL;
 #include "tny-camel-mime-part-priv.h"
 #include "tny-camel-msg-header-priv.h"
 #include "tny-camel-msg-priv.h"
+#include "tny-camel-common-priv.h"
 
 #include <camel/camel-url.h>
 #include <camel/camel-stream.h>
@@ -64,7 +65,7 @@ static GObjectClass *parent_class = NULL;
 
 #include <libedataserver/e-iconv.h>
 
-static ssize_t camel_stream_format_text (CamelDataWrapper *dw, CamelStream *stream);
+static ssize_t camel_lite_stream_format_text (CamelDataWrapper *dw, CamelStream *stream);
 
 
 
@@ -81,7 +82,7 @@ tny_camel_mime_part_set_header_pair_default (TnyMimePart *self, const gchar *nam
 {
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
 
-	camel_medium_add_header (CAMEL_MEDIUM (priv->part), name, value);
+	camel_lite_medium_add_header (CAMEL_MEDIUM (priv->part), name, value);
 
 	return;
 }
@@ -98,7 +99,7 @@ tny_camel_mime_part_get_header_pairs_default (TnyMimePart *self, TnyList *list)
 {
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
 	guint i = 0;
-	GArray *headers = camel_medium_get_headers (CAMEL_MEDIUM (priv->part));
+	GArray *headers = camel_lite_medium_get_headers (CAMEL_MEDIUM (priv->part));
 	
 	for (i=0; i < headers->len; i++)
 	{
@@ -108,7 +109,7 @@ tny_camel_mime_part_get_header_pairs_default (TnyMimePart *self, TnyList *list)
 		g_object_unref (pair);
 	}
 
-	camel_medium_free_headers (CAMEL_MEDIUM (priv->part), headers);
+	camel_lite_medium_free_headers (CAMEL_MEDIUM (priv->part), headers);
 
 	return;
 }
@@ -133,14 +134,14 @@ tny_camel_mime_part_get_parts_default (TnyMimePart *self, TnyList *list)
 
 	g_mutex_lock (priv->part_lock);
 
-	containee = camel_medium_get_content_object (CAMEL_MEDIUM (priv->part));
+	containee = camel_lite_medium_get_content_object (CAMEL_MEDIUM (priv->part));
 	
 	if (G_UNLIKELY (containee == NULL)) {
 		g_mutex_unlock (priv->part_lock);
 		return;
 	}
 
-	content_type = camel_mime_part_get_content_type (priv->part);
+	content_type = camel_lite_mime_part_get_content_type (priv->part);
 	if (content_type != NULL) {
 		if ((content_type->type && strcmp (content_type->type, "multipart")==0) &&
 		    (content_type->subtype && strcmp (content_type->subtype, "related") == 0)) {
@@ -150,10 +151,10 @@ tny_camel_mime_part_get_parts_default (TnyMimePart *self, TnyList *list)
 
 	if (CAMEL_IS_MULTIPART (containee))
 	{
-		guint i, parts = camel_multipart_get_number (CAMEL_MULTIPART (containee));
+		guint i, parts = camel_lite_multipart_get_number (CAMEL_MULTIPART (containee));
 		for (i = 0; i < parts; i++) 
 		{
-			CamelMimePart *tpart = camel_multipart_get_part (CAMEL_MULTIPART (containee), i);
+			CamelMimePart *tpart = camel_lite_multipart_get_part (CAMEL_MULTIPART (containee), i);
 			TnyMimePart *newpart=NULL;
 			CamelContentType *type;
 			const gchar *disposition;
@@ -161,11 +162,11 @@ tny_camel_mime_part_get_parts_default (TnyMimePart *self, TnyList *list)
 			if (!tpart || !CAMEL_IS_MIME_PART (tpart))
 				continue;
 
-			disposition = camel_mime_part_get_disposition (tpart);
-			if (disposition && camel_strstrcase (disposition, "attachment") != NULL)
+			disposition = camel_lite_mime_part_get_disposition (tpart);
+			if (disposition && camel_lite_strstrcase (disposition, "attachment") != NULL)
 				has_attachments = TRUE;
 
-			type = camel_mime_part_get_content_type (tpart);
+			type = camel_lite_mime_part_get_content_type (tpart);
 			if (CAMEL_IS_MIME_MESSAGE (tpart))
 			{
 				TnyHeader *nheader = NULL;
@@ -174,14 +175,14 @@ tny_camel_mime_part_get_parts_default (TnyMimePart *self, TnyList *list)
 				_tny_camel_mime_part_set_part (TNY_CAMEL_MIME_PART (newpart), CAMEL_MIME_PART (tpart));
 
 				nheader = _tny_camel_msg_header_new (CAMEL_MIME_MESSAGE (tpart), NULL, 
-					camel_mime_message_get_date_received (CAMEL_MIME_MESSAGE (tpart), NULL));
+					camel_lite_mime_message_get_date_received (CAMEL_MIME_MESSAGE (tpart), NULL));
 				_tny_camel_msg_set_header (TNY_CAMEL_MSG (newpart), nheader);
 
 				g_object_unref (nheader);
 			}
-			else if (type && camel_content_type_is (type, "message", "rfc822"))
+			else if (type && camel_lite_content_type_is (type, "message", "rfc822"))
 			{
-				CamelDataWrapper *c = camel_medium_get_content_object (CAMEL_MEDIUM (tpart));
+				CamelDataWrapper *c = camel_lite_medium_get_content_object (CAMEL_MEDIUM (tpart));
 
 				if (c && CAMEL_IS_MIME_PART (c) && CAMEL_IS_MIME_MESSAGE (c)) 
 				{
@@ -190,7 +191,7 @@ tny_camel_mime_part_get_parts_default (TnyMimePart *self, TnyList *list)
 					newpart = TNY_MIME_PART (tny_camel_msg_new ());
 					_tny_camel_mime_part_set_part (TNY_CAMEL_MIME_PART (newpart), CAMEL_MIME_PART (c));
 					nheader = _tny_camel_msg_header_new (CAMEL_MIME_MESSAGE (c), NULL, 
-						camel_mime_message_get_date_received (CAMEL_MIME_MESSAGE (c), NULL));
+						camel_lite_mime_message_get_date_received (CAMEL_MIME_MESSAGE (c), NULL));
 					_tny_camel_msg_set_header (TNY_CAMEL_MSG (newpart), nheader);
 
 					g_object_unref (nheader);
@@ -198,8 +199,8 @@ tny_camel_mime_part_get_parts_default (TnyMimePart *self, TnyList *list)
 
 			} else {
 				newpart = tny_camel_mime_part_new_with_part (tpart);
-				if (is_related && (camel_mime_part_get_disposition (tpart) == NULL)) {
-					camel_mime_part_set_disposition (tpart, "inline");
+				if (is_related && (camel_lite_mime_part_get_disposition (tpart) == NULL)) {
+					camel_lite_mime_part_set_disposition (tpart, "inline");
 				}
 			}
 
@@ -427,8 +428,8 @@ static const gchar*
 tny_camel_mime_part_get_transfer_encoding_default (TnyMimePart *self)
 {
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
-	CamelTransferEncoding encoding =  camel_mime_part_get_encoding (priv->part);
-	const char *text = camel_transfer_encoding_to_string (encoding);
+	CamelTransferEncoding encoding =  camel_lite_mime_part_get_encoding (priv->part);
+	const char *text = camel_lite_transfer_encoding_to_string (encoding);
 	return (const gchar *) text;
 }
 
@@ -453,7 +454,7 @@ tny_camel_mime_part_add_part_default (TnyMimePart *self, TnyMimePart *part)
 	g_mutex_lock (priv->part_lock);
 
 	medium = CAMEL_MEDIUM (priv->part);
-	containee = camel_medium_get_content_object (medium);
+	containee = camel_lite_medium_get_content_object (medium);
 
 	/* Warp it into a multipart */
 	if (!containee || !CAMEL_IS_MULTIPART (containee))
@@ -461,40 +462,40 @@ tny_camel_mime_part_add_part_default (TnyMimePart *self, TnyMimePart *part)
 		CamelContentType *type;
 		gchar *applied_type = NULL;
 
-		/* camel_medium_set_content_object does this ...
+		/* camel_lite_medium_set_content_object does this ...
 		if (containee)
-			camel_object_unref (containee); */
+			camel_lite_object_unref (containee); */
 
 		curl = 0;
-		type = camel_mime_part_get_content_type (priv->part);
+		type = camel_lite_mime_part_get_content_type (priv->part);
 
 		if (type && !g_ascii_strcasecmp (type->type, "multipart"))
 			applied_type = g_strdup_printf ("%s/%s", type->type, type->subtype);
 		else
 			applied_type = g_strdup ("multipart/mixed");
 
-		body = camel_multipart_new ();
-		camel_data_wrapper_set_mime_type (CAMEL_DATA_WRAPPER (body),
+		body = camel_lite_multipart_new ();
+		camel_lite_data_wrapper_set_mime_type (CAMEL_DATA_WRAPPER (body),
 						applied_type);
 		g_free (applied_type);
-		camel_multipart_set_boundary (body, NULL);
-		camel_medium_set_content_object (medium, CAMEL_DATA_WRAPPER (body));
-		camel_object_unref (body);
+		camel_lite_multipart_set_boundary (body, NULL);
+		camel_lite_medium_set_content_object (medium, CAMEL_DATA_WRAPPER (body));
+		camel_lite_object_unref (body);
 	} else
 		body = CAMEL_MULTIPART (containee);
 
 	cpart = tny_camel_mime_part_get_part (TNY_CAMEL_MIME_PART (actual_part));
 
 	/* Generate a content-id */
-	camel_mime_part_set_content_id (cpart, NULL);
+	camel_lite_mime_part_set_content_id (cpart, NULL);
 
 	if (cpart && CAMEL_IS_MIME_MESSAGE (cpart)) {
-		CamelMimePart *message_part = camel_mime_part_new ();
+		CamelMimePart *message_part = camel_lite_mime_part_new ();
 		const gchar *subject;
 		gchar *description;
 		gboolean freedescup = FALSE;
 
-		subject = camel_mime_message_get_subject (CAMEL_MIME_MESSAGE (cpart));
+		subject = camel_lite_mime_message_get_subject (CAMEL_MIME_MESSAGE (cpart));
 
 		if (subject) {
 			freedescup = TRUE;
@@ -502,24 +503,24 @@ tny_camel_mime_part_add_part_default (TnyMimePart *self, TnyMimePart *part)
 		} else
 			description = "Forwarded message";
 
-		camel_mime_part_set_description (message_part, description);
+		camel_lite_mime_part_set_description (message_part, description);
 
 		if (freedescup)
 			g_free (description);
 
-		camel_mime_part_set_disposition (message_part, "inline");
-		camel_medium_set_content_object (CAMEL_MEDIUM (message_part), 
+		camel_lite_mime_part_set_disposition (message_part, "inline");
+		camel_lite_medium_set_content_object (CAMEL_MEDIUM (message_part), 
 						 CAMEL_DATA_WRAPPER (cpart));
-		camel_mime_part_set_content_type (message_part, "message/rfc822");
-		camel_multipart_add_part (body, message_part);
-		camel_object_unref (message_part);
+		camel_lite_mime_part_set_content_type (message_part, "message/rfc822");
+		camel_lite_multipart_add_part (body, message_part);
+		camel_lite_object_unref (message_part);
 	} else if (cpart)
-		camel_multipart_add_part (body, cpart);
+		camel_lite_multipart_add_part (body, cpart);
 
 	if (cpart)
-		camel_object_unref (cpart);
+		camel_lite_object_unref (cpart);
 
-	retval = camel_multipart_get_number (body);
+	retval = camel_lite_multipart_get_number (body);
 
 	g_mutex_unlock (priv->part_lock);
 
@@ -528,7 +529,7 @@ tny_camel_mime_part_add_part_default (TnyMimePart *self, TnyMimePart *part)
 	return retval;
 }
 
-/* TODO: camel_mime_message_set_date(msg, time(0), 930); */
+/* TODO: camel_lite_mime_message_set_date(msg, time(0), 930); */
 
 static void 
 tny_camel_mime_part_del_part (TnyMimePart *self,  TnyMimePart *part)
@@ -552,13 +553,13 @@ tny_camel_mime_part_del_part_default (TnyMimePart *self, TnyMimePart *part)
 
 	g_mutex_lock (priv->part_lock);
 
-	containee = camel_medium_get_content_object (CAMEL_MEDIUM (priv->part));
+	containee = camel_lite_medium_get_content_object (CAMEL_MEDIUM (priv->part));
 
 	if (containee && CAMEL_IS_MULTIPART (containee))
 	{
 		cpart = tny_camel_mime_part_get_part (TNY_CAMEL_MIME_PART (part));
-		camel_multipart_remove_part (CAMEL_MULTIPART (containee), cpart);
-		camel_object_unref (CAMEL_OBJECT (cpart));
+		camel_lite_multipart_remove_part (CAMEL_MULTIPART (containee), cpart);
+		camel_lite_object_unref (CAMEL_OBJECT (cpart));
 	}
 
 	g_mutex_unlock (priv->part_lock);
@@ -581,27 +582,27 @@ tny_camel_mime_part_is_attachment_default (TnyMimePart *self)
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
 	CamelDataWrapper *dw = NULL;
 	CamelMedium *medium = (CamelMedium *)priv->part;
-	const gchar *contdisp = camel_medium_get_header (medium, "content-disposition");
+	const gchar *contdisp = camel_lite_medium_get_header (medium, "content-disposition");
 
 	/* Content-Disposition is excellent for this, of course (but we might
 	 * not actually have this header, as not all E-mail clients add it) */
 
 	if (contdisp) {
-		if (camel_strstrcase (contdisp, "attachment"))
+		if (camel_lite_strstrcase (contdisp, "attachment"))
 			return TRUE;
-		if (camel_strstrcase (contdisp, "inline") && (camel_strstrcase (contdisp, "filename=") == NULL))
+		if (camel_lite_strstrcase (contdisp, "inline") && (camel_lite_strstrcase (contdisp, "filename=") == NULL))
 			return FALSE;
 	}
 
 	/* Check the old fashioned way */
-	dw = camel_medium_get_content_object(medium);
+	dw = camel_lite_medium_get_content_object(medium);
 
 	if (dw) {
-		return !(camel_content_type_is(dw->mime_type, "application", "x-pkcs7-mime")
-			 || camel_content_type_is(dw->mime_type, "application", "pkcs7-mime")
-			 || camel_content_type_is(dw->mime_type, "application", "x-inlinepgp-signed")
-			 || camel_content_type_is(dw->mime_type, "application", "x-inlinepgp-encrypted")
-			 || (camel_mime_part_get_filename(priv->part) == NULL));
+		return !(camel_lite_content_type_is(dw->mime_type, "application", "x-pkcs7-mime")
+			 || camel_lite_content_type_is(dw->mime_type, "application", "pkcs7-mime")
+			 || camel_lite_content_type_is(dw->mime_type, "application", "x-inlinepgp-signed")
+			 || camel_lite_content_type_is(dw->mime_type, "application", "x-inlinepgp-encrypted")
+			 || (camel_lite_mime_part_get_filename(priv->part) == NULL));
 	}
 
 	return FALSE;
@@ -628,15 +629,15 @@ tny_camel_mime_part_write_to_stream_default (TnyMimePart *self, TnyStream *strea
 
 	g_mutex_lock (priv->part_lock);
 	medium = CAMEL_MEDIUM (priv->part);
-	camel_object_ref (medium);
+	camel_lite_object_ref (medium);
 	g_mutex_unlock (priv->part_lock);
 
-	wrapper = camel_medium_get_content_object (medium);
+	wrapper = camel_lite_medium_get_content_object (medium);
 
 	if (!wrapper) {
 		g_warning (_("Mime part does not yet have a source stream, use "
 			     "tny_mime_part_construct first"));
-		camel_object_unref (cstream);
+		camel_lite_object_unref (cstream);
 		g_set_error (err, TNY_ERROR_DOMAIN,
 				TNY_MIME_ERROR_STATE,
 				_("Mime part does not yet have a source stream, use "
@@ -645,13 +646,13 @@ tny_camel_mime_part_write_to_stream_default (TnyMimePart *self, TnyStream *strea
 	}
 
 	/* This should work but doesn't . . .
-	camel_data_wrapper_write_to_stream (wrapper, cstream); */
+	camel_lite_data_wrapper_write_to_stream (wrapper, cstream); */
 
-	camel_stream_reset (wrapper->stream);
-	bytes = (gssize) camel_stream_write_to_stream (wrapper->stream, cstream);
+	camel_lite_stream_reset (wrapper->stream);
+	bytes = (gssize) camel_lite_stream_write_to_stream (wrapper->stream, cstream);
 
-	camel_object_unref (cstream);
-	camel_object_unref (medium);
+	camel_lite_object_unref (cstream);
+	camel_lite_object_unref (medium);
 
 	if (bytes < 0) {
 		g_set_error (err, TNY_ERROR_DOMAIN,
@@ -665,7 +666,7 @@ tny_camel_mime_part_write_to_stream_default (TnyMimePart *self, TnyStream *strea
 
 
 static ssize_t
-camel_stream_format_text (CamelDataWrapper *dw, CamelStream *stream)
+camel_lite_stream_format_text (CamelDataWrapper *dw, CamelStream *stream)
 {
 	/* Stolen from evolution, evil evil me!! moehahah */
 
@@ -675,7 +676,7 @@ camel_stream_format_text (CamelDataWrapper *dw, CamelStream *stream)
 	CamelMimeFilterWindows *windows = NULL;
 	ssize_t bytes = -1;
 
-	if (dw->mime_type && (charset = camel_content_type_param 
+	if (dw->mime_type && (charset = camel_lite_content_type_param 
 			(dw->mime_type, "charset")) && 
 		g_ascii_strncasecmp(charset, "iso-8859-", 9) == 0) 
 	{
@@ -686,30 +687,30 @@ camel_stream_format_text (CamelDataWrapper *dw, CamelStream *stream)
 		* out windows-cp125#, do some simple sanity checking
 		* before we move on... */
 
-		null = camel_stream_null_new();
-		filter_stream = camel_stream_filter_new_with_stream(null);
-		camel_object_unref(null);
-		windows = (CamelMimeFilterWindows *)camel_mime_filter_windows_new(charset);
-		camel_stream_filter_add (filter_stream, (CamelMimeFilter *)windows);
-		camel_data_wrapper_decode_to_stream (dw, (CamelStream *)filter_stream);
-		camel_stream_flush ((CamelStream *)filter_stream);
-		camel_object_unref (filter_stream);
-		charset = camel_mime_filter_windows_real_charset (windows);
+		null = camel_lite_stream_null_new();
+		filter_stream = camel_lite_stream_filter_new_with_stream(null);
+		camel_lite_object_unref(null);
+		windows = (CamelMimeFilterWindows *)camel_lite_mime_filter_windows_new(charset);
+		camel_lite_stream_filter_add (filter_stream, (CamelMimeFilter *)windows);
+		camel_lite_data_wrapper_decode_to_stream (dw, (CamelStream *)filter_stream);
+		camel_lite_stream_flush ((CamelStream *)filter_stream);
+		camel_lite_object_unref (filter_stream);
+		charset = camel_lite_mime_filter_windows_real_charset (windows);
 	}
 
-	filter_stream = camel_stream_filter_new_with_stream (stream);
+	filter_stream = camel_lite_stream_filter_new_with_stream (stream);
 
-	if ((filter = camel_mime_filter_charset_new_convert (charset, "UTF-8"))) {
-		camel_stream_filter_add (filter_stream, (CamelMimeFilter *) filter);
-		camel_object_unref (filter);
+	if ((filter = camel_lite_mime_filter_charset_new_convert (charset, "UTF-8"))) {
+		camel_lite_stream_filter_add (filter_stream, (CamelMimeFilter *) filter);
+		camel_lite_object_unref (filter);
 	}
 
-	bytes = camel_data_wrapper_decode_to_stream (dw, (CamelStream *)filter_stream);
-	camel_stream_flush ((CamelStream *)filter_stream);
-	camel_object_unref (filter_stream);
+	bytes = camel_lite_data_wrapper_decode_to_stream (dw, (CamelStream *)filter_stream);
+	camel_lite_stream_flush ((CamelStream *)filter_stream);
+	camel_lite_object_unref (filter_stream);
 
 	if (windows)
-		camel_object_unref(windows);
+		camel_lite_object_unref(windows);
 
 	return bytes;
 }
@@ -736,27 +737,27 @@ tny_camel_mime_part_decode_to_stream_default (TnyMimePart *self, TnyStream *stre
 
 	g_mutex_lock (priv->part_lock);
 	medium = CAMEL_MEDIUM (priv->part);
-	camel_object_ref (CAMEL_OBJECT (medium));
+	camel_lite_object_ref (CAMEL_OBJECT (medium));
 	g_mutex_unlock (priv->part_lock);
 
-	wrapper = camel_medium_get_content_object (medium);
-	camel_object_ref (wrapper);
+	wrapper = camel_lite_medium_get_content_object (medium);
+	camel_lite_object_ref (wrapper);
 
 	if (G_UNLIKELY (!wrapper)) {
 		g_warning (_("Mime part does not yet have a source stream, use "
 			     "tny_mime_part_construct first"));
-		camel_object_unref (CAMEL_OBJECT (cstream));
+		camel_lite_object_unref (CAMEL_OBJECT (cstream));
 		return -1;
 	}
 	
-	if (camel_content_type_is (wrapper->mime_type, "text", "plain"))
-		bytes = (gssize) camel_stream_format_text (wrapper, cstream);
+	if (camel_lite_content_type_is (wrapper->mime_type, "text", "plain"))
+		bytes = (gssize) camel_lite_stream_format_text (wrapper, cstream);
 	else
-		bytes = (gssize) camel_data_wrapper_decode_to_stream (wrapper, cstream);
+		bytes = (gssize) camel_lite_data_wrapper_decode_to_stream (wrapper, cstream);
 
-	camel_object_unref (wrapper);
-	camel_object_unref (cstream);
-	camel_object_unref (medium);
+	camel_lite_object_unref (wrapper);
+	camel_lite_object_unref (cstream);
+	camel_lite_object_unref (medium);
 	
 	if (bytes < 0) {
 		g_set_error (err, TNY_ERROR_DOMAIN,
@@ -784,8 +785,8 @@ tny_camel_mime_part_set_transfer_encoding_default (TnyMimePart *self, const gcha
 {
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
 	CamelTransferEncoding encoding;
-	encoding = camel_transfer_encoding_from_string (transfer_encoding);
-	camel_mime_part_set_encoding (priv->part, encoding);
+	encoding = camel_lite_transfer_encoding_from_string (transfer_encoding);
+	camel_lite_mime_part_set_encoding (priv->part, encoding);
 	return;
 }
 
@@ -805,34 +806,34 @@ tny_camel_mime_part_construct_default (TnyMimePart *self, TnyStream *stream, con
 
 	g_mutex_lock (priv->part_lock);
 
-	encoding = camel_transfer_encoding_from_string (transfer_encoding);
-	camel_mime_part_set_encoding (priv->part, encoding);
+	encoding = camel_lite_transfer_encoding_from_string (transfer_encoding);
+	camel_lite_mime_part_set_encoding (priv->part, encoding);
 
 	medium = CAMEL_MEDIUM (priv->part);
-	camel_object_ref (CAMEL_OBJECT (medium));
+	camel_lite_object_ref (CAMEL_OBJECT (medium));
 	g_mutex_unlock (priv->part_lock);
 
-	wrapper = camel_medium_get_content_object (medium);
+	wrapper = camel_lite_medium_get_content_object (medium);
 
 	if (wrapper)
-		camel_object_unref (CAMEL_OBJECT (wrapper));
+		camel_lite_object_unref (CAMEL_OBJECT (wrapper));
 
 	if (mime_type && g_ascii_strcasecmp (mime_type, "message/rfc822") == 0)
-		wrapper = (CamelDataWrapper *) camel_mime_message_new ();
+		wrapper = (CamelDataWrapper *) camel_lite_mime_message_new ();
 	else
-		wrapper = camel_data_wrapper_new ();
+		wrapper = camel_lite_data_wrapper_new ();
 
-	retval = camel_data_wrapper_construct_from_stream (wrapper, cstream);
+	retval = camel_lite_data_wrapper_construct_from_stream (wrapper, cstream);
 	if (mime_type)
-		camel_data_wrapper_set_mime_type (wrapper, mime_type);
+		camel_lite_data_wrapper_set_mime_type (wrapper, mime_type);
 
-	camel_medium_set_content_object(medium, wrapper);
+	camel_lite_medium_set_content_object(medium, wrapper);
 
-	camel_mime_part_set_content_id (priv->part, NULL);
+	camel_lite_mime_part_set_content_id (priv->part, NULL);
 
-	camel_object_unref (cstream);
-	camel_object_unref (medium);
-	camel_object_unref (wrapper);
+	camel_lite_object_unref (cstream);
+	camel_lite_object_unref (medium);
+	camel_lite_object_unref (wrapper);
 
 	return retval;
 }
@@ -850,31 +851,31 @@ tny_camel_mime_part_get_stream_default (TnyMimePart *self)
 	TnyStream *retval = NULL;
 	CamelDataWrapper *wrapper;
 	CamelMedium *medium;
-	CamelStream *stream = camel_stream_mem_new ();
+	CamelStream *stream = camel_lite_stream_mem_new ();
 
 	g_mutex_lock (priv->part_lock);
 	medium =  CAMEL_MEDIUM (priv->part);
-	camel_object_ref (medium);
+	camel_lite_object_ref (medium);
 	g_mutex_unlock (priv->part_lock);
 
-	wrapper = camel_medium_get_content_object (medium);
+	wrapper = camel_lite_medium_get_content_object (medium);
 
 	if (!wrapper) {
-		wrapper = camel_data_wrapper_new (); 
-		camel_medium_set_content_object (medium, wrapper);
-		camel_object_unref (wrapper);
+		wrapper = camel_lite_data_wrapper_new (); 
+		camel_lite_medium_set_content_object (medium, wrapper);
+		camel_lite_object_unref (wrapper);
 	} 
 
 	if (wrapper->stream) {
-		camel_stream_reset (wrapper->stream);
-		camel_stream_write_to_stream (wrapper->stream, stream);
+		camel_lite_stream_reset (wrapper->stream);
+		camel_lite_stream_write_to_stream (wrapper->stream, stream);
 	}
 
 	retval = TNY_STREAM (tny_camel_stream_new (stream));
-	camel_object_unref (stream);
+	camel_lite_object_unref (stream);
 
 	tny_stream_reset (retval);
-	camel_object_unref (medium);
+	camel_lite_object_unref (medium);
 
 	return retval;
 }
@@ -895,29 +896,29 @@ tny_camel_mime_part_get_decoded_stream_default (TnyMimePart *self)
 	TnyStream *retval = NULL;
 	CamelDataWrapper *wrapper;
 	CamelMedium *medium;
-	CamelStream *stream = camel_stream_mem_new ();
+	CamelStream *stream = camel_lite_stream_mem_new ();
 	gssize bytes = -1;
 
 	g_mutex_lock (priv->part_lock);
 	medium =  CAMEL_MEDIUM (priv->part);
-	camel_object_ref (medium);
+	camel_lite_object_ref (medium);
 	g_mutex_unlock (priv->part_lock);
 
-	wrapper = camel_medium_get_content_object (medium);
+	wrapper = camel_lite_medium_get_content_object (medium);
 
 	if (!wrapper) {
-		wrapper = camel_data_wrapper_new (); 
-		camel_medium_set_content_object (medium, wrapper);
-		camel_object_unref (wrapper);
+		wrapper = camel_lite_data_wrapper_new (); 
+		camel_lite_medium_set_content_object (medium, wrapper);
+		camel_lite_object_unref (wrapper);
 	} 
 
 	if (wrapper->stream) {
-		camel_stream_reset (wrapper->stream);
+		camel_lite_stream_reset (wrapper->stream);
 
-		if (camel_content_type_is (wrapper->mime_type, "text", "plain"))
-			bytes = camel_stream_format_text (wrapper, stream);
+		if (camel_lite_content_type_is (wrapper->mime_type, "text", "plain"))
+			bytes = camel_lite_stream_format_text (wrapper, stream);
 		else
-			bytes = camel_data_wrapper_decode_to_stream (wrapper, stream);
+			bytes = camel_lite_data_wrapper_decode_to_stream (wrapper, stream);
 	}
 
 	if (bytes >= 0) {
@@ -925,8 +926,8 @@ tny_camel_mime_part_get_decoded_stream_default (TnyMimePart *self)
 		tny_stream_reset (retval);
 	}
 
-	camel_object_unref (stream);
-	camel_object_unref (medium);
+	camel_lite_object_unref (stream);
+	camel_lite_object_unref (medium);
 
 	return retval;
 }
@@ -946,7 +947,7 @@ tny_camel_mime_part_get_content_type_default (TnyMimePart *self)
 	if (!priv->cached_content_type) {
 		CamelContentType *type;
 		g_mutex_lock (priv->part_lock);
-		type = camel_mime_part_get_content_type (priv->part);
+		type = camel_lite_mime_part_get_content_type (priv->part);
 		if (type)
 			priv->cached_content_type = g_strdup_printf ("%s/%s", type->type, type->subtype);
 		g_mutex_unlock (priv->part_lock);
@@ -965,7 +966,7 @@ static gboolean
 tny_camel_mime_part_is_purged_default (TnyMimePart *self)
 {
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
-	const gchar *disposition = camel_mime_part_get_disposition (priv->part);
+	const gchar *disposition = camel_lite_mime_part_get_disposition (priv->part);
 	return (disposition != NULL) && (!strcmp (disposition, "purged"));
 }
 
@@ -984,7 +985,7 @@ tny_camel_mime_part_content_type_is_default (TnyMimePart *self, const gchar *typ
 	gboolean retval = FALSE;
 
 	g_mutex_lock (priv->part_lock);
-	ctype = camel_mime_part_get_content_type (priv->part);
+	ctype = camel_lite_mime_part_get_content_type (priv->part);
 	g_mutex_unlock (priv->part_lock);
 
 	if (!ctype)
@@ -999,7 +1000,7 @@ tny_camel_mime_part_content_type_is_default (TnyMimePart *self, const gchar *typ
 
 	/* pocus ! */
 
-	retval = camel_content_type_is (ctype, (const char *)str1, 
+	retval = camel_lite_content_type_is (ctype, (const char *)str1, 
 			(const char *) str2);
 
 	g_free (dup);
@@ -1025,9 +1026,9 @@ _tny_camel_mime_part_set_part (TnyCamelMimePart *self, CamelMimePart *part)
 	priv->cached_content_type = NULL;
 
 	if (priv->part)
-		camel_object_unref (priv->part);
+		camel_lite_object_unref (priv->part);
 
-	camel_object_ref (part);
+	camel_lite_object_ref (part);
 	priv->part = part;
 
 	g_mutex_unlock (priv->part_lock);
@@ -1052,7 +1053,7 @@ tny_camel_mime_part_get_part (TnyCamelMimePart *self)
 	g_mutex_lock (priv->part_lock);
 	retval = priv->part;
 	if (retval)
-		camel_object_ref (retval);
+		camel_lite_object_ref (retval);
 	g_mutex_unlock (priv->part_lock);
 
 	return retval;
@@ -1060,19 +1061,19 @@ tny_camel_mime_part_get_part (TnyCamelMimePart *self)
 
 
 static const gchar*
-tny_camel_mime_part_get_filename (TnyMimePart *self)
+tny_camel_lite_mime_part_get_filename (TnyMimePart *self)
 {
 	return TNY_CAMEL_MIME_PART_GET_CLASS (self)->get_filename(self);
 }
 
 static const gchar*
-tny_camel_mime_part_get_filename_default (TnyMimePart *self)
+tny_camel_lite_mime_part_get_filename_default (TnyMimePart *self)
 {
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
 
 	g_mutex_lock (priv->part_lock);
 	if (!priv->cached_filename) {
-		const char *str = camel_mime_part_get_filename (priv->part);
+		const char *str = camel_lite_mime_part_get_filename (priv->part);
 
 		if (str) {
 			if (!g_utf8_validate (str, -1, NULL))
@@ -1099,7 +1100,7 @@ tny_camel_mime_part_get_content_id_default (TnyMimePart *self)
 	const gchar *retval;
 
 	g_mutex_lock (priv->part_lock);
-	retval = camel_mime_part_get_content_id (priv->part);
+	retval = camel_lite_mime_part_get_content_id (priv->part);
 	g_mutex_unlock (priv->part_lock);
 
 	return retval;
@@ -1118,7 +1119,7 @@ tny_camel_mime_part_get_description_default (TnyMimePart *self)
 	const gchar *retval;
 
 	g_mutex_lock (priv->part_lock);
-	retval = camel_mime_part_get_description (priv->part);
+	retval = camel_lite_mime_part_get_description (priv->part);
 	g_mutex_unlock (priv->part_lock);
 
 	return retval;
@@ -1137,7 +1138,7 @@ tny_camel_mime_part_get_content_location_default (TnyMimePart *self)
 	const gchar *retval;
 
 	g_mutex_lock (priv->part_lock);
-	retval = camel_mime_part_get_content_location (priv->part);
+	retval = camel_lite_mime_part_get_content_location (priv->part);
 	g_mutex_unlock (priv->part_lock);
 
 	return retval;
@@ -1157,7 +1158,7 @@ tny_camel_mime_part_set_content_location_default (TnyMimePart *self, const gchar
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
 
 	g_mutex_lock (priv->part_lock);
-	camel_mime_part_set_content_location (priv->part, content_location);
+	camel_lite_mime_part_set_content_location (priv->part, content_location);
 	g_mutex_unlock (priv->part_lock);
 
 	return;
@@ -1176,7 +1177,7 @@ tny_camel_mime_part_set_description_default (TnyMimePart *self, const gchar *des
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
 
 	g_mutex_lock (priv->part_lock);
-	camel_mime_part_set_description (priv->part, description);
+	camel_lite_mime_part_set_description (priv->part, description);
 	g_mutex_unlock (priv->part_lock);
 
 	return;
@@ -1195,7 +1196,7 @@ tny_camel_mime_part_set_content_id_default (TnyMimePart *self, const gchar *cont
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
 
 	g_mutex_lock (priv->part_lock);
-	camel_mime_part_set_content_id (priv->part, content_id);
+	camel_lite_mime_part_set_content_id (priv->part, content_id);
 	g_mutex_unlock (priv->part_lock);
 
 	return;
@@ -1213,7 +1214,7 @@ tny_camel_mime_part_set_filename_default (TnyMimePart *self, const gchar *filena
 {
 	TnyCamelMimePartPriv *priv = TNY_CAMEL_MIME_PART_GET_PRIVATE (self);
 	g_mutex_lock (priv->part_lock);
-	camel_mime_part_set_filename (priv->part, filename);
+	camel_lite_mime_part_set_filename (priv->part, filename);
 	g_mutex_unlock (priv->part_lock);
 	return;
 }
@@ -1233,12 +1234,12 @@ tny_camel_mime_part_set_purged_default (TnyMimePart *self)
 	const gchar *tmp;
 	gchar *filename = NULL;
 	g_mutex_lock (priv->part_lock);
-	tmp = camel_mime_part_get_filename (priv->part);
+	tmp = camel_lite_mime_part_get_filename (priv->part);
 	if (tmp != NULL)
 		filename = g_strdup (tmp);
-	camel_mime_part_set_disposition (priv->part, "purged");
+	camel_lite_mime_part_set_disposition (priv->part, "purged");
 	if (filename) {
-		camel_mime_part_set_filename (priv->part, filename);
+		camel_lite_mime_part_set_filename (priv->part, filename);
 		g_free (filename);
 	}
 	g_mutex_unlock (priv->part_lock);
@@ -1260,7 +1261,7 @@ tny_camel_mime_part_set_content_type_default (TnyMimePart *self, const gchar *co
 	g_assert (CAMEL_IS_MEDIUM (priv->part));
 
 	g_mutex_lock (priv->part_lock);
-	camel_mime_part_set_content_type (priv->part, content_type);
+	camel_lite_mime_part_set_content_type (priv->part, content_type);
 
 	if (priv->cached_filename)
 		g_free (priv->cached_filename);
@@ -1292,7 +1293,7 @@ tny_camel_mime_part_finalize (GObject *object)
 	priv->cached_content_type = NULL;
 
 	if (priv->part && CAMEL_IS_OBJECT (priv->part))
-		camel_object_unref (CAMEL_OBJECT (priv->part));
+		camel_lite_object_unref (CAMEL_OBJECT (priv->part));
 	g_mutex_unlock (priv->part_lock);
 
 	g_mutex_free (priv->part_lock);
@@ -1315,11 +1316,11 @@ TnyMimePart*
 tny_camel_mime_part_new (void)
 {
 	TnyCamelMimePart *self = g_object_new (TNY_TYPE_CAMEL_MIME_PART, NULL);
-	CamelMimePart *cpart = camel_mime_part_new ();
+	CamelMimePart *cpart = camel_lite_mime_part_new ();
 
 	_tny_camel_mime_part_set_part (self, cpart);
 
-	camel_object_unref(cpart);
+	camel_lite_object_unref(cpart);
 	return TNY_MIME_PART (self);
 }
 
@@ -1355,7 +1356,7 @@ tny_mime_part_init (gpointer g, gpointer iface_data)
 	klass->get_decoded_stream= tny_camel_mime_part_get_decoded_stream;
 	klass->write_to_stream= tny_camel_mime_part_write_to_stream;
 	klass->construct= tny_camel_mime_part_construct;
-	klass->get_filename= tny_camel_mime_part_get_filename;
+	klass->get_filename= tny_camel_lite_mime_part_get_filename;
 	klass->get_content_id= tny_camel_mime_part_get_content_id;
 	klass->get_description= tny_camel_mime_part_get_description;
 	klass->get_content_location= tny_camel_mime_part_get_content_location;
@@ -1394,7 +1395,7 @@ tny_camel_mime_part_class_init (TnyCamelMimePartClass *class)
 	class->get_decoded_stream= tny_camel_mime_part_get_decoded_stream_default;
 	class->write_to_stream= tny_camel_mime_part_write_to_stream_default;
 	class->construct= tny_camel_mime_part_construct_default;
-	class->get_filename= tny_camel_mime_part_get_filename_default;
+	class->get_filename= tny_camel_lite_mime_part_get_filename_default;
 	class->get_content_id= tny_camel_mime_part_get_content_id_default;
 	class->get_description= tny_camel_mime_part_get_description_default;
 	class->get_content_location= tny_camel_mime_part_get_content_location_default;
@@ -1490,7 +1491,7 @@ tny_camel_mime_part_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

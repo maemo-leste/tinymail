@@ -8,7 +8,7 @@
 #include <libedataserver/e-msgport.h>
 #include "camel-imapp-folder.h"
 
-#define CAMEL_IMAPP_ENGINE_TYPE     (camel_imapp_engine_get_type ())
+#define CAMEL_IMAPP_ENGINE_TYPE     (camel_lite_imapp_engine_get_type ())
 #define CAMEL_IMAPP_ENGINE(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_IMAPP_ENGINE_TYPE, CamelIMAPPEngine))
 #define CAMEL_IMAPP_ENGINE_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_IMAPP_ENGINE_TYPE, CamelIMAPPEngineClass))
 #define CAMEL_IS_IMAP_ENGINE(o)    (CAMEL_CHECK_TYPE((o), CAMEL_IMAPP_ENGINE_TYPE))
@@ -28,7 +28,7 @@ typedef enum {
 	CAMEL_IMAPP_COMMAND_AUTH,
 	CAMEL_IMAPP_COMMAND_MASK = 0xff,
 	CAMEL_IMAPP_COMMAND_CONTINUATION = 0x8000 /* does this command expect continuation? */
-} camel_imapp_command_part_t;
+} camel_lite_imapp_command_part_t;
 
 struct _CamelIMAPPCommandPart {
 	struct _CamelIMAPPCommandPart *next;
@@ -39,7 +39,7 @@ struct _CamelIMAPPCommandPart {
 	int data_size;
 	char *data;
 
-	camel_imapp_command_part_t type;
+	camel_lite_imapp_command_part_t type;
 
 	int ob_size;
 	CamelObject *ob;
@@ -89,12 +89,12 @@ enum {
 };
 
 /* currently selected states */
-typedef enum _camel_imapp_engine_state_t {
+typedef enum _camel_lite_imapp_engine_state_t {
 	IMAP_ENGINE_DISCONNECT,	/* only happens during shutdown */
 	IMAP_ENGINE_CONNECT,	/* connected, not authenticated */
 	IMAP_ENGINE_AUTH,	/* connected, and authenticated */
 	IMAP_ENGINE_SELECT,	/* and selected, select holds selected folder */
-} camel_imapp_engine_state_t;
+} camel_lite_imapp_engine_state_t;
 
 struct _CamelIMAPPEngine {
 	CamelObject parent_object;
@@ -104,7 +104,7 @@ struct _CamelIMAPPEngine {
 
 	CamelIMAPPStream *stream;
 
-	camel_imapp_engine_state_t state;
+	camel_lite_imapp_engine_state_t state;
 
 	guint32 capa;		/* capabilities for this server, refresh with :capabilities() */
 
@@ -134,26 +134,26 @@ struct _CamelIMAPPEngineClass {
 	*/
 };
 
-CamelType       camel_imapp_engine_get_type (void);
+CamelType       camel_lite_imapp_engine_get_type (void);
 
-CamelIMAPPEngine  *camel_imapp_engine_new(CamelIMAPPStream *stream);
+CamelIMAPPEngine  *camel_lite_imapp_engine_new(CamelIMAPPStream *stream);
 
-void		camel_imapp_engine_add_handler(CamelIMAPPEngine *imap, const char *response, CamelIMAPPEngineFunc func, void *data);
-int 		camel_imapp_engine_iterate(CamelIMAPPEngine *imap, CamelIMAPPCommand *wait); /* throws PARSE,IO exception */
-int		camel_imapp_engine_skip(CamelIMAPPEngine *imap);
-int		camel_imapp_engine_capabilities(CamelIMAPPEngine *imap);
+void		camel_lite_imapp_engine_add_handler(CamelIMAPPEngine *imap, const char *response, CamelIMAPPEngineFunc func, void *data);
+int 		camel_lite_imapp_engine_iterate(CamelIMAPPEngine *imap, CamelIMAPPCommand *wait); /* throws PARSE,IO exception */
+int		camel_lite_imapp_engine_skip(CamelIMAPPEngine *imap);
+int		camel_lite_imapp_engine_capabilities(CamelIMAPPEngine *imap);
 
-CamelIMAPPCommand *camel_imapp_engine_command_new  (CamelIMAPPEngine *imap, const char *name, const char *select, const char *fmt, ...);
-void		camel_imapp_engine_command_complete(CamelIMAPPEngine *imap, struct _CamelIMAPPCommand *, CamelIMAPPCommandFunc func, void *data);
-void            camel_imapp_engine_command_add  (CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, const char *fmt, ...);
-void            camel_imapp_engine_command_free (CamelIMAPPEngine *imap, CamelIMAPPCommand *ic);
-void 		camel_imapp_engine_command_queue(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic); /* throws IO exception */
-CamelIMAPPCommand *camel_imapp_engine_command_find (CamelIMAPPEngine *imap, const char *name);
-CamelIMAPPCommand *camel_imapp_engine_command_find_tag(CamelIMAPPEngine *imap, unsigned int tag);
+CamelIMAPPCommand *camel_lite_imapp_engine_command_new  (CamelIMAPPEngine *imap, const char *name, const char *select, const char *fmt, ...);
+void		camel_lite_imapp_engine_command_complete(CamelIMAPPEngine *imap, struct _CamelIMAPPCommand *, CamelIMAPPCommandFunc func, void *data);
+void            camel_lite_imapp_engine_command_add  (CamelIMAPPEngine *imap, CamelIMAPPCommand *ic, const char *fmt, ...);
+void            camel_lite_imapp_engine_command_free (CamelIMAPPEngine *imap, CamelIMAPPCommand *ic);
+void 		camel_lite_imapp_engine_command_queue(CamelIMAPPEngine *imap, CamelIMAPPCommand *ic); /* throws IO exception */
+CamelIMAPPCommand *camel_lite_imapp_engine_command_find (CamelIMAPPEngine *imap, const char *name);
+CamelIMAPPCommand *camel_lite_imapp_engine_command_find_tag(CamelIMAPPEngine *imap, unsigned int tag);
 
 /* util functions */
-CamelIMAPPSelectResponse *camel_imapp_engine_select(CamelIMAPPEngine *imap, const char *name);
-void camel_imapp_engine_select_free(CamelIMAPPEngine *imap, CamelIMAPPSelectResponse *select);
+CamelIMAPPSelectResponse *camel_lite_imapp_engine_select(CamelIMAPPEngine *imap, const char *name);
+void camel_lite_imapp_engine_select_free(CamelIMAPPEngine *imap, CamelIMAPPSelectResponse *select);
 
 G_END_DECLS
 

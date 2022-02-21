@@ -77,29 +77,29 @@ raw_enable_compress (CamelTcpStream *stream)
 }
 
 static void
-camel_tcp_stream_raw_class_init (CamelTcpStreamRawClass *camel_tcp_stream_raw_class)
+camel_lite_tcp_stream_raw_class_init (CamelTcpStreamRawClass *camel_lite_tcp_stream_raw_class)
 {
-	CamelTcpStreamClass *camel_tcp_stream_class =
-		CAMEL_TCP_STREAM_CLASS (camel_tcp_stream_raw_class);
-	CamelStreamClass *camel_stream_class =
-		CAMEL_STREAM_CLASS (camel_tcp_stream_raw_class);
+	CamelTcpStreamClass *camel_lite_tcp_stream_class =
+		CAMEL_TCP_STREAM_CLASS (camel_lite_tcp_stream_raw_class);
+	CamelStreamClass *camel_lite_stream_class =
+		CAMEL_STREAM_CLASS (camel_lite_tcp_stream_raw_class);
 
-	parent_class = CAMEL_TCP_STREAM_CLASS (camel_type_get_global_classfuncs (camel_tcp_stream_get_type ()));
+	parent_class = CAMEL_TCP_STREAM_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_tcp_stream_get_type ()));
 
 	/* virtual method overload */
-	camel_stream_class->read = stream_read;
-	camel_stream_class->write = stream_write;
-	camel_stream_class->flush = stream_flush;
-	camel_stream_class->close = stream_close;
+	camel_lite_stream_class->read = stream_read;
+	camel_lite_stream_class->write = stream_write;
+	camel_lite_stream_class->flush = stream_flush;
+	camel_lite_stream_class->close = stream_close;
 
-	camel_tcp_stream_class->enable_compress = raw_enable_compress;
-	camel_tcp_stream_class->gettimeout = stream_gettimeout;
-	camel_tcp_stream_class->read_nb = stream_read_nb;
-	camel_tcp_stream_class->connect = stream_connect;
-	camel_tcp_stream_class->getsockopt = stream_getsockopt;
-	camel_tcp_stream_class->setsockopt  = stream_setsockopt;
-	camel_tcp_stream_class->get_local_address  = stream_get_local_address;
-	camel_tcp_stream_class->get_remote_address = stream_get_remote_address;
+	camel_lite_tcp_stream_class->enable_compress = raw_enable_compress;
+	camel_lite_tcp_stream_class->gettimeout = stream_gettimeout;
+	camel_lite_tcp_stream_class->read_nb = stream_read_nb;
+	camel_lite_tcp_stream_class->connect = stream_connect;
+	camel_lite_tcp_stream_class->getsockopt = stream_getsockopt;
+	camel_lite_tcp_stream_class->setsockopt  = stream_setsockopt;
+	camel_lite_tcp_stream_class->get_local_address  = stream_get_local_address;
+	camel_lite_tcp_stream_class->get_remote_address = stream_get_remote_address;
 }
 
 static int
@@ -109,7 +109,7 @@ stream_gettimeout (CamelTcpStream *stream)
 }
 
 static void
-camel_tcp_stream_raw_init (gpointer object, gpointer klass)
+camel_lite_tcp_stream_raw_init (gpointer object, gpointer klass)
 {
 	CamelTcpStreamRaw *stream = CAMEL_TCP_STREAM_RAW (object);
 
@@ -117,7 +117,7 @@ camel_tcp_stream_raw_init (gpointer object, gpointer klass)
 }
 
 static void
-camel_tcp_stream_raw_finalize (CamelObject *object)
+camel_lite_tcp_stream_raw_finalize (CamelObject *object)
 {
 	CamelTcpStreamRaw *stream = CAMEL_TCP_STREAM_RAW (object);
 
@@ -127,19 +127,19 @@ camel_tcp_stream_raw_finalize (CamelObject *object)
 
 
 CamelType
-camel_tcp_stream_raw_get_type (void)
+camel_lite_tcp_stream_raw_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_tcp_stream_get_type (),
-					    "CamelTcpStreamRaw",
+		type = camel_lite_type_register (camel_lite_tcp_stream_get_type (),
+					    "CamelLiteTcpStreamRaw",
 					    sizeof (CamelTcpStreamRaw),
 					    sizeof (CamelTcpStreamRawClass),
-					    (CamelObjectClassInitFunc) camel_tcp_stream_raw_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_tcp_stream_raw_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_tcp_stream_raw_init,
-					    (CamelObjectFinalizeFunc) camel_tcp_stream_raw_finalize);
+					    (CamelObjectInitFunc) camel_lite_tcp_stream_raw_init,
+					    (CamelObjectFinalizeFunc) camel_lite_tcp_stream_raw_finalize);
 	}
 
 	return type;
@@ -249,18 +249,18 @@ flaky_tcp_read (int fd, char *buffer, size_t buflen)
 
 
 /**
- * camel_tcp_stream_raw_new:
+ * camel_lite_tcp_stream_raw_new:
  *
  * Create a new #CamelTcpStreamRaw object.
  *
  * Returns a new #CamelTcpStream object
  **/
 CamelStream *
-camel_tcp_stream_raw_new (void)
+camel_lite_tcp_stream_raw_new (void)
 {
 	CamelTcpStreamRaw *stream;
 
-	stream = CAMEL_TCP_STREAM_RAW (camel_object_new (camel_tcp_stream_raw_get_type ()));
+	stream = CAMEL_TCP_STREAM_RAW (camel_lite_object_new (camel_lite_tcp_stream_raw_get_type ()));
 
 	return CAMEL_STREAM (stream);
 }
@@ -270,7 +270,7 @@ stream_read (CamelStream *stream, char *buffer, size_t n)
 {
 	CamelTcpStreamRaw *raw = CAMEL_TCP_STREAM_RAW (stream);
 
-	return camel_read_socket (raw->sockfd, buffer, n);
+	return camel_lite_read_socket (raw->sockfd, buffer, n);
 }
 
 static ssize_t
@@ -278,7 +278,7 @@ stream_read_nb (CamelTcpStream *stream, char *buffer, size_t n)
 {
 	CamelTcpStreamRaw *raw = CAMEL_TCP_STREAM_RAW (stream);
 
-	return camel_read_socket_nb (raw->sockfd, buffer, n);
+	return camel_lite_read_socket_nb (raw->sockfd, buffer, n);
 }
 
 static ssize_t
@@ -286,7 +286,7 @@ stream_write (CamelStream *stream, const char *buffer, size_t n)
 {
 	CamelTcpStreamRaw *raw = CAMEL_TCP_STREAM_RAW (stream);
 
-	return camel_write_socket (raw->sockfd, buffer, n);
+	return camel_lite_write_socket (raw->sockfd, buffer, n);
 }
 
 static int
@@ -363,7 +363,7 @@ err:
   return res;
 }
 
-/* this is a 'cancellable' connect, cancellable from camel_operation_cancel etc */
+/* this is a 'cancellable' connect, cancellable from camel_lite_operation_cancel etc */
 /* returns -1 & errno == EINTR if the connection was cancelled */
 static int
 socket_connect(struct addrinfo *h)
@@ -375,7 +375,7 @@ socket_connect(struct addrinfo *h)
 	int ret, fd;
 
 	/* see if we're cancelled yet */
-	if (camel_operation_cancel_check (NULL)) {
+	if (camel_lite_operation_cancel_check (NULL)) {
 		errno = EINTR;
 		return -1;
 	}
@@ -388,7 +388,7 @@ socket_connect(struct addrinfo *h)
 	if ((fd = socket (h->ai_family, SOCK_STREAM, 0)) == -1)
 		return -1;
 
-	cancel_fd = camel_operation_cancel_fd (NULL);
+	cancel_fd = camel_lite_operation_cancel_fd (NULL);
 	if (cancel_fd == -1) {
 		if (connect_timeout (fd, h->ai_addr, h->ai_addrlen) == -1) {
 			/* Yeah, errno is meaningless on Win32 after a

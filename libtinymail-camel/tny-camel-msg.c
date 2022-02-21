@@ -189,8 +189,8 @@ tny_camel_msg_get_url_string_default (TnyMsg *self)
 				TnyCamelAccountPriv *apriv = TNY_CAMEL_ACCOUNT_GET_PRIVATE (fpriv->account);
 				if (apriv->service)
 				{
-					char *urls = camel_service_get_url (apriv->service);
-					const char *foln = camel_folder_get_full_name (fpriv->folder);
+					char *urls = camel_lite_service_get_url (apriv->service);
+					const char *foln = camel_lite_folder_get_full_name (fpriv->folder);
 					retval = g_strdup_printf ("%s/%s/%s", urls, foln, uid);
 					g_free (urls);
 				}
@@ -362,12 +362,12 @@ TnyMsg*
 tny_camel_msg_new (void)
 {
 	TnyCamelMsg *self = g_object_new (TNY_TYPE_CAMEL_MSG, NULL);
-	CamelMimeMessage *ms = camel_mime_message_new ();
+	CamelMimeMessage *ms = camel_lite_mime_message_new ();
 
 	_tny_camel_mime_part_set_part (TNY_CAMEL_MIME_PART (self), 
 		CAMEL_MIME_PART (ms));
 
-	camel_object_unref (ms);
+	camel_lite_object_unref (ms);
 
 	return TNY_MSG (self);
 }
@@ -387,7 +387,7 @@ tny_camel_msg_new_with_part (CamelMimePart *part)
 	TnyCamelMsg *self = g_object_new (TNY_TYPE_CAMEL_MSG, NULL);
 
 	_tny_camel_mime_part_set_part (TNY_CAMEL_MIME_PART (self), 
-		CAMEL_MIME_PART (camel_mime_message_new ()));
+		CAMEL_MIME_PART (camel_lite_mime_message_new ()));
 
 	return TNY_MSG (self);
 }
@@ -503,7 +503,7 @@ tny_camel_msg_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 
@@ -520,12 +520,12 @@ tny_camel_msg_parse (TnyMsg *self, TnyStream *stream)
 
 	cstream = tny_stream_camel_new (stream);
 
-	parser = camel_mime_parser_new ();
-	camel_mime_parser_init_with_stream (parser, cstream);
+	parser = camel_lite_mime_parser_new ();
+	camel_lite_mime_parser_init_with_stream (parser, cstream);
 
-	camel_mime_part_construct_from_parser (ppriv->part, parser);
+	camel_lite_mime_part_construct_from_parser (ppriv->part, parser);
 
-	camel_object_unref (cstream);
-	camel_object_unref (parser);
+	camel_lite_object_unref (cstream);
+	camel_lite_object_unref (parser);
 }
 

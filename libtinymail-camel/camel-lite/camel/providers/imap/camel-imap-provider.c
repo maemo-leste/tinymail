@@ -94,7 +94,7 @@ static CamelProvider imap_provider = {
 	/* ... */
 };
 
-CamelServiceAuthType camel_imap_password_authtype = {
+CamelServiceAuthType camel_lite_imap_password_authtype = {
 	N_("Password"),
 
 	N_("This option will connect to the IMAP server using a "
@@ -105,16 +105,16 @@ CamelServiceAuthType camel_imap_password_authtype = {
 };
 
 void
-camel_provider_module_init(void)
+camel_lite_provider_module_init(void)
 {
-	imap_provider.object_types[CAMEL_PROVIDER_STORE] = camel_imap_store_get_type ();
+	imap_provider.object_types[CAMEL_PROVIDER_STORE] = camel_lite_imap_store_get_type ();
 	imap_provider.url_hash = imap_url_hash;
 	imap_provider.url_equal = imap_url_equal;
-	imap_provider.authtypes = camel_sasl_authtype_list (FALSE);
-	imap_provider.authtypes = g_list_prepend (imap_provider.authtypes, &camel_imap_password_authtype);
+	imap_provider.authtypes = camel_lite_sasl_authtype_list (FALSE);
+	imap_provider.authtypes = g_list_prepend (imap_provider.authtypes, &camel_lite_imap_password_authtype);
 	imap_provider.translation_domain = GETTEXT_PACKAGE;
 
-	camel_provider_register(&imap_provider);
+	camel_lite_provider_register(&imap_provider);
 }
 
 static void

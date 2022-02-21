@@ -42,9 +42,9 @@ static CamelFolder *digest_get_junk  (CamelStore *store, CamelException *ex);
 
 static CamelFolderInfo *digest_get_folder_info (CamelStore *store, const char *top, guint32 flags, CamelException *ex);
 
-static void camel_digest_store_class_init (CamelDigestStoreClass *klass);
-static void camel_digest_store_init       (CamelDigestStore *obj);
-static void camel_digest_store_finalise   (CamelObject *obj);
+static void camel_lite_digest_store_class_init (CamelDigestStoreClass *klass);
+static void camel_lite_digest_store_init       (CamelDigestStore *obj);
+static void camel_lite_digest_store_finalise   (CamelObject *obj);
 
 static int digest_setv (CamelObject *object, CamelException *ex, CamelArgV *args);
 static int digest_getv (CamelObject *object, CamelException *ex, CamelArgGetV *args);
@@ -53,31 +53,31 @@ static CamelStoreClass *parent_class = NULL;
 
 
 CamelType
-camel_digest_store_get_type (void)
+camel_lite_digest_store_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_store_get_type (),
-					    "CamelDigestStore",
+		type = camel_lite_type_register (camel_lite_store_get_type (),
+					    "CamelLiteDigestStore",
 					    sizeof (CamelDigestStore),
 					    sizeof (CamelDigestStoreClass),
-					    (CamelObjectClassInitFunc) camel_digest_store_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_digest_store_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_digest_store_init,
-					    (CamelObjectFinalizeFunc) camel_digest_store_finalise);
+					    (CamelObjectInitFunc) camel_lite_digest_store_init,
+					    (CamelObjectFinalizeFunc) camel_lite_digest_store_finalise);
 	}
 
 	return type;
 }
 
 static void
-camel_digest_store_class_init (CamelDigestStoreClass *klass)
+camel_lite_digest_store_class_init (CamelDigestStoreClass *klass)
 {
 	CamelObjectClass *object_class = (CamelObjectClass *) klass;
 	CamelStoreClass *store_class = (CamelStoreClass *) klass;
 
-	parent_class = CAMEL_STORE_CLASS(camel_type_get_global_classfuncs (camel_store_get_type ()));
+	parent_class = CAMEL_STORE_CLASS(camel_lite_type_get_global_classfuncs (camel_lite_store_get_type ()));
 
 	/* virtual method overload */
 	object_class->setv = digest_setv;
@@ -87,14 +87,14 @@ camel_digest_store_class_init (CamelDigestStoreClass *klass)
 	store_class->rename_folder = digest_rename_folder;
 	store_class->delete_folder = digest_delete_folder;
 	store_class->get_folder_info = digest_get_folder_info;
-	store_class->free_folder_info = camel_store_free_folder_info_full;
+	store_class->free_folder_info = camel_lite_store_free_folder_info_full;
 
 	store_class->get_trash = digest_get_trash;
 	store_class->get_junk = digest_get_junk;
 }
 
 static void
-camel_digest_store_init (CamelDigestStore *obj)
+camel_lite_digest_store_init (CamelDigestStore *obj)
 {
 	CamelStore *store = (CamelStore *) obj;
 
@@ -103,7 +103,7 @@ camel_digest_store_init (CamelDigestStore *obj)
 }
 
 static void
-camel_digest_store_finalise (CamelObject *obj)
+camel_lite_digest_store_finalise (CamelObject *obj)
 {
 
 }
@@ -124,7 +124,7 @@ digest_getv (CamelObject *object, CamelException *ex, CamelArgGetV *args)
 
 
 /**
- * camel_digest_store_new:
+ * camel_lite_digest_store_new:
  * @url:
  *
  * Create a new CamelDigestStore object.
@@ -132,16 +132,16 @@ digest_getv (CamelObject *object, CamelException *ex, CamelArgGetV *args)
  * Return value: A new CamelDigestStore widget.
  **/
 CamelStore *
-camel_digest_store_new (const char *url)
+camel_lite_digest_store_new (const char *url)
 {
 	CamelStore *store;
 	CamelURL *uri;
 
-	uri = camel_url_new (url, NULL);
+	uri = camel_lite_url_new (url, NULL);
 	if (!uri)
 		return NULL;
 
-	store = CAMEL_STORE (camel_object_new (camel_digest_store_get_type ()));
+	store = CAMEL_STORE (camel_lite_object_new (camel_lite_digest_store_get_type ()));
 	CAMEL_SERVICE (store)->url = uri;
 
 	return store;

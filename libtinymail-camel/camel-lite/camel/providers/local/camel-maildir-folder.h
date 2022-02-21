@@ -25,7 +25,7 @@
 
 #include "camel-local-folder.h"
 
-#define CAMEL_MAILDIR_FOLDER_TYPE     (camel_maildir_folder_get_type ())
+#define CAMEL_MAILDIR_FOLDER_TYPE     (camel_lite_maildir_folder_get_type ())
 #define CAMEL_MAILDIR_FOLDER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_MAILDIR_FOLDER_TYPE, CamelMaildirFolder))
 #define CAMEL_MAILDIR_FOLDER_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_MAILDIR_FOLDER_TYPE, CamelMaildirFolderClass))
 #define CAMEL_IS_MAILDIR_FOLDER(o)    (CAMEL_CHECK_TYPE((o), CAMEL_MAILDIR_FOLDER_TYPE))
@@ -45,10 +45,10 @@ typedef struct {
 } CamelMaildirFolderClass;
 
 /* public methods */
-CamelFolder *camel_maildir_folder_new(CamelStore *parent_store, const char *full_name, guint32 flags, CamelException *ex);
+CamelFolder *camel_lite_maildir_folder_new(CamelStore *parent_store, const char *full_name, guint32 flags, CamelException *ex);
 
 /* Standard Camel function */
-CamelType camel_maildir_folder_get_type(void);
+CamelType camel_lite_maildir_folder_get_type(void);
 
 
 G_END_DECLS

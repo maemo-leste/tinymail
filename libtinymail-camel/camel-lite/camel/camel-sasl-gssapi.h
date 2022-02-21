@@ -27,7 +27,7 @@
 #include <sys/types.h>
 #include <camel/camel-sasl.h>
 
-#define CAMEL_SASL_GSSAPI_TYPE     (camel_sasl_gssapi_get_type ())
+#define CAMEL_SASL_GSSAPI_TYPE     (camel_lite_sasl_gssapi_get_type ())
 #define CAMEL_SASL_GSSAPI(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SASL_GSSAPI_TYPE, CamelSaslGssapi))
 #define CAMEL_SASL_GSSAPI_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SASL_GSSAPI_TYPE, CamelSaslGssapiClass))
 #define CAMEL_IS_SASL_GSSAPI(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SASL_GSSAPI_TYPE))
@@ -50,9 +50,9 @@ struct _CamelSaslGssapiClass {
 };
 
 /* Standard Camel function */
-CamelType camel_sasl_gssapi_get_type (void);
+CamelType camel_lite_sasl_gssapi_get_type (void);
 
-extern CamelServiceAuthType camel_sasl_gssapi_authtype;
+extern CamelServiceAuthType camel_lite_sasl_gssapi_authtype;
 
 G_END_DECLS
 

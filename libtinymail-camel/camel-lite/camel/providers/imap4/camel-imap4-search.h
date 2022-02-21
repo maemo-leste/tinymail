@@ -29,10 +29,10 @@
 #include <camel/camel-data-cache.h>
 #include <camel/camel-folder-search.h>
 
-#define CAMEL_IMAP4_SEARCH_TYPE         (camel_imap4_search_get_type ())
-#define CAMEL_IMAP4_SEARCH(obj)         CAMEL_CHECK_CAST (obj, camel_imap4_search_get_type (), CamelIMAP4Search)
-#define CAMEL_IMAP4_SEARCH_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_imap4_search_get_type (), CamelIMAP4SearchClass)
-#define CAMEL_IS_IMAP4_SEARCH(obj)      CAMEL_CHECK_TYPE (obj, camel_imap4_search_get_type ())
+#define CAMEL_IMAP4_SEARCH_TYPE         (camel_lite_imap4_search_get_type ())
+#define CAMEL_IMAP4_SEARCH(obj)         CAMEL_CHECK_CAST (obj, camel_lite_imap4_search_get_type (), CamelIMAP4Search)
+#define CAMEL_IMAP4_SEARCH_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_imap4_search_get_type (), CamelIMAP4SearchClass)
+#define CAMEL_IS_IMAP4_SEARCH(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_imap4_search_get_type ())
 
 G_BEGIN_DECLS
 
@@ -63,9 +63,9 @@ struct _CamelIMAP4SearchClass {
 };
 
 
-CamelType camel_imap4_search_get_type (void);
+CamelType camel_lite_imap4_search_get_type (void);
 
-CamelFolderSearch *camel_imap4_search_new (struct _CamelIMAP4Engine *engine, const char *cachedir);
+CamelFolderSearch *camel_lite_imap4_search_new (struct _CamelIMAP4Engine *engine, const char *cachedir);
 
 G_END_DECLS
 

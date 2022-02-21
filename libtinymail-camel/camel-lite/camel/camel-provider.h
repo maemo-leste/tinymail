@@ -43,7 +43,7 @@ typedef enum {
 	CAMEL_NUM_PROVIDER_TYPES
 } CamelProviderType;
 
-extern char *camel_provider_type_name[CAMEL_NUM_PROVIDER_TYPES];
+extern char *camel_lite_provider_type_name[CAMEL_NUM_PROVIDER_TYPES];
 
 /* Provider flags:
  *
@@ -220,18 +220,18 @@ struct _CamelProviderModule {
 	guint loaded:1;
 };
 
-void camel_provider_init(void);
+void camel_lite_provider_init(void);
 
-void camel_provider_load(const char *path, CamelException *ex);
-void camel_provider_register(CamelProvider *provider);
-GList *camel_provider_list(gboolean load);
-CamelProvider *camel_provider_get(const char *url_string, CamelException *ex);
+void camel_lite_provider_load(const char *path, CamelException *ex);
+void camel_lite_provider_register(CamelProvider *provider);
+GList *camel_lite_provider_list(gboolean load);
+CamelProvider *camel_lite_provider_get(const char *url_string, CamelException *ex);
 
 /* This is defined by each module, not by camel-provider.c. */
-void camel_provider_module_init(void);
+void camel_lite_provider_module_init(void);
 
 
-int camel_provider_auto_detect (CamelProvider *provider, CamelURL *url,
+int camel_lite_provider_auto_detect (CamelProvider *provider, CamelURL *url,
 				GHashTable **auto_detected, CamelException *ex);
 
 G_END_DECLS

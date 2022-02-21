@@ -45,36 +45,36 @@ struct _CamelImapResponse {
 	char *status;
 };
 
-CamelImapResponse *camel_imap_command              (CamelImapStore *store,
+CamelImapResponse *camel_lite_imap_command              (CamelImapStore *store,
 						    CamelFolder *folder,
 						    CamelException *ex,
 						    const char *fmt, ...);
-CamelImapResponse *camel_imap_command_continuation (CamelImapStore *store,
+CamelImapResponse *camel_lite_imap_command_continuation (CamelImapStore *store,
 						    const char *cmd,
 						    size_t cmdlen,
 						    CamelException *ex);
 
-void  camel_imap_response_free                     (CamelImapStore *store,
+void  camel_lite_imap_response_free                     (CamelImapStore *store,
 						    CamelImapResponse *response);
-void  camel_imap_response_free_without_processing  (CamelImapStore *store,
+void  camel_lite_imap_response_free_without_processing  (CamelImapStore *store,
 						    CamelImapResponse *response);
-char *camel_imap_response_extract                  (CamelImapStore *store,
+char *camel_lite_imap_response_extract                  (CamelImapStore *store,
 						    CamelImapResponse *response,
 						    const char *type,
 						    CamelException *ex);
-char *camel_imap_response_extract_continuation     (CamelImapStore *store,
+char *camel_lite_imap_response_extract_continuation     (CamelImapStore *store,
 						    CamelImapResponse *response,
 						    CamelException *ex);
 
-gboolean           camel_imap_command_start        (CamelImapStore *store,
+gboolean           camel_lite_imap_command_start        (CamelImapStore *store,
 						    CamelFolder *folder,
 						    CamelException *ex,
 						    const char *fmt, ...);
-CamelImapResponseType camel_imap_command_response  (CamelImapStore *store,
+CamelImapResponseType camel_lite_imap_command_response  (CamelImapStore *store,
 						    char **respbuf,
 						    CamelException *ex);
 
-CamelImapResponseType camel_imap_command_response_idle (CamelImapStore *store, char **response,
+CamelImapResponseType camel_lite_imap_command_response_idle (CamelImapStore *store, char **response,
 						        CamelException *ex);
 
 G_END_DECLS

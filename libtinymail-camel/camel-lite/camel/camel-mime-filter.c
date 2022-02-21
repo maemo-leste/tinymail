@@ -39,22 +39,22 @@ struct _CamelMimeFilterPrivate {
 #define _PRIVATE(o) (((CamelMimeFilter *)(o))->priv)
 #define FCLASS(o) ((CamelMimeFilterClass *)(CAMEL_OBJECT_GET_CLASS(o)))
 
-static CamelObjectClass *camel_mime_filter_parent;
+static CamelObjectClass *camel_lite_mime_filter_parent;
 
 static void complete (CamelMimeFilter *mf, char *in, size_t len,
 		      size_t prespace, char **out, size_t *outlen,
 		      size_t *outprespace);
 
 static void
-camel_mime_filter_class_init (CamelMimeFilterClass *klass)
+camel_lite_mime_filter_class_init (CamelMimeFilterClass *klass)
 {
-	camel_mime_filter_parent = camel_type_get_global_classfuncs (camel_object_get_type ());
+	camel_lite_mime_filter_parent = camel_lite_type_get_global_classfuncs (camel_lite_object_get_type ());
 
 	klass->complete = complete;
 }
 
 static void
-camel_mime_filter_init (CamelMimeFilter *obj)
+camel_lite_mime_filter_init (CamelMimeFilter *obj)
 {
 	obj->outreal = NULL;
 	obj->outbuf = NULL;
@@ -68,7 +68,7 @@ camel_mime_filter_init (CamelMimeFilter *obj)
 }
 
 static void
-camel_mime_filter_finalize(CamelObject *o)
+camel_lite_mime_filter_finalize(CamelObject *o)
 {
 	CamelMimeFilter *f = (CamelMimeFilter *)o;
 	struct _CamelMimeFilterPrivate *p = _PRIVATE(f);
@@ -80,21 +80,21 @@ camel_mime_filter_finalize(CamelObject *o)
 }
 
 CamelType
-camel_mime_filter_get_type (void)
+camel_lite_mime_filter_get_type (void)
 {
-	static CamelType camel_mime_filter_type = CAMEL_INVALID_TYPE;
+	static CamelType camel_lite_mime_filter_type = CAMEL_INVALID_TYPE;
 
-	if (camel_mime_filter_type == CAMEL_INVALID_TYPE) {
-		camel_mime_filter_type = camel_type_register (CAMEL_OBJECT_TYPE, "CamelMimeFilter",
+	if (camel_lite_mime_filter_type == CAMEL_INVALID_TYPE) {
+		camel_lite_mime_filter_type = camel_lite_type_register (CAMEL_OBJECT_TYPE, "CamelLiteMimeFilter",
 							      sizeof (CamelMimeFilter),
 							      sizeof (CamelMimeFilterClass),
-							      (CamelObjectClassInitFunc) camel_mime_filter_class_init,
+							      (CamelObjectClassInitFunc) camel_lite_mime_filter_class_init,
 							      NULL,
-							      (CamelObjectInitFunc) camel_mime_filter_init,
-							      (CamelObjectFinalizeFunc) camel_mime_filter_finalize);
+							      (CamelObjectInitFunc) camel_lite_mime_filter_init,
+							      (CamelObjectFinalizeFunc) camel_lite_mime_filter_finalize);
 	}
 
-	return camel_mime_filter_type;
+	return camel_lite_mime_filter_type;
 }
 
 static void
@@ -105,16 +105,16 @@ complete(CamelMimeFilter *mf, char *in, size_t len, size_t prespace, char **out,
 
 
 /**
- * camel_mime_filter_new:
+ * camel_lite_mime_filter_new:
  *
  * Create a new #CamelMimeFilter object.
  *
  * Returns a new #CamelMimeFilter
  **/
 CamelMimeFilter *
-camel_mime_filter_new (void)
+camel_lite_mime_filter_new (void)
 {
-	CamelMimeFilter *new = CAMEL_MIME_FILTER ( camel_object_new (camel_mime_filter_get_type ()));
+	CamelMimeFilter *new = CAMEL_MIME_FILTER ( camel_lite_object_new (camel_lite_mime_filter_get_type ()));
 	return new;
 }
 
@@ -197,7 +197,7 @@ static void filter_run(CamelMimeFilter *f,
 
 
 /**
- * camel_mime_filter_filter:
+ * camel_lite_mime_filter_filter:
  * @filter: a #CamelMimeFilter object
  * @in: input buffer
  * @len: length of @in
@@ -210,7 +210,7 @@ static void filter_run(CamelMimeFilter *f,
  * output buffer, @out.
  **/
 void
-camel_mime_filter_filter (CamelMimeFilter *filter,
+camel_lite_mime_filter_filter (CamelMimeFilter *filter,
 			  char *in, size_t len, size_t prespace,
 			  char **out, size_t *outlen, size_t *outprespace)
 {
@@ -222,7 +222,7 @@ camel_mime_filter_filter (CamelMimeFilter *filter,
 
 
 /**
- * camel_mime_filter_complete:
+ * camel_lite_mime_filter_complete:
  * @filter: a #CamelMimeFilter object
  * @in: input buffer
  * @len: length of @in
@@ -234,11 +234,11 @@ camel_mime_filter_filter (CamelMimeFilter *filter,
  * Passes the input buffer, @in, through @filter and generates an
  * output buffer, @out and makes sure that all data is flushed to the
  * output buffer. This must be the last filtering call made, no
- * further calls to #camel_mime_filter_filter may be called on @filter
- * until @filter has been reset using #camel_mime_filter_reset.
+ * further calls to #camel_lite_mime_filter_filter may be called on @filter
+ * until @filter has been reset using #camel_lite_mime_filter_reset.
  **/
 void
-camel_mime_filter_complete (CamelMimeFilter *filter,
+camel_lite_mime_filter_complete (CamelMimeFilter *filter,
 			    char *in, size_t len, size_t prespace,
 			    char **out, size_t *outlen, size_t *outprespace)
 {
@@ -248,13 +248,13 @@ camel_mime_filter_complete (CamelMimeFilter *filter,
 
 
 /**
- * camel_mime_filter_reset:
+ * camel_lite_mime_filter_reset:
  * @filter: a #CamelMimeFilter object
  *
  * Resets the state on @filter so that it may be used again.
  **/
 void
-camel_mime_filter_reset(CamelMimeFilter *filter)
+camel_lite_mime_filter_reset(CamelMimeFilter *filter)
 {
 	if (FCLASS(filter)->reset) {
 		FCLASS(filter)->reset(filter);
@@ -266,18 +266,18 @@ camel_mime_filter_reset(CamelMimeFilter *filter)
 
 
 /**
- * camel_mime_filter_backup:
+ * camel_lite_mime_filter_backup:
  * @filter: a #camelMimeFilter object
  * @data: data buffer to backup
  * @length: length of @data
  *
  * Saves @data to be used as prespace input data to the next call to
- * #camel_mime_filter_filter or #camel_mime_filter_complete.
+ * #camel_lite_mime_filter_filter or #camel_lite_mime_filter_complete.
  *
  * Note: New calls replace old data.
  **/
 void
-camel_mime_filter_backup(CamelMimeFilter *filter, const char *data, size_t length)
+camel_lite_mime_filter_backup(CamelMimeFilter *filter, const char *data, size_t length)
 {
 	if (filter->backsize < length) {
 		/* g_realloc copies data, unnecessary overhead */
@@ -291,7 +291,7 @@ camel_mime_filter_backup(CamelMimeFilter *filter, const char *data, size_t lengt
 
 
 /**
- * camel_mime_filter_set_size:
+ * camel_lite_mime_filter_set_size:
  * @filter: a #camelMimeFilter object
  * @size: requested amount of storage space
  * @keep: %TRUE to keep existing buffered data or %FALSE otherwise
@@ -300,7 +300,7 @@ camel_mime_filter_backup(CamelMimeFilter *filter, const char *data, size_t lengt
  * for filter output.
  **/
 void
-camel_mime_filter_set_size(CamelMimeFilter *filter, size_t size, int keep)
+camel_lite_mime_filter_set_size(CamelMimeFilter *filter, size_t size, int keep)
 {
 	if (filter->outsize < size) {
 		int offset = filter->outptr - filter->outreal;

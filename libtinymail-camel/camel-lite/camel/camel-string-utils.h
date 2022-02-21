@@ -28,23 +28,23 @@
 
 G_BEGIN_DECLS
 
-void camel_du (char *name, int *my_size);
-void camel_rm (char *name);
+void camel_lite_du (char *name, int *my_size);
+void camel_lite_rm (char *name);
 
-int   camel_strcase_equal (gconstpointer a, gconstpointer b);
-guint camel_strcase_hash  (gconstpointer v);
+int   camel_lite_strcase_equal (gconstpointer a, gconstpointer b);
+guint camel_lite_strcase_hash  (gconstpointer v);
 
-void camel_string_list_free (GList *string_list);
+void camel_lite_string_list_free (GList *string_list);
 
-char *camel_strstrcase (const char *haystack, const char *needle);
+char *camel_lite_strstrcase (const char *haystack, const char *needle);
 
-const char *camel_strdown (char *str);
-char camel_tolower(char c);
-char camel_toupper(char c);
+const char *camel_lite_strdown (char *str);
+char camel_lite_tolower(char c);
+char camel_lite_toupper(char c);
 
-const char *camel_pstring_add (char *str, gboolean own);
-const char *camel_pstring_strdup(const char *s);
-void camel_pstring_free(const char *s);
+const char *camel_lite_pstring_add (char *str, gboolean own);
+const char *camel_lite_pstring_strdup(const char *s);
+void camel_lite_pstring_free(const char *s);
 
 G_END_DECLS
 

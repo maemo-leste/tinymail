@@ -26,7 +26,7 @@
 
 #include <camel/camel-store.h>
 
-#define CAMEL_TYPE_OFFLINE_STORE            (camel_offline_store_get_type ())
+#define CAMEL_TYPE_OFFLINE_STORE            (camel_lite_offline_store_get_type ())
 #define CAMEL_OFFLINE_STORE(obj)            (CAMEL_CHECK_CAST ((obj), CAMEL_TYPE_OFFLINE_STORE, CamelOfflineStore))
 #define CAMEL_OFFLINE_STORE_CLASS(klass)    (CAMEL_CHECK_CLASS_CAST ((klass), CAMEL_TYPE_OFFLINE_STORE, CamelOfflineStoreClass))
 #define CAMEL_IS_OFFLINE_STORE(obj)         (CAMEL_CHECK_TYPE ((obj), CAMEL_TYPE_OFFLINE_STORE))
@@ -60,12 +60,12 @@ struct _CamelOfflineStoreClass {
 };
 
 
-CamelType camel_offline_store_get_type (void);
+CamelType camel_lite_offline_store_get_type (void);
 
 
-void camel_offline_store_set_network_state (CamelOfflineStore *store, int state, CamelException *ex);
+void camel_lite_offline_store_set_network_state (CamelOfflineStore *store, int state, CamelException *ex);
 
-void camel_offline_store_prepare_for_offline (CamelOfflineStore *store, CamelException *ex);
+void camel_lite_offline_store_prepare_for_offline (CamelOfflineStore *store, CamelException *ex);
 
 G_END_DECLS
 

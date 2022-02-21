@@ -38,7 +38,7 @@ tny_camel_mem_stream_new (void)
 	TnyCamelMemStream *self = g_object_new (TNY_TYPE_CAMEL_MEM_STREAM, NULL);
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
-	priv->stream = camel_stream_mem_new ();
+	priv->stream = camel_lite_stream_mem_new ();
 
 	return TNY_STREAM (self);
 }
@@ -60,7 +60,7 @@ tny_camel_mem_stream_new_with_buffer (const char *buffer, size_t len)
 	TnyCamelMemStream *self = g_object_new (TNY_TYPE_CAMEL_MEM_STREAM, NULL);
 	TnyCamelStreamPriv *priv = TNY_CAMEL_STREAM_GET_PRIVATE (self);
 
-	priv->stream = camel_stream_mem_new_with_buffer (buffer, len);
+	priv->stream = camel_lite_stream_mem_new_with_buffer (buffer, len);
 
 	return TNY_STREAM (self);
 }

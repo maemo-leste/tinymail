@@ -32,7 +32,7 @@
 #include <libedataserver/e-msgport.h>
 #include <camel/camel-object.h>
 
-#define CAMEL_TYPE_OFFLINE_JOURNAL            (camel_offline_journal_get_type ())
+#define CAMEL_TYPE_OFFLINE_JOURNAL            (camel_lite_offline_journal_get_type ())
 #define CAMEL_OFFLINE_JOURNAL(obj)            (CAMEL_CHECK_CAST ((obj), CAMEL_TYPE_OFFLINE_JOURNAL, CamelOfflineJournal))
 #define CAMEL_OFFLINE_JOURNAL_CLASS(klass)    (CAMEL_CHECK_CLASS_CAST ((klass), CAMEL_TYPE_OFFLINE_JOURNAL, CamelOfflineJournalClass))
 #define CAMEL_IS_OFFLINE_JOURNAL(obj)         (CAMEL_CHECK_TYPE ((obj), CAMEL_TYPE_OFFLINE_JOURNAL))
@@ -67,13 +67,13 @@ struct _CamelOfflineJournalClass {
 };
 
 
-CamelType camel_offline_journal_get_type (void);
+CamelType camel_lite_offline_journal_get_type (void);
 
-void camel_offline_journal_construct (CamelOfflineJournal *journal, struct _CamelFolder *folder, const char *filename);
-void camel_offline_journal_set_filename (CamelOfflineJournal *journal, const char *filename);
+void camel_lite_offline_journal_construct (CamelOfflineJournal *journal, struct _CamelFolder *folder, const char *filename);
+void camel_lite_offline_journal_set_filename (CamelOfflineJournal *journal, const char *filename);
 
-int camel_offline_journal_write (CamelOfflineJournal *journal, CamelException *ex);
-int camel_offline_journal_replay (CamelOfflineJournal *journal, CamelException *ex);
+int camel_lite_offline_journal_write (CamelOfflineJournal *journal, CamelException *ex);
+int camel_lite_offline_journal_replay (CamelOfflineJournal *journal, CamelException *ex);
 
 G_END_DECLS
 

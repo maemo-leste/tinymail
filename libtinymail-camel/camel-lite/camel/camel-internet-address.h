@@ -24,9 +24,9 @@
 
 #include <camel/camel-address.h>
 
-#define CAMEL_INTERNET_ADDRESS(obj)         CAMEL_CHECK_CAST (obj, camel_internet_address_get_type (), CamelInternetAddress)
-#define CAMEL_INTERNET_ADDRESS_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_internet_address_get_type (), CamelInternetAddressClass)
-#define CAMEL_IS_INTERNET_ADDRESS(obj)      CAMEL_CHECK_TYPE (obj, camel_internet_address_get_type ())
+#define CAMEL_INTERNET_ADDRESS(obj)         CAMEL_CHECK_CAST (obj, camel_lite_internet_address_get_type (), CamelInternetAddress)
+#define CAMEL_INTERNET_ADDRESS_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_internet_address_get_type (), CamelInternetAddressClass)
+#define CAMEL_IS_INTERNET_ADDRESS(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_internet_address_get_type ())
 
 G_BEGIN_DECLS
 
@@ -42,18 +42,18 @@ struct _CamelInternetAddressClass {
 	CamelAddressClass parent_class;
 };
 
-CamelType		camel_internet_address_get_type	(void);
-CamelInternetAddress   *camel_internet_address_new	(void);
+CamelType		camel_lite_internet_address_get_type	(void);
+CamelInternetAddress   *camel_lite_internet_address_new	(void);
 
-int			camel_internet_address_add	(CamelInternetAddress *addr, const char *name, const char *address);
-gboolean		camel_internet_address_get	(const CamelInternetAddress *addr, int index, const char **namep, const char **addressp);
+int			camel_lite_internet_address_add	(CamelInternetAddress *addr, const char *name, const char *address);
+gboolean		camel_lite_internet_address_get	(const CamelInternetAddress *addr, int index, const char **namep, const char **addressp);
 
-int			camel_internet_address_find_name(CamelInternetAddress *addr, const char *name, const char **addressp);
-int			camel_internet_address_find_address(CamelInternetAddress *addr, const char *address, const char **namep);
+int			camel_lite_internet_address_find_name(CamelInternetAddress *addr, const char *name, const char **addressp);
+int			camel_lite_internet_address_find_address(CamelInternetAddress *addr, const char *address, const char **namep);
 
 /* utility functions, for network/display formatting */
-char *			camel_internet_address_encode_address(int *len, const char *name, const char *addr);
-char *			camel_internet_address_format_address(const char *real, const char *addr);
+char *			camel_lite_internet_address_encode_address(int *len, const char *name, const char *addr);
+char *			camel_lite_internet_address_format_address(const char *real, const char *addr);
 
 G_END_DECLS
 

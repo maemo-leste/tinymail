@@ -30,9 +30,9 @@
 
 G_BEGIN_DECLS
 
-pid_t camel_process_fork (const char *path, char **argv, int *infd, int *outfd, int *errfd, CamelException *ex);
+pid_t camel_lite_process_fork (const char *path, char **argv, int *infd, int *outfd, int *errfd, CamelException *ex);
 
-int camel_process_wait (pid_t pid);
+int camel_lite_process_wait (pid_t pid);
 
 G_END_DECLS
 

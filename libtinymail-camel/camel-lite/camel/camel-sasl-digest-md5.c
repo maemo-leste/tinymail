@@ -46,7 +46,7 @@
 
 /* Implements rfc2831 */
 
-CamelServiceAuthType camel_sasl_digest_md5_authtype = {
+CamelServiceAuthType camel_lite_sasl_digest_md5_authtype = {
 	N_("DIGEST-MD5"),
 
 	N_("This option will connect to the server using a "
@@ -171,18 +171,18 @@ struct _CamelSaslDigestMd5Private {
 };
 
 static void
-camel_sasl_digest_md5_class_init (CamelSaslDigestMd5Class *camel_sasl_digest_md5_class)
+camel_lite_sasl_digest_md5_class_init (CamelSaslDigestMd5Class *camel_lite_sasl_digest_md5_class)
 {
-	CamelSaslClass *camel_sasl_class = CAMEL_SASL_CLASS (camel_sasl_digest_md5_class);
+	CamelSaslClass *camel_lite_sasl_class = CAMEL_SASL_CLASS (camel_lite_sasl_digest_md5_class);
 
-	parent_class = CAMEL_SASL_CLASS (camel_type_get_global_classfuncs (camel_sasl_get_type ()));
+	parent_class = CAMEL_SASL_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_sasl_get_type ()));
 
 	/* virtual method overload */
-	camel_sasl_class->challenge = digest_md5_challenge;
+	camel_lite_sasl_class->challenge = digest_md5_challenge;
 }
 
 static void
-camel_sasl_digest_md5_init (gpointer object, gpointer klass)
+camel_lite_sasl_digest_md5_init (gpointer object, gpointer klass)
 {
 	CamelSaslDigestMd5 *sasl_digest = CAMEL_SASL_DIGEST_MD5 (object);
 
@@ -190,7 +190,7 @@ camel_sasl_digest_md5_init (gpointer object, gpointer klass)
 }
 
 static void
-camel_sasl_digest_md5_finalize (CamelObject *object)
+camel_lite_sasl_digest_md5_finalize (CamelObject *object)
 {
 	CamelSaslDigestMd5 *sasl = CAMEL_SASL_DIGEST_MD5 (object);
 	struct _DigestChallenge *c = sasl->priv->challenge;
@@ -238,19 +238,19 @@ camel_sasl_digest_md5_finalize (CamelObject *object)
 
 
 CamelType
-camel_sasl_digest_md5_get_type (void)
+camel_lite_sasl_digest_md5_get_type (void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (camel_sasl_get_type (),
-					    "CamelSaslDigestMd5",
+		type = camel_lite_type_register (camel_lite_sasl_get_type (),
+					    "CamelLiteSaslDigestMd5",
 					    sizeof (CamelSaslDigestMd5),
 					    sizeof (CamelSaslDigestMd5Class),
-					    (CamelObjectClassInitFunc) camel_sasl_digest_md5_class_init,
+					    (CamelObjectClassInitFunc) camel_lite_sasl_digest_md5_class_init,
 					    NULL,
-					    (CamelObjectInitFunc) camel_sasl_digest_md5_init,
-					    (CamelObjectFinalizeFunc) camel_sasl_digest_md5_finalize);
+					    (CamelObjectInitFunc) camel_lite_sasl_digest_md5_init,
+					    (CamelObjectFinalizeFunc) camel_lite_sasl_digest_md5_finalize);
 	}
 
 	return type;
@@ -816,7 +816,7 @@ digest_md5_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 	switch (priv->state) {
 	case STATE_AUTH:
 		if (token->len > 2048) {
-			camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					      _("Server challenge too long (>2048 octets)"));
 			return NULL;
 		}
@@ -825,13 +825,13 @@ digest_md5_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 		priv->challenge = parse_server_challenge (tokens, &abort);
 		g_free (tokens);
 		if (!priv->challenge || abort) {
-			camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					      _("Server challenge invalid\n"));
 			return NULL;
 		}
 
 		if (priv->challenge->qop == QOP_INVALID) {
-			camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					      _("Server challenge contained invalid "
 						"\"Quality of Protection\" token"));
 			return NULL;
@@ -839,7 +839,7 @@ digest_md5_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 
 		memset(&hints, 0, sizeof(hints));
 		hints.ai_flags = AI_CANONNAME;
-		ai = camel_getaddrinfo(sasl->service->url->host?sasl->service->url->host:"localhost", NULL, &hints, NULL);
+		ai = camel_lite_getaddrinfo(sasl->service->url->host?sasl->service->url->host:"localhost", NULL, &hints, NULL);
 		if (ai && ai->ai_canonname)
 			ptr = ai->ai_canonname;
 		else
@@ -849,7 +849,7 @@ digest_md5_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 						    sasl->service->url->user,
 						    sasl->service->url->passwd);
 		if (ai)
-			camel_freeaddrinfo(ai);
+			camel_lite_freeaddrinfo(ai);
 		ret = digest_response (priv->response);
 
 		break;
@@ -861,7 +861,7 @@ digest_md5_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 
 		if (!tokens || !*tokens) {
 			g_free (tokens);
-			camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					      _("Server response did not contain authorization data"));
 			return NULL;
 		}
@@ -879,7 +879,7 @@ digest_md5_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 		if (!rspauth->value) {
 			g_free (rspauth->name);
 			g_free (rspauth);
-			camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					      _("Server response contained incomplete authorization data"));
 			return NULL;
 		}
@@ -889,7 +889,7 @@ digest_md5_challenge (CamelSasl *sasl, GByteArray *token, CamelException *ex)
 			g_free (rspauth->name);
 			g_free (rspauth->value);
 			g_free (rspauth);
-			camel_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
+			camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SERVICE_CANT_AUTHENTICATE,
 					      _("Server response does not match"));
 			sasl->authenticated = TRUE;
 

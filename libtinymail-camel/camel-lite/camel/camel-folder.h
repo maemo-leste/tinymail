@@ -29,7 +29,7 @@
 #include <camel/camel-object.h>
 #include <camel/camel-folder-summary.h>
 
-#define CAMEL_FOLDER_TYPE     (camel_folder_get_type ())
+#define CAMEL_FOLDER_TYPE     (camel_lite_folder_get_type ())
 #define CAMEL_FOLDER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_FOLDER_TYPE, CamelFolder))
 #define CAMEL_FOLDER_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_FOLDER_TYPE, CamelFolderClass))
 #define CAMEL_IS_FOLDER(o)    (CAMEL_CHECK_TYPE((o), CAMEL_FOLDER_TYPE))
@@ -227,60 +227,60 @@ typedef struct {
 } CamelFolderClass;
 
 /* Standard Camel function */
-CamelType camel_folder_get_type (void);
+CamelType camel_lite_folder_get_type (void);
 
 
 /* public methods */
-void               camel_folder_construct              (CamelFolder *folder,
+void               camel_lite_folder_construct              (CamelFolder *folder,
 							CamelStore *parent_store,
 							const char *full_name,
 							const char *name);
 
-void               camel_folder_refresh_info           (CamelFolder *folder,
+void               camel_lite_folder_refresh_info           (CamelFolder *folder,
 							CamelException *ex);
-void               camel_folder_sync                   (CamelFolder *folder,
+void               camel_lite_folder_sync                   (CamelFolder *folder,
 							gboolean expunge,
 							CamelException *ex);
 
-CamelStore *       camel_folder_get_parent_store       (CamelFolder *folder);
+CamelStore *       camel_lite_folder_get_parent_store       (CamelFolder *folder);
 
 
 /* delete operations */
-void		   camel_folder_expunge                (CamelFolder *folder,
+void		   camel_lite_folder_expunge                (CamelFolder *folder,
 							CamelException *ex);
 
 
 /* folder name operations */
-const char *      camel_folder_get_name                (CamelFolder *folder);
-const char *      camel_folder_get_full_name           (CamelFolder *folder);
+const char *      camel_lite_folder_get_name                (CamelFolder *folder);
+const char *      camel_lite_folder_get_full_name           (CamelFolder *folder);
 
 
 /* various properties accessors */
-guint32		   camel_folder_get_permanent_flags    (CamelFolder *folder);
+guint32		   camel_lite_folder_get_permanent_flags    (CamelFolder *folder);
 
 #ifndef CAMEL_DISABLE_DEPRECATED
-guint32		   camel_folder_get_message_flags      (CamelFolder *folder,
+guint32		   camel_lite_folder_get_message_flags      (CamelFolder *folder,
 							const char *uid);
 
-gboolean	   camel_folder_set_message_flags      (CamelFolder *folder,
+gboolean	   camel_lite_folder_set_message_flags      (CamelFolder *folder,
 							const char *uid,
 							guint32 flags,
 							guint32 set);
 
-gboolean	   camel_folder_get_message_user_flag  (CamelFolder *folder,
+gboolean	   camel_lite_folder_get_message_user_flag  (CamelFolder *folder,
 							const char *uid,
 							const char *name);
 
-void		   camel_folder_set_message_user_flag  (CamelFolder *folder,
+void		   camel_lite_folder_set_message_user_flag  (CamelFolder *folder,
 							const char *uid,
 							const char *name,
 							gboolean value);
 
-const char *	   camel_folder_get_message_user_tag  (CamelFolder *folder,
+const char *	   camel_lite_folder_get_message_user_tag  (CamelFolder *folder,
 						       const char *uid,
 						       const char *name);
 
-void		   camel_folder_set_message_user_tag  (CamelFolder *folder,
+void		   camel_lite_folder_set_message_user_tag  (CamelFolder *folder,
 						       const char *uid,
 						       const char *name,
 						       const char *value);
@@ -289,7 +289,7 @@ void		   camel_folder_set_message_user_tag  (CamelFolder *folder,
 
 
 /* message manipulation */
-void               camel_folder_append_message         (CamelFolder *folder,
+void               camel_lite_folder_append_message         (CamelFolder *folder,
 							CamelMimeMessage *message,
 							const CamelMessageInfo *info,
 							char **appended_uid,
@@ -297,99 +297,99 @@ void               camel_folder_append_message         (CamelFolder *folder,
 
 
 /* summary related operations */
-gboolean           camel_folder_has_summary_capability (CamelFolder *folder);
+gboolean           camel_lite_folder_has_summary_capability (CamelFolder *folder);
 
 
-int                camel_folder_get_message_count     (CamelFolder *folder);
+int                camel_lite_folder_get_message_count     (CamelFolder *folder);
 
 #ifndef CAMEL_DISABLE_DEPRECATED
-int                camel_folder_get_unread_message_count (CamelFolder *folder);
+int                camel_lite_folder_get_unread_message_count (CamelFolder *folder);
 #endif
 
-int                camel_folder_get_deleted_message_count (CamelFolder *folder);
+int                camel_lite_folder_get_deleted_message_count (CamelFolder *folder);
 
-GPtrArray *        camel_folder_get_summary           (CamelFolder *folder);
-void               camel_folder_free_summary          (CamelFolder *folder,
+GPtrArray *        camel_lite_folder_get_summary           (CamelFolder *folder);
+void               camel_lite_folder_free_summary          (CamelFolder *folder,
 						       GPtrArray *array);
 
 /* uid based access operations */
-CamelMimeMessage * camel_folder_get_message           (CamelFolder *folder,
+CamelMimeMessage * camel_lite_folder_get_message           (CamelFolder *folder,
 						       const char *uid, CamelFolderReceiveType type,
 						       gint param, CamelException *ex);
-#define camel_folder_delete_message(folder, uid) \
-	camel_folder_set_message_flags (folder, uid, CAMEL_MESSAGE_DELETED|CAMEL_MESSAGE_SEEN, CAMEL_MESSAGE_DELETED|CAMEL_MESSAGE_SEEN)
+#define camel_lite_folder_delete_message(folder, uid) \
+	camel_lite_folder_set_message_flags (folder, uid, CAMEL_MESSAGE_DELETED|CAMEL_MESSAGE_SEEN, CAMEL_MESSAGE_DELETED|CAMEL_MESSAGE_SEEN)
 
-GPtrArray *        camel_folder_get_uids              (CamelFolder *folder);
-void               camel_folder_free_uids             (CamelFolder *folder,
+GPtrArray *        camel_lite_folder_get_uids              (CamelFolder *folder);
+void               camel_lite_folder_free_uids             (CamelFolder *folder,
 						       GPtrArray *array);
 
 /* search api */
-gboolean           camel_folder_has_search_capability (CamelFolder *folder);
-GPtrArray *	   camel_folder_search_by_expression  (CamelFolder *folder, const char *expr, CamelException *ex);
-GPtrArray *	   camel_folder_search_by_uids	      (CamelFolder *folder, const char *expr, GPtrArray *uids, CamelException *ex);
-void		   camel_folder_search_free	      (CamelFolder *folder, GPtrArray *result);
+gboolean           camel_lite_folder_has_search_capability (CamelFolder *folder);
+GPtrArray *	   camel_lite_folder_search_by_expression  (CamelFolder *folder, const char *expr, CamelException *ex);
+GPtrArray *	   camel_lite_folder_search_by_uids	      (CamelFolder *folder, const char *expr, GPtrArray *uids, CamelException *ex);
+void		   camel_lite_folder_search_free	      (CamelFolder *folder, GPtrArray *result);
 
 /* summary info */
-CamelMessageInfo *camel_folder_get_message_info		(CamelFolder *folder, const char *uid);
-void		  camel_folder_free_message_info	(CamelFolder *folder, CamelMessageInfo *info);
+CamelMessageInfo *camel_lite_folder_get_message_info		(CamelFolder *folder, const char *uid);
+void		  camel_lite_folder_free_message_info	(CamelFolder *folder, CamelMessageInfo *info);
 #ifndef CAMEL_DISABLE_DEPRECATED
-void		  camel_folder_ref_message_info		(CamelFolder *folder, CamelMessageInfo *info);
+void		  camel_lite_folder_ref_message_info		(CamelFolder *folder, CamelMessageInfo *info);
 #endif
 
-void               camel_folder_transfer_messages_to   (CamelFolder *source,
+void               camel_lite_folder_transfer_messages_to   (CamelFolder *source,
 							GPtrArray *uids,
 							CamelFolder *dest,
 							GPtrArray **transferred_uids,
 							gboolean delete_originals,
 							CamelException *ex);
 
-void               camel_folder_delete                 (CamelFolder *folder);
-void               camel_folder_rename                 (CamelFolder *folder, const char *new);
+void               camel_lite_folder_delete                 (CamelFolder *folder);
+void               camel_lite_folder_rename                 (CamelFolder *folder, const char *new);
 
 /* stop/restart getting events */
-void               camel_folder_freeze                (CamelFolder *folder);
-void               camel_folder_thaw                  (CamelFolder *folder);
-gboolean           camel_folder_is_frozen             (CamelFolder *folder);
+void               camel_lite_folder_freeze                (CamelFolder *folder);
+void               camel_lite_folder_thaw                  (CamelFolder *folder);
+gboolean           camel_lite_folder_is_frozen             (CamelFolder *folder);
 
 /* For use by subclasses (for free_{uids,summary,subfolder_names}) */
-void camel_folder_free_nop     (CamelFolder *folder, GPtrArray *array);
-void camel_folder_free_shallow (CamelFolder *folder, GPtrArray *array);
-void camel_folder_free_deep    (CamelFolder *folder, GPtrArray *array);
+void camel_lite_folder_free_nop     (CamelFolder *folder, GPtrArray *array);
+void camel_lite_folder_free_shallow (CamelFolder *folder, GPtrArray *array);
+void camel_lite_folder_free_deep    (CamelFolder *folder, GPtrArray *array);
 
 /* update functions for change info */
-CamelFolderChangeInfo *	camel_folder_change_info_new		(void);
-void			camel_folder_change_info_clear		(CamelFolderChangeInfo *info);
-void			camel_folder_change_info_free		(CamelFolderChangeInfo *info);
-gboolean		camel_folder_change_info_changed	(CamelFolderChangeInfo *info);
+CamelFolderChangeInfo *	camel_lite_folder_change_info_new		(void);
+void			camel_lite_folder_change_info_clear		(CamelFolderChangeInfo *info);
+void			camel_lite_folder_change_info_free		(CamelFolderChangeInfo *info);
+gboolean		camel_lite_folder_change_info_changed	(CamelFolderChangeInfo *info);
 
 /* for building diff's automatically */
-void			camel_folder_change_info_add_source	(CamelFolderChangeInfo *info, const char *uid);
-void			camel_folder_change_info_add_source_list(CamelFolderChangeInfo *info, const GPtrArray *list);
-void			camel_folder_change_info_add_update	(CamelFolderChangeInfo *info, const char *uid);
-void			camel_folder_change_info_add_update_list(CamelFolderChangeInfo *info, const GPtrArray *list);
-void			camel_folder_change_info_build_diff	(CamelFolderChangeInfo *info);
+void			camel_lite_folder_change_info_add_source	(CamelFolderChangeInfo *info, const char *uid);
+void			camel_lite_folder_change_info_add_source_list(CamelFolderChangeInfo *info, const GPtrArray *list);
+void			camel_lite_folder_change_info_add_update	(CamelFolderChangeInfo *info, const char *uid);
+void			camel_lite_folder_change_info_add_update_list(CamelFolderChangeInfo *info, const GPtrArray *list);
+void			camel_lite_folder_change_info_build_diff	(CamelFolderChangeInfo *info);
 
 /* for manipulating diff's directly */
-void			camel_folder_change_info_cat		(CamelFolderChangeInfo *info, CamelFolderChangeInfo *src);
-void			camel_folder_change_info_add_uid	(CamelFolderChangeInfo *info, const char *uid);
-void			camel_folder_change_info_remove_uid	(CamelFolderChangeInfo *info, const char *uid);
-void			camel_folder_change_info_change_uid	(CamelFolderChangeInfo *info, const char *uid);
-void			camel_folder_change_info_recent_uid	(CamelFolderChangeInfo *info, const char *uid);
+void			camel_lite_folder_change_info_cat		(CamelFolderChangeInfo *info, CamelFolderChangeInfo *src);
+void			camel_lite_folder_change_info_add_uid	(CamelFolderChangeInfo *info, const char *uid);
+void			camel_lite_folder_change_info_remove_uid	(CamelFolderChangeInfo *info, const char *uid);
+void			camel_lite_folder_change_info_change_uid	(CamelFolderChangeInfo *info, const char *uid);
+void			camel_lite_folder_change_info_recent_uid	(CamelFolderChangeInfo *info, const char *uid);
 
-void camel_folder_set_push_email (CamelFolder *folder, gboolean setting);
+void camel_lite_folder_set_push_email (CamelFolder *folder, gboolean setting);
 
-int camel_folder_get_local_size   (CamelFolder *folder);
+int camel_lite_folder_get_local_size   (CamelFolder *folder);
 
-void camel_folder_delete_attachments (CamelFolder *folder, const char *uid);
-void camel_folder_rewrite_cache (CamelFolder *folder, const char *uid, CamelMimeMessage *msg);
+void camel_lite_folder_delete_attachments (CamelFolder *folder, const char *uid);
+void camel_lite_folder_rewrite_cache (CamelFolder *folder, const char *uid, CamelMimeMessage *msg);
 
-gboolean camel_folder_get_allow_external_images (CamelFolder *folder, const char *uid);
-void camel_folder_set_allow_external_images (CamelFolder *folder, const char *uid, gboolean allow);
+gboolean camel_lite_folder_get_allow_external_images (CamelFolder *folder, const char *uid);
+void camel_lite_folder_set_allow_external_images (CamelFolder *folder, const char *uid, gboolean allow);
 
-char* camel_folder_fetch (CamelFolder *folder, const char *uid, const char *spec, gboolean *binary, CamelException *ex);
-char* camel_folder_fetch_structure (CamelFolder *folder, const char *uid, CamelException *ex);
-char* camel_folder_get_cache_filename (CamelFolder *folder, const char *uid, const char *spec, CamelFolderPartState *state);
-char* camel_folder_convert (CamelFolder *folder, const char *uid, const char *spec, const char *convert_to, CamelException *ex);
+char* camel_lite_folder_fetch (CamelFolder *folder, const char *uid, const char *spec, gboolean *binary, CamelException *ex);
+char* camel_lite_folder_fetch_structure (CamelFolder *folder, const char *uid, CamelException *ex);
+char* camel_lite_folder_get_cache_filename (CamelFolder *folder, const char *uid, const char *spec, CamelFolderPartState *state);
+char* camel_lite_folder_convert (CamelFolder *folder, const char *uid, const char *spec, const char *convert_to, CamelException *ex);
 
 G_END_DECLS
 

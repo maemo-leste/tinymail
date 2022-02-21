@@ -33,7 +33,7 @@
 
 #include <camel/camel-seekable-stream.h>
 
-#define CAMEL_STREAM_FS_TYPE     (camel_stream_fs_get_type ())
+#define CAMEL_STREAM_FS_TYPE     (camel_lite_stream_fs_get_type ())
 #define CAMEL_STREAM_FS(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_STREAM_FS_TYPE, CamelStreamFs))
 #define CAMEL_STREAM_FS_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_STREAM_FS_TYPE, CamelStreamFsClass))
 #define CAMEL_IS_STREAM_FS(o)    (CAMEL_CHECK_TYPE((o), CAMEL_STREAM_FS_TYPE))
@@ -52,15 +52,15 @@ typedef struct {
 } CamelStreamFsClass;
 
 /* Standard Camel function */
-CamelType camel_stream_fs_get_type (void);
+CamelType camel_lite_stream_fs_get_type (void);
 
 /* public methods */
-CamelStream * camel_stream_fs_new_with_name            (const char *name, int flags, mode_t mode);
-CamelStream * camel_stream_fs_new_with_name_and_bounds (const char *name, int flags, mode_t mode,
+CamelStream * camel_lite_stream_fs_new_with_name            (const char *name, int flags, mode_t mode);
+CamelStream * camel_lite_stream_fs_new_with_name_and_bounds (const char *name, int flags, mode_t mode,
 							off_t start, off_t end);
 
-CamelStream * camel_stream_fs_new_with_fd              (int fd);
-CamelStream * camel_stream_fs_new_with_fd_and_bounds   (int fd, off_t start, off_t end);
+CamelStream * camel_lite_stream_fs_new_with_fd              (int fd);
+CamelStream * camel_lite_stream_fs_new_with_fd_and_bounds   (int fd, off_t start, off_t end);
 
 G_END_DECLS
 

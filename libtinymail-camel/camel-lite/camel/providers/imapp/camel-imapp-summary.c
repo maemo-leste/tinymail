@@ -44,24 +44,24 @@ static int summary_header_save(CamelFolderSummary *, FILE *);
 static CamelMessageInfo *message_info_load(CamelFolderSummary *s, gboolean *must_add);
 static int message_info_save(CamelFolderSummary *s, FILE *out, CamelMessageInfo *info);
 
-static void camel_imapp_summary_class_init(CamelIMAPPSummaryClass *klass);
-static void camel_imapp_summary_init      (CamelIMAPPSummary *obj);
+static void camel_lite_imapp_summary_class_init(CamelIMAPPSummaryClass *klass);
+static void camel_lite_imapp_summary_init      (CamelIMAPPSummary *obj);
 
-static CamelFolderSummaryClass *camel_imapp_summary_parent;
+static CamelFolderSummaryClass *camel_lite_imapp_summary_parent;
 
 CamelType
-camel_imapp_summary_get_type(void)
+camel_lite_imapp_summary_get_type(void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register(
-			camel_folder_summary_get_type(), "CamelIMAPPSummary",
+		type = camel_lite_type_register(
+			camel_lite_folder_summary_get_type(), "CamelLiteIMAPPSummary",
 			sizeof(CamelIMAPPSummary),
 			sizeof(CamelIMAPPSummaryClass),
-			(CamelObjectClassInitFunc) camel_imapp_summary_class_init,
+			(CamelObjectClassInitFunc) camel_lite_imapp_summary_class_init,
 			NULL,
-			(CamelObjectInitFunc) camel_imapp_summary_init,
+			(CamelObjectInitFunc) camel_lite_imapp_summary_init,
 			NULL);
 	}
 
@@ -69,11 +69,11 @@ camel_imapp_summary_get_type(void)
 }
 
 static void
-camel_imapp_summary_class_init(CamelIMAPPSummaryClass *klass)
+camel_lite_imapp_summary_class_init(CamelIMAPPSummaryClass *klass)
 {
 	CamelFolderSummaryClass *cfs_class =(CamelFolderSummaryClass *) klass;
 
-	camel_imapp_summary_parent = CAMEL_FOLDER_SUMMARY_CLASS(camel_type_get_global_classfuncs(camel_folder_summary_get_type()));
+	camel_lite_imapp_summary_parent = CAMEL_FOLDER_SUMMARY_CLASS(camel_lite_type_get_global_classfuncs(camel_lite_folder_summary_get_type()));
 
 	cfs_class->summary_header_load = summary_header_load;
 	cfs_class->summary_header_save = summary_header_save;
@@ -82,7 +82,7 @@ camel_imapp_summary_class_init(CamelIMAPPSummaryClass *klass)
 }
 
 static void
-camel_imapp_summary_init(CamelIMAPPSummary *obj)
+camel_lite_imapp_summary_init(CamelIMAPPSummary *obj)
 {
 	CamelFolderSummary *s =(CamelFolderSummary *)obj;
 
@@ -95,7 +95,7 @@ camel_imapp_summary_init(CamelIMAPPSummary *obj)
 }
 
 /**
- * camel_imapp_summary_new:
+ * camel_lite_imapp_summary_new:
  * @filename: the file to store the summary in.
  *
  * This will create a new CamelIMAPPSummary object and read in the
@@ -104,9 +104,9 @@ camel_imapp_summary_init(CamelIMAPPSummary *obj)
  * Return value: A new CamelIMAPPSummary object.
  **/
 CamelFolderSummary *
-camel_imapp_summary_new(void)
+camel_lite_imapp_summary_new(void)
 {
-	CamelFolderSummary *summary = CAMEL_FOLDER_SUMMARY(camel_object_new(camel_imapp_summary_get_type()));
+	CamelFolderSummary *summary = CAMEL_FOLDER_SUMMARY(camel_lite_object_new(camel_lite_imapp_summary_get_type()));
 
 	return summary;
 }
@@ -118,12 +118,12 @@ summary_header_load(CamelFolderSummary *s)
 	CamelIMAPPSummary *ims = CAMEL_IMAPP_SUMMARY(s);
 	unsigned char *ptrchr = s->filepos;
 
-	if (camel_imapp_summary_parent->summary_header_load(s) == -1)
+	if (camel_lite_imapp_summary_parent->summary_header_load(s) == -1)
 		return -1;
 
 	/* Legacy version */
 	if (s->version == 0x100c) {
-		ptrchr = camel_file_util_mmap_decode_uint32 (ptrchr, &ims->uidvalidity, FALSE);
+		ptrchr = camel_lite_file_util_mmap_decode_uint32 (ptrchr, &ims->uidvalidity, FALSE);
 		s->filepos = ptrchr;
 
 		return 0;
@@ -148,11 +148,11 @@ summary_header_save(CamelFolderSummary *s, FILE *out)
 {
 	CamelIMAPPSummary *ims = CAMEL_IMAPP_SUMMARY(s);
 
-	if (camel_imapp_summary_parent->summary_header_save(s, out) == -1)
+	if (camel_lite_imapp_summary_parent->summary_header_save(s, out) == -1)
 		return -1;
 
-	if (camel_file_util_encode_fixed_int32(out, CAMEL_IMAPP_SUMMARY_VERSION) == -1
-	    || camel_file_util_encode_fixed_int32(out, ims->uidvalidity) == -1)
+	if (camel_lite_file_util_encode_fixed_int32(out, CAMEL_IMAPP_SUMMARY_VERSION) == -1
+	    || camel_lite_file_util_encode_fixed_int32(out, ims->uidvalidity) == -1)
 		return -1;
 
 	return 0;
@@ -165,12 +165,12 @@ message_info_load(CamelFolderSummary *s, gboolean *must_add)
 	CamelMessageInfo *info;
 	CamelIMAPPMessageInfo *iinfo;
 
-	info = camel_imapp_summary_parent->message_info_load(s, must_add);
+	info = camel_lite_imapp_summary_parent->message_info_load(s, must_add);
 	if (info) {
 		unsigned char *ptrchr = s->filepos;
 		iinfo =(CamelIMAPPMessageInfo *)info;
 
-		ptrchr = camel_file_util_mmap_decode_uint32 (ptrchr, &iinfo->server_flags, FALSE);
+		ptrchr = camel_lite_file_util_mmap_decode_uint32 (ptrchr, &iinfo->server_flags, FALSE);
 		s->filepos = ptrchr;
 	}
 
@@ -182,8 +182,8 @@ message_info_save(CamelFolderSummary *s, FILE *out, CamelMessageInfo *info)
 {
 	CamelIMAPPMessageInfo *iinfo =(CamelIMAPPMessageInfo *)info;
 
-	if (camel_imapp_summary_parent->message_info_save(s, out, info) == -1)
+	if (camel_lite_imapp_summary_parent->message_info_save(s, out, info) == -1)
 		return -1;
 
-	return camel_file_util_encode_uint32(out, iinfo->server_flags);
+	return camel_lite_file_util_encode_uint32(out, iinfo->server_flags);
 }

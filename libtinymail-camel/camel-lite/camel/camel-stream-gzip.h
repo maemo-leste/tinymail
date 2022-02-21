@@ -31,9 +31,9 @@ extern "C" {
 
 #include <camel/camel-stream.h>
 
-#define CAMEL_STREAM_GZIP(obj)         CAMEL_CHECK_CAST (obj, camel_stream_gzip_get_type (), CamelStreamGZip)
-#define CAMEL_STREAM_GZIP_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_stream_gzip_get_type (), CamelStreamGZipClass)
-#define CAMEL_IS_STREAM_GZIP(obj)      CAMEL_CHECK_TYPE (obj, camel_stream_gzip_get_type ())
+#define CAMEL_STREAM_GZIP(obj)         CAMEL_CHECK_CAST (obj, camel_lite_stream_gzip_get_type (), CamelStreamGZip)
+#define CAMEL_STREAM_GZIP_CLASS(klass) CAMEL_CHECK_CLASS_CAST (klass, camel_lite_stream_gzip_get_type (), CamelStreamGZipClass)
+#define CAMEL_IS_STREAM_GZIP(obj)      CAMEL_CHECK_TYPE (obj, camel_lite_stream_gzip_get_type ())
 
 typedef struct _CamelStreamGZipClass CamelStreamGZipClass;
 
@@ -56,9 +56,9 @@ struct _CamelStreamGZipClass {
 	CamelStreamClass parent_class;
 };
 
-CamelType camel_stream_gzip_get_type (void);
+CamelType camel_lite_stream_gzip_get_type (void);
 
-CamelStream *camel_stream_gzip_new (CamelStream *real, int level, int read_mode, int write_mode);
+CamelStream *camel_lite_stream_gzip_new (CamelStream *real, int level, int read_mode, int write_mode);
 
 #ifdef __cplusplus
 }

@@ -30,14 +30,14 @@
 
 G_BEGIN_DECLS
 
-void camel_debug_init(void);
-gboolean camel_debug(const char *mode);
+void camel_lite_debug_init(void);
+gboolean camel_lite_debug(const char *mode);
 
-gboolean camel_debug_start(const char *mode);
-void camel_debug_end(void);
+gboolean camel_lite_debug_start(const char *mode);
+void camel_lite_debug_end(void);
 
 /* This interface is deprecated */
-extern int camel_verbose_debug;
+extern int camel_lite_verbose_debug;
 
 G_END_DECLS
 

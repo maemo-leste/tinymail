@@ -29,42 +29,42 @@
 
 #define CAMEL_DIGEST_SUMMARY_VERSION 0
 
-static void camel_digest_summary_class_init (CamelDigestSummaryClass *klass);
-static void camel_digest_summary_init       (CamelDigestSummary *obj);
-static void camel_digest_summary_finalise   (CamelObject *obj);
+static void camel_lite_digest_summary_class_init (CamelDigestSummaryClass *klass);
+static void camel_lite_digest_summary_init       (CamelDigestSummary *obj);
+static void camel_lite_digest_summary_finalise   (CamelObject *obj);
 
 
 static CamelFolderSummaryClass *parent_class = NULL;
 
 
 CamelType
-camel_digest_summary_get_type(void)
+camel_lite_digest_summary_get_type(void)
 {
 	static CamelType type = CAMEL_INVALID_TYPE;
 
 	if (type == CAMEL_INVALID_TYPE) {
-		type = camel_type_register (
-			camel_folder_summary_get_type (),
-			"CamelDigestSummary",
+		type = camel_lite_type_register (
+			camel_lite_folder_summary_get_type (),
+			"CamelLiteDigestSummary",
 			sizeof (CamelDigestSummary),
 			sizeof (CamelDigestSummaryClass),
-			(CamelObjectClassInitFunc) camel_digest_summary_class_init,
+			(CamelObjectClassInitFunc) camel_lite_digest_summary_class_init,
 			NULL,
-			(CamelObjectInitFunc) camel_digest_summary_init,
-			(CamelObjectFinalizeFunc) camel_digest_summary_finalise);
+			(CamelObjectInitFunc) camel_lite_digest_summary_init,
+			(CamelObjectFinalizeFunc) camel_lite_digest_summary_finalise);
 	}
 
 	return type;
 }
 
 static void
-camel_digest_summary_class_init (CamelDigestSummaryClass *klass)
+camel_lite_digest_summary_class_init (CamelDigestSummaryClass *klass)
 {
-	parent_class = CAMEL_FOLDER_SUMMARY_CLASS (camel_type_get_global_classfuncs (camel_folder_summary_get_type ()));
+	parent_class = CAMEL_FOLDER_SUMMARY_CLASS (camel_lite_type_get_global_classfuncs (camel_lite_folder_summary_get_type ()));
 }
 
 static void
-camel_digest_summary_init (CamelDigestSummary *summary)
+camel_lite_digest_summary_init (CamelDigestSummary *summary)
 {
 	CamelFolderSummary *s = (CamelFolderSummary *) summary;
 
@@ -77,14 +77,14 @@ camel_digest_summary_init (CamelDigestSummary *summary)
 }
 
 static void
-camel_digest_summary_finalise (CamelObject *object)
+camel_lite_digest_summary_finalise (CamelObject *object)
 {
 
 }
 
 
 CamelFolderSummary *
-camel_digest_summary_new (void)
+camel_lite_digest_summary_new (void)
 {
-	return (CamelFolderSummary *) camel_object_new (camel_digest_summary_get_type ());
+	return (CamelFolderSummary *) camel_lite_object_new (camel_lite_digest_summary_get_type ());
 }

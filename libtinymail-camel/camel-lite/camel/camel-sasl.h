@@ -28,7 +28,7 @@
 #include <camel/camel-exception.h>
 #include <camel/camel-service.h>
 
-#define CAMEL_SASL_TYPE     (camel_sasl_get_type ())
+#define CAMEL_SASL_TYPE     (camel_lite_sasl_get_type ())
 #define CAMEL_SASL(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SASL_TYPE, CamelSasl))
 #define CAMEL_SASL_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SASL_TYPE, CamelSaslClass))
 #define CAMEL_IS_SASL(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SASL_TYPE))
@@ -54,19 +54,19 @@ typedef struct _CamelSaslClass {
 
 
 /* Standard Camel function */
-CamelType  camel_sasl_get_type (void);
+CamelType  camel_lite_sasl_get_type (void);
 
 /* public methods */
-GByteArray *camel_sasl_challenge        (CamelSasl *sasl, GByteArray *token, CamelException *ex);
-char       *camel_sasl_challenge_base64 (CamelSasl *sasl, const char *token, CamelException *ex);
+GByteArray *camel_lite_sasl_challenge        (CamelSasl *sasl, GByteArray *token, CamelException *ex);
+char       *camel_lite_sasl_challenge_base64 (CamelSasl *sasl, const char *token, CamelException *ex);
 
-gboolean    camel_sasl_authenticated    (CamelSasl *sasl);
+gboolean    camel_lite_sasl_authenticated    (CamelSasl *sasl);
 
 /* utility functions */
-CamelSasl  *camel_sasl_new              (const char *service_name, const char *mechanism, CamelService *service);
+CamelSasl  *camel_lite_sasl_new              (const char *service_name, const char *mechanism, CamelService *service);
 
-GList                *camel_sasl_authtype_list (gboolean include_plain);
-CamelServiceAuthType *camel_sasl_authtype      (const char *mechanism);
+GList                *camel_lite_sasl_authtype_list (gboolean include_plain);
+CamelServiceAuthType *camel_lite_sasl_authtype      (const char *mechanism);
 
 G_END_DECLS
 

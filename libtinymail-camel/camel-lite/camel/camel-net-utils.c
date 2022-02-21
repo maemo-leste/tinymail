@@ -208,7 +208,7 @@ ai_to_herr (int error)
 #endif /* ENABLE_IPv6 */
 
 static int
-camel_gethostbyname_r (const char *name, struct hostent *host,
+camel_lite_gethostbyname_r (const char *name, struct hostent *host,
 		       char *buf, size_t buflen, int *herr)
 {
 #ifdef ENABLE_IPv6
@@ -266,7 +266,7 @@ camel_gethostbyname_r (const char *name, struct hostent *host,
 	((char **) buf)[1] = NULL;
 	host->h_addr_list = (char **) buf;
 
-	camel_freeaddrinfo (res);
+	camel_lite_freeaddrinfo (res);
 
 	return 0;
 #else /* No support for IPv6 addresses */
@@ -319,7 +319,7 @@ camel_gethostbyname_r (const char *name, struct hostent *host,
 }
 
 static int
-camel_gethostbyaddr_r (const char *addr, int addrlen, int type, struct hostent *host,
+camel_lite_gethostbyaddr_r (const char *addr, int addrlen, int type, struct hostent *host,
 		       char *buf, size_t buflen, int *herr)
 {
 #ifdef ENABLE_IPv6
@@ -458,7 +458,7 @@ cs_waitinfo(void *(worker)(void *), struct _addrinfo_msg *msg, const char *error
 	pthread_t id;
 	int err, cancel_fd, cancel = 0, fd;
 
-	cancel_fd = camel_operation_cancel_fd(NULL);
+	cancel_fd = camel_lite_operation_cancel_fd(NULL);
 	if (cancel_fd == -1) {
 		worker(msg);
 		return 0;
@@ -506,7 +506,7 @@ cs_waitinfo(void *(worker)(void *), struct _addrinfo_msg *msg, const char *error
 #endif
 						   ) {
 			if (status == -1)
-				camel_exception_setv(ex, CAMEL_EXCEPTION_SYSTEM, "%s: %s", error,
+				camel_lite_exception_setv(ex, CAMEL_EXCEPTION_SYSTEM, "%s: %s", error,
 #ifndef G_OS_WIN32
 						     g_strerror(errno)
 #else
@@ -514,7 +514,7 @@ cs_waitinfo(void *(worker)(void *), struct _addrinfo_msg *msg, const char *error
 #endif
 						     );
 			else
-				camel_exception_setv(ex, CAMEL_EXCEPTION_USER_CANCEL, _("Canceled"));
+				camel_lite_exception_setv(ex, CAMEL_EXCEPTION_USER_CANCEL, _("Canceled"));
 
 			/* We cancel so if the thread impl is decent it causes immediate exit.
 			   We detach so we dont need to wait for it to exit if it isn't.
@@ -532,7 +532,7 @@ cs_waitinfo(void *(worker)(void *), struct _addrinfo_msg *msg, const char *error
 			{
 				/* Experimental: and the timeout happened */
 
-				camel_exception_setv(ex, CAMEL_EXCEPTION_SYSTEM,
+				camel_lite_exception_setv(ex, CAMEL_EXCEPTION_SYSTEM,
 					"Timeout when resolving hostname");
 				msg->cancelled = 1;
 				pthread_detach(id);
@@ -550,7 +550,7 @@ cs_waitinfo(void *(worker)(void *), struct _addrinfo_msg *msg, const char *error
 			}
 		}
 	} else {
-		camel_exception_setv(ex, CAMEL_EXCEPTION_SYSTEM, "%s: %s: %s", error, _("cannot create thread"), g_strerror(err));
+		camel_lite_exception_setv(ex, CAMEL_EXCEPTION_SYSTEM, "%s: %s: %s", error, _("cannot create thread"), g_strerror(err));
 	}
 	e_msgport_destroy(reply_port);
 
@@ -571,7 +571,7 @@ cs_getaddrinfo(void *data)
 
 	/* This is a pretty simplistic emulation of getaddrinfo */
 
-	while ((msg->result = camel_gethostbyname_r(msg->name, &h, msg->hostbufmem, msg->hostbuflen, &herr)) == ERANGE) {
+	while ((msg->result = camel_lite_gethostbyname_r(msg->name, &h, msg->hostbufmem, msg->hostbuflen, &herr)) == ERANGE) {
 		pthread_testcancel();
                 msg->hostbuflen *= 2;
                 msg->hostbufmem = g_realloc(msg->hostbufmem, msg->hostbuflen);
@@ -687,7 +687,7 @@ cs_getaddrinfo(void *data)
 #endif /* NEED_ADDRINFO */
 
 struct addrinfo *
-camel_getaddrinfo(const char *name, const char *service, const struct addrinfo *hints, CamelException *ex)
+camel_lite_getaddrinfo(const char *name, const char *service, const struct addrinfo *hints, CamelException *ex)
 {
 	struct _addrinfo_msg *msg;
 	struct addrinfo *res = NULL;
@@ -696,12 +696,12 @@ camel_getaddrinfo(const char *name, const char *service, const struct addrinfo *
 #endif
 	g_return_val_if_fail(name != NULL, NULL);
 
-	/*if (camel_operation_cancel_check(NULL)) {
-		camel_exception_set(ex, CAMEL_EXCEPTION_USER_CANCEL, _("Canceled"));
+	/*if (camel_lite_operation_cancel_check(NULL)) {
+		camel_lite_exception_set(ex, CAMEL_EXCEPTION_USER_CANCEL, _("Canceled"));
 		return NULL;
 	}*/
 
-	camel_operation_start_transient(NULL, _("Resolving: %s"), name);
+	camel_lite_operation_start_transient(NULL, _("Resolving: %s"), name);
 
 	/* force ipv4 addresses only */
 #ifndef ENABLE_IPv6
@@ -725,7 +725,7 @@ camel_getaddrinfo(const char *name, const char *service, const struct addrinfo *
 #endif
 	if (cs_waitinfo(cs_getaddrinfo, msg, _("Host lookup failed"), ex) == 0) {
 		if (msg->result != 0) {
-			camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM_HOST_LOOKUP_FAILED, _("Host lookup failed: %s: %s"),
+			camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM_HOST_LOOKUP_FAILED, _("Host lookup failed: %s: %s"),
 					      name, gai_strerror (msg->result));
 		}
 
@@ -733,13 +733,13 @@ camel_getaddrinfo(const char *name, const char *service, const struct addrinfo *
 	} else
 		res = NULL;
 
-	camel_operation_end(NULL);
+	camel_lite_operation_end(NULL);
 
 	return res;
 }
 
 void
-camel_freeaddrinfo(struct addrinfo *host)
+camel_lite_freeaddrinfo(struct addrinfo *host)
 {
 #ifdef NEED_ADDRINFO
 	while (host) {
@@ -772,7 +772,7 @@ cs_getnameinfo(void *data)
 
 	/* FIXME: honour getnameinfo flags: do we care, not really */
 
-	while ((msg->result = camel_gethostbyaddr_r((const char *)&sin->sin_addr, sizeof(sin->sin_addr), AF_INET, &h,
+	while ((msg->result = camel_lite_gethostbyaddr_r((const char *)&sin->sin_addr, sizeof(sin->sin_addr), AF_INET, &h,
 						    msg->hostbufmem, msg->hostbuflen, &herr)) == ERANGE) {
 		pthread_testcancel ();
                 msg->hostbuflen *= 2;
@@ -823,17 +823,17 @@ cs_getnameinfo(void *data)
 #endif
 
 int
-camel_getnameinfo(const struct sockaddr *sa, socklen_t salen, char **host, char **serv, int flags, CamelException *ex)
+camel_lite_getnameinfo(const struct sockaddr *sa, socklen_t salen, char **host, char **serv, int flags, CamelException *ex)
 {
 	struct _addrinfo_msg *msg;
 	int result;
 
-	if (camel_operation_cancel_check(NULL)) {
-		camel_exception_set (ex, CAMEL_EXCEPTION_USER_CANCEL, _("Canceled"));
+	if (camel_lite_operation_cancel_check(NULL)) {
+		camel_lite_exception_set (ex, CAMEL_EXCEPTION_USER_CANCEL, _("Canceled"));
 		return -1;
 	}
 
-	camel_operation_start_transient(NULL, _("Resolving address"));
+	camel_lite_operation_start_transient(NULL, _("Resolving address"));
 
 	msg = g_malloc0(sizeof(*msg));
 	msg->addr = sa;
@@ -856,7 +856,7 @@ camel_getnameinfo(const struct sockaddr *sa, socklen_t salen, char **host, char 
 	cs_waitinfo(cs_getnameinfo, msg, _("Name lookup failed"), ex);
 
 	if ((result = msg->result) != 0)
-		camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM, _("Name lookup failed: %s"),
+		camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM, _("Name lookup failed: %s"),
 				      gai_strerror (result));
 	else {
 		if (host)
@@ -869,7 +869,7 @@ camel_getnameinfo(const struct sockaddr *sa, socklen_t salen, char **host, char 
 	g_free(msg->serv);
 	g_free(msg);
 
-	camel_operation_end(NULL);
+	camel_lite_operation_end(NULL);
 
 	return result;
 }

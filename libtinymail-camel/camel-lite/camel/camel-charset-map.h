@@ -33,15 +33,15 @@ struct _CamelCharset {
 	int level;
 };
 
-void camel_charset_init(CamelCharset *);
-void camel_charset_step(CamelCharset *, const char *in, int len);
+void camel_lite_charset_init(CamelCharset *);
+void camel_lite_charset_step(CamelCharset *, const char *in, int len);
 
-const char *camel_charset_best_name (CamelCharset *);
+const char *camel_lite_charset_best_name (CamelCharset *);
 
 /* helper function */
-const char *camel_charset_best(const char *in, int len);
+const char *camel_lite_charset_best(const char *in, int len);
 
-const char *camel_charset_iso_to_windows (const char *isocharset);
+const char *camel_lite_charset_iso_to_windows (const char *isocharset);
 
 G_END_DECLS
 

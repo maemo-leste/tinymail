@@ -52,7 +52,7 @@ tny_camel_msg_header_dup_replyto (TnyHeader *self)
 	const gchar *enc;
 
 	if (!me->reply_to) {
-		enc = camel_medium_get_header (CAMEL_MEDIUM (me->msg), "reply-to");
+		enc = camel_lite_medium_get_header (CAMEL_MEDIUM (me->msg), "reply-to");
 		me->reply_to = _tny_camel_decode_raw_header ((CamelMimePart *) me->msg, enc, TRUE);
 	}
 
@@ -67,14 +67,14 @@ tny_camel_msg_header_set_bcc (TnyHeader *self, const gchar *bcc)
 	CamelInternetAddress *addr;
 
 	me = TNY_CAMEL_MSG_HEADER (self);
-	addr = camel_internet_address_new ();
+	addr = camel_lite_internet_address_new ();
 
 	_foreach_email_add_to_inet_addr (bcc, addr);
 
-	camel_mime_message_set_recipients (me->msg, 
+	camel_lite_mime_message_set_recipients (me->msg, 
 		CAMEL_RECIPIENT_TYPE_BCC, addr);
 
-	camel_object_unref (CAMEL_OBJECT (addr));
+	camel_lite_object_unref (CAMEL_OBJECT (addr));
 
 	return;
 }
@@ -83,14 +83,14 @@ static void
 tny_camel_msg_header_set_cc (TnyHeader *self, const gchar *cc)
 {
 	TnyCamelMsgHeader *me = TNY_CAMEL_MSG_HEADER (self);    
-	CamelInternetAddress *addr = camel_internet_address_new ();
+	CamelInternetAddress *addr = camel_lite_internet_address_new ();
 
 	_foreach_email_add_to_inet_addr (cc, addr);
 
-	camel_mime_message_set_recipients (me->msg, 
+	camel_lite_mime_message_set_recipients (me->msg, 
 		CAMEL_RECIPIENT_TYPE_CC, addr);
 
-	camel_object_unref (CAMEL_OBJECT (addr));
+	camel_lite_object_unref (CAMEL_OBJECT (addr));
 
 	return;
 }
@@ -99,15 +99,15 @@ static void
 tny_camel_msg_header_set_from (TnyHeader *self, const gchar *from)
 {
 	TnyCamelMsgHeader *me = TNY_CAMEL_MSG_HEADER (self);    
-	CamelInternetAddress *addr = camel_internet_address_new ();
+	CamelInternetAddress *addr = camel_lite_internet_address_new ();
 	gchar *dup;
 
 	dup = g_strdup (from);
 	_string_to_camel_inet_addr (dup, addr);
 	g_free (dup);
 
-	camel_mime_message_set_from (me->msg, addr);
-	camel_object_unref (CAMEL_OBJECT (addr));
+	camel_lite_mime_message_set_from (me->msg, addr);
+	camel_lite_object_unref (CAMEL_OBJECT (addr));
 
 	return;
 }
@@ -117,7 +117,7 @@ tny_camel_msg_header_set_subject (TnyHeader *self, const gchar *subject)
 {
 	TnyCamelMsgHeader *me = TNY_CAMEL_MSG_HEADER (self);    
 
-	camel_mime_message_set_subject (me->msg, subject);
+	camel_lite_mime_message_set_subject (me->msg, subject);
 
 	return;
 }
@@ -126,17 +126,17 @@ static void
 tny_camel_msg_header_set_to (TnyHeader *self, const gchar *to)
 {
 	TnyCamelMsgHeader *me = TNY_CAMEL_MSG_HEADER (self);    
-	CamelInternetAddress *addr = camel_internet_address_new ();
+	CamelInternetAddress *addr = camel_lite_internet_address_new ();
 	gchar *dup;
 
 	dup = g_strdup (to);
 	_foreach_email_add_to_inet_addr (dup, addr);
 	g_free (dup);
 
-	camel_mime_message_set_recipients (me->msg, 
+	camel_lite_mime_message_set_recipients (me->msg, 
 		CAMEL_RECIPIENT_TYPE_TO, addr);
 
-	camel_object_unref (CAMEL_OBJECT (addr));
+	camel_lite_object_unref (CAMEL_OBJECT (addr));
 
 	return;
 }
@@ -146,16 +146,16 @@ static void
 tny_camel_msg_header_set_replyto (TnyHeader *self, const gchar *replyto)
 {
 	TnyCamelMsgHeader *me = TNY_CAMEL_MSG_HEADER (self);    
-	CamelInternetAddress *addr = camel_internet_address_new ();
+	CamelInternetAddress *addr = camel_lite_internet_address_new ();
 	gchar *dup;
 
 	dup = g_strdup (replyto);
 	_foreach_email_add_to_inet_addr (dup, addr);
 	g_free (dup);
 
-	camel_mime_message_set_reply_to (me->msg, addr);
+	camel_lite_mime_message_set_reply_to (me->msg, addr);
 
-	camel_object_unref (CAMEL_OBJECT (addr));
+	camel_lite_object_unref (CAMEL_OBJECT (addr));
 
 	return;
 }
@@ -168,7 +168,7 @@ tny_camel_msg_header_dup_cc (TnyHeader *self)
 	const gchar *enc;
 
 	if (!me->cc) {
-		enc = camel_medium_get_header (CAMEL_MEDIUM (me->msg), "cc");
+		enc = camel_lite_medium_get_header (CAMEL_MEDIUM (me->msg), "cc");
 		me->cc = _tny_camel_decode_raw_header ((CamelMimePart *) me->msg, enc, TRUE);
 	}
 
@@ -182,7 +182,7 @@ tny_camel_msg_header_dup_bcc (TnyHeader *self)
 	const gchar *enc;
 
 	if (!me->bcc) {
-		enc = camel_medium_get_header (CAMEL_MEDIUM (me->msg), "bcc");
+		enc = camel_lite_medium_get_header (CAMEL_MEDIUM (me->msg), "bcc");
 		me->bcc = _tny_camel_decode_raw_header ((CamelMimePart *) me->msg, enc, TRUE);
 	}
 
@@ -200,8 +200,8 @@ tny_camel_msg_header_get_flags (TnyHeader *self)
 
 	result |= TNY_HEADER_FLAG_CACHED;
 
-	priority_string = camel_medium_get_header (CAMEL_MEDIUM (me->msg), "X-Priority");
-	attachments_string = camel_medium_get_header (CAMEL_MEDIUM (me->msg), "X-MS-Has-Attach");
+	priority_string = camel_lite_medium_get_header (CAMEL_MEDIUM (me->msg), "X-Priority");
+	attachments_string = camel_lite_medium_get_header (CAMEL_MEDIUM (me->msg), "X-MS-Has-Attach");
 	if (priority_string != NULL) {
 		if (g_strrstr (priority_string, "1") != NULL ||
 		    g_strrstr (priority_string, "2") != NULL)
@@ -233,18 +233,18 @@ set_prio_mask (TnyCamelMsgHeader *me, TnyHeaderFlags mask)
 	TnyHeaderFlags prio_mask = mask;
 	prio_mask &= TNY_HEADER_FLAG_PRIORITY_MASK;
 
-	camel_medium_remove_header (CAMEL_MEDIUM (me->msg), "X-MSMail-Priority");
-	camel_medium_remove_header (CAMEL_MEDIUM (me->msg), "X-Priority");
+	camel_lite_medium_remove_header (CAMEL_MEDIUM (me->msg), "X-MSMail-Priority");
+	camel_lite_medium_remove_header (CAMEL_MEDIUM (me->msg), "X-Priority");
 
 	if (prio_mask == TNY_HEADER_FLAG_HIGH_PRIORITY) {
-		camel_medium_add_header (CAMEL_MEDIUM (me->msg), "X-MSMail-Priority", "High");
-		camel_medium_add_header (CAMEL_MEDIUM (me->msg), "X-Priority", "1");
+		camel_lite_medium_add_header (CAMEL_MEDIUM (me->msg), "X-MSMail-Priority", "High");
+		camel_lite_medium_add_header (CAMEL_MEDIUM (me->msg), "X-Priority", "1");
 	} else if (prio_mask == TNY_HEADER_FLAG_LOW_PRIORITY) {
-		camel_medium_add_header (CAMEL_MEDIUM (me->msg), "X-MSMail-Priority", "Low");
-		camel_medium_add_header (CAMEL_MEDIUM (me->msg), "X-Priority", "5");
+		camel_lite_medium_add_header (CAMEL_MEDIUM (me->msg), "X-MSMail-Priority", "Low");
+		camel_lite_medium_add_header (CAMEL_MEDIUM (me->msg), "X-Priority", "5");
 	} else if (prio_mask == TNY_HEADER_FLAG_NORMAL_PRIORITY) {
-		camel_medium_add_header (CAMEL_MEDIUM (me->msg), "X-MSMail-Priority", "Normal");
-		camel_medium_add_header (CAMEL_MEDIUM (me->msg), "X-Priority", "3");
+		camel_lite_medium_add_header (CAMEL_MEDIUM (me->msg), "X-MSMail-Priority", "Normal");
+		camel_lite_medium_add_header (CAMEL_MEDIUM (me->msg), "X-Priority", "3");
 	}
 
 	return;
@@ -273,8 +273,8 @@ tny_camel_msg_header_set_flag (TnyHeader *self, TnyHeaderFlags mask)
 	}
 
 	if (mask & TNY_HEADER_FLAG_ATTACHMENTS) {
-		camel_medium_remove_header (CAMEL_MEDIUM (me->msg), "X-MS-Has-Attach");
-		camel_medium_add_header (CAMEL_MEDIUM (me->msg), "X-MS-Has-Attach", "Yes");
+		camel_lite_medium_remove_header (CAMEL_MEDIUM (me->msg), "X-MS-Has-Attach");
+		camel_lite_medium_add_header (CAMEL_MEDIUM (me->msg), "X-MS-Has-Attach", "Yes");
 	}
 
 	return;
@@ -290,7 +290,7 @@ tny_camel_msg_header_unset_flag (TnyHeader *self, TnyHeaderFlags mask)
 	}
 
 	if (mask & TNY_HEADER_FLAG_ATTACHMENTS)
-		camel_medium_remove_header (CAMEL_MEDIUM (me->msg), "X-MS-Has-Attach");
+		camel_lite_medium_remove_header (CAMEL_MEDIUM (me->msg), "X-MS-Has-Attach");
 
 	if (mask & TNY_HEADER_FLAG_PARTIAL)
 		me->partial = FALSE;
@@ -356,9 +356,9 @@ tny_camel_msg_header_get_date_received (TnyHeader *self)
 	if (me->has_received)
 		return me->received;
 
-	retval = camel_mime_message_get_date_received (me->msg, &tzone);
+	retval = camel_lite_mime_message_get_date_received (me->msg, &tzone);
 	if (retval == CAMEL_MESSAGE_DATE_CURRENT)
-		retval = camel_mime_message_get_date (me->msg, &tzone);
+		retval = camel_lite_mime_message_get_date (me->msg, &tzone);
 
 	/* return 0 if we really cannot find a date */
 	if (retval == CAMEL_MESSAGE_DATE_CURRENT)
@@ -381,10 +381,10 @@ tny_camel_msg_header_get_date_sent (TnyHeader *self)
 	 * NOTE: we ignore the timezone, as the camel function already
 	 * returns a UTC-normalized time_t
 	 * */
-	retval = camel_mime_message_get_date (me->msg, &tzone);
+	retval = camel_lite_mime_message_get_date (me->msg, &tzone);
 
 	if (retval == CAMEL_MESSAGE_DATE_CURRENT)
-		retval = camel_mime_message_get_date_received (me->msg, &tzone);
+		retval = camel_lite_mime_message_get_date_received (me->msg, &tzone);
 	if (retval == CAMEL_MESSAGE_DATE_CURRENT)
 		return 0;
 	else
@@ -398,7 +398,7 @@ tny_camel_msg_header_dup_from (TnyHeader *self)
 	const gchar *enc;
 
 	if (!me->from) {
-		enc = camel_medium_get_header (CAMEL_MEDIUM (me->msg), "from");
+		enc = camel_lite_medium_get_header (CAMEL_MEDIUM (me->msg), "from");
 		me->from = _tny_camel_decode_raw_header ((CamelMimePart *) me->msg, enc, TRUE);
 	}
 
@@ -412,7 +412,7 @@ tny_camel_msg_header_dup_subject (TnyHeader *self)
 	const gchar *enc;
 
 	if (!me->subject) {
-		enc = camel_medium_get_header (CAMEL_MEDIUM (me->msg), "subject");
+		enc = camel_lite_medium_get_header (CAMEL_MEDIUM (me->msg), "subject");
 		me->subject = _tny_camel_decode_raw_header ((CamelMimePart *) me->msg, enc, FALSE);
 	}
 
@@ -427,7 +427,7 @@ tny_camel_msg_header_dup_to (TnyHeader *self)
 	const gchar *enc;
 
 	if (!me->to) {
-		enc = camel_medium_get_header (CAMEL_MEDIUM (me->msg), "to");
+		enc = camel_lite_medium_get_header (CAMEL_MEDIUM (me->msg), "to");
 		me->to = _tny_camel_decode_raw_header ((CamelMimePart *) me->msg, enc, TRUE);
 	}
 
@@ -441,7 +441,7 @@ tny_camel_msg_header_dup_message_id (TnyHeader *self)
 	TnyCamelMsgHeader *me = TNY_CAMEL_MSG_HEADER (self);
 	gchar *retval = NULL;
 
-	retval = g_strdup (camel_mime_message_get_message_id (me->msg));
+	retval = g_strdup (camel_lite_mime_message_get_message_id (me->msg));
 
 	return retval;
 }
@@ -453,12 +453,12 @@ tny_camel_msg_header_get_message_size (TnyHeader *self)
 {
 	TnyCamelMsgHeader *me = TNY_CAMEL_MSG_HEADER (self);
 	guint retval;
-	CamelStreamNull *sn = (CamelStreamNull *)camel_stream_null_new();
+	CamelStreamNull *sn = (CamelStreamNull *)camel_lite_stream_null_new();
 
-	camel_data_wrapper_write_to_stream((CamelDataWrapper *)me->msg, (CamelStream *)sn);
+	camel_lite_data_wrapper_write_to_stream((CamelDataWrapper *)me->msg, (CamelStream *)sn);
 
 	retval = (guint) sn->written;
-	camel_object_unref((CamelObject *)sn);
+	camel_lite_object_unref((CamelObject *)sn);
 
 	return retval;
 }
@@ -688,7 +688,7 @@ tny_camel_msg_header_get_type (void)
 		if (!g_thread_supported ()) 
 			g_thread_init (NULL);
 
-		camel_type_init ();
+		camel_lite_type_init ();
 		_camel_type_init_done = TRUE;
 	}
 

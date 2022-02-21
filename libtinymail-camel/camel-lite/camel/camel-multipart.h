@@ -29,7 +29,7 @@
 
 #include <camel/camel-data-wrapper.h>
 
-#define CAMEL_MULTIPART_TYPE     (camel_multipart_get_type ())
+#define CAMEL_MULTIPART_TYPE     (camel_lite_multipart_get_type ())
 #define CAMEL_MULTIPART(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_MULTIPART_TYPE, CamelMultipart))
 #define CAMEL_MULTIPART_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_MULTIPART_TYPE, CamelMultipartClass))
 #define CAMEL_IS_MULTIPART(o)    (CAMEL_CHECK_TYPE((o), CAMEL_MULTIPART_TYPE))
@@ -66,34 +66,34 @@ typedef struct {
 } CamelMultipartClass;
 
 /* Standard Camel function */
-CamelType camel_multipart_get_type (void);
+CamelType camel_lite_multipart_get_type (void);
 
 
 /* public methods */
-CamelMultipart *    camel_multipart_new            (void);
-void                camel_multipart_add_part       (CamelMultipart *multipart,
+CamelMultipart *    camel_lite_multipart_new            (void);
+void                camel_lite_multipart_add_part       (CamelMultipart *multipart,
 						    CamelMimePart *part);
-void                camel_multipart_add_part_at    (CamelMultipart *multipart,
+void                camel_lite_multipart_add_part_at    (CamelMultipart *multipart,
 						    CamelMimePart *part,
 						    guint index);
-void                camel_multipart_remove_part    (CamelMultipart *multipart,
+void                camel_lite_multipart_remove_part    (CamelMultipart *multipart,
 						    CamelMimePart *part);
-CamelMimePart *     camel_multipart_remove_part_at (CamelMultipart *multipart,
+CamelMimePart *     camel_lite_multipart_remove_part_at (CamelMultipart *multipart,
 						    guint index);
-CamelMimePart *     camel_multipart_get_part       (CamelMultipart *multipart,
+CamelMimePart *     camel_lite_multipart_get_part       (CamelMultipart *multipart,
 						    guint index);
-guint               camel_multipart_get_number     (CamelMultipart *multipart);
-void                camel_multipart_set_boundary   (CamelMultipart *multipart,
+guint               camel_lite_multipart_get_number     (CamelMultipart *multipart);
+void                camel_lite_multipart_set_boundary   (CamelMultipart *multipart,
 						    const char *boundary);
-const char *        camel_multipart_get_boundary   (CamelMultipart *multipart);
+const char *        camel_lite_multipart_get_boundary   (CamelMultipart *multipart);
 
-void		    camel_multipart_set_preface	   (CamelMultipart *multipart, const char *preface);
-void		    camel_multipart_set_postface   (CamelMultipart *multipart, const char *postface);
+void		    camel_lite_multipart_set_preface	   (CamelMultipart *multipart, const char *preface);
+void		    camel_lite_multipart_set_postface   (CamelMultipart *multipart, const char *postface);
 
-int		    camel_multipart_construct_from_parser(CamelMultipart *multipart, struct _CamelMimeParser *parser);
+int		    camel_lite_multipart_construct_from_parser(CamelMultipart *multipart, struct _CamelMimeParser *parser);
 
 
-CamelMimePart * camel_multipart_get_part_wref (CamelMultipart *multipart, guint index);
+CamelMimePart * camel_lite_multipart_get_part_wref (CamelMultipart *multipart, guint index);
 
 G_END_DECLS
 

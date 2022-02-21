@@ -25,7 +25,7 @@
 
 #include <camel/camel-sasl.h>
 
-#define CAMEL_SASL_PLAIN_TYPE     (camel_sasl_plain_get_type ())
+#define CAMEL_SASL_PLAIN_TYPE     (camel_lite_sasl_plain_get_type ())
 #define CAMEL_SASL_PLAIN(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SASL_PLAIN_TYPE, CamelSaslPlain))
 #define CAMEL_SASL_PLAIN_CLASS(k) (CAMEL_CHECK_CLASS_CAST ((k), CAMEL_SASL_PLAIN_TYPE, CamelSaslPlainClass))
 #define CAMEL_IS_SASL_PLAIN(o)    (CAMEL_CHECK_TYPE((o), CAMEL_SASL_PLAIN_TYPE))
@@ -45,9 +45,9 @@ typedef struct _CamelSaslPlainClass {
 
 
 /* Standard Camel function */
-CamelType camel_sasl_plain_get_type (void);
+CamelType camel_lite_sasl_plain_get_type (void);
 
-extern CamelServiceAuthType camel_sasl_plain_authtype;
+extern CamelServiceAuthType camel_lite_sasl_plain_authtype;
 
 G_END_DECLS
 

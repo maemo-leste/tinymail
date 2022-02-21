@@ -45,7 +45,7 @@
 
 
 void
-camel_imap4_flags_diff (flags_diff_t *diff, guint32 old, guint32 new)
+camel_lite_imap4_flags_diff (flags_diff_t *diff, guint32 old, guint32 new)
 {
 	diff->changed = old ^ new;
 	diff->bits = new & diff->changed;
@@ -53,14 +53,14 @@ camel_imap4_flags_diff (flags_diff_t *diff, guint32 old, guint32 new)
 
 
 guint32
-camel_imap4_flags_merge (flags_diff_t *diff, guint32 flags)
+camel_lite_imap4_flags_merge (flags_diff_t *diff, guint32 flags)
 {
 	return (flags & ~diff->changed) | diff->bits;
 }
 
 
 /**
- * camel_imap4_merge_flags:
+ * camel_lite_imap4_merge_flags:
  * @original: original server flags
  * @local: local flags (after changes)
  * @server: new server flags (another client updated the server flags)
@@ -70,18 +70,18 @@ camel_imap4_flags_merge (flags_diff_t *diff, guint32 flags)
  * Returns the merged flags.
  **/
 guint32
-camel_imap4_merge_flags (guint32 original, guint32 local, guint32 server)
+camel_lite_imap4_merge_flags (guint32 original, guint32 local, guint32 server)
 {
 	flags_diff_t diff;
 
-	camel_imap4_flags_diff (&diff, original, local);
+	camel_lite_imap4_flags_diff (&diff, original, local);
 
-	return camel_imap4_flags_merge (&diff, server);
+	return camel_lite_imap4_flags_merge (&diff, server);
 }
 
 
 void
-camel_imap4_namespace_clear (CamelIMAP4Namespace **ns)
+camel_lite_imap4_namespace_clear (CamelIMAP4Namespace **ns)
 {
 	CamelIMAP4Namespace *node, *next;
 
@@ -118,7 +118,7 @@ imap4_namespace_copy (const CamelIMAP4Namespace *ns)
 }
 
 CamelIMAP4NamespaceList *
-camel_imap4_namespace_list_copy (const CamelIMAP4NamespaceList *nsl)
+camel_lite_imap4_namespace_list_copy (const CamelIMAP4NamespaceList *nsl)
 {
 	CamelIMAP4NamespaceList *new;
 
@@ -131,17 +131,17 @@ camel_imap4_namespace_list_copy (const CamelIMAP4NamespaceList *nsl)
 }
 
 void
-camel_imap4_namespace_list_free (CamelIMAP4NamespaceList *nsl)
+camel_lite_imap4_namespace_list_free (CamelIMAP4NamespaceList *nsl)
 {
-	camel_imap4_namespace_clear (&nsl->personal);
-	camel_imap4_namespace_clear (&nsl->shared);
-	camel_imap4_namespace_clear (&nsl->other);
+	camel_lite_imap4_namespace_clear (&nsl->personal);
+	camel_lite_imap4_namespace_clear (&nsl->shared);
+	camel_lite_imap4_namespace_clear (&nsl->other);
 	g_free (nsl);
 }
 
 
 char
-camel_imap4_get_path_delim (CamelIMAP4StoreSummary *s, const char *full_name)
+camel_lite_imap4_get_path_delim (CamelIMAP4StoreSummary *s, const char *full_name)
 {
 	CamelIMAP4Namespace *namespace;
 	const char *slash;
@@ -241,7 +241,7 @@ uidset_add (struct _uidset *uidset, CamelMessageInfo *info)
 {
 	GPtrArray *messages = uidset->summary->messages;
 	struct _uidset_range *node, *tail = uidset->tail;
-	const char *iuid = camel_message_info_uid (info);
+	const char *iuid = camel_lite_message_info_uid (info);
 	size_t uidlen, len;
 	const char *colon;
 	guint32 index;
@@ -330,7 +330,7 @@ uidset_to_string (struct _uidset *uidset)
 }
 
 int
-camel_imap4_get_uid_set (CamelIMAP4Engine *engine, CamelFolderSummary *summary, GPtrArray *infos, int cur, size_t linelen, char **set)
+camel_lite_imap4_get_uid_set (CamelIMAP4Engine *engine, CamelFolderSummary *summary, GPtrArray *infos, int cur, size_t linelen, char **set)
 {
 	struct _uidset uidset;
 	size_t maxlen;
@@ -359,7 +359,7 @@ camel_imap4_get_uid_set (CamelIMAP4Engine *engine, CamelFolderSummary *summary, 
 
 
 void
-camel_imap4_utils_set_unexpected_token_error (CamelException *ex, CamelIMAP4Engine *engine, camel_imap4_token_t *token)
+camel_lite_imap4_utils_set_unexpected_token_error (CamelException *ex, CamelIMAP4Engine *engine, camel_lite_imap4_token_t *token)
 {
 	GString *errmsg;
 
@@ -397,7 +397,7 @@ camel_imap4_utils_set_unexpected_token_error (CamelException *ex, CamelIMAP4Engi
 		break;
 	}
 
-	camel_exception_set (ex, CAMEL_EXCEPTION_SYSTEM, errmsg->str);
+	camel_lite_exception_set (ex, CAMEL_EXCEPTION_SYSTEM, errmsg->str);
 
 	g_string_free (errmsg, TRUE);
 }
@@ -421,22 +421,22 @@ static struct {
 };
 
 int
-camel_imap4_parse_flags_list (CamelIMAP4Engine *engine, guint32 *flags, CamelException *ex)
+camel_lite_imap4_parse_flags_list (CamelIMAP4Engine *engine, guint32 *flags, CamelException *ex)
 {
-	camel_imap4_token_t token;
+	camel_lite_imap4_token_t token;
 	guint32 new = 0;
 	int i;
 
-	if (camel_imap4_engine_next_token (engine, &token, ex) == -1)
+	if (camel_lite_imap4_engine_next_token (engine, &token, ex) == -1)
 		return -1;
 
 	if (token.token != '(') {
 		d(fprintf (stderr, "Expected to find a '(' token starting the flags list\n"));
-		camel_imap4_utils_set_unexpected_token_error (ex, engine, &token);
+		camel_lite_imap4_utils_set_unexpected_token_error (ex, engine, &token);
 		return -1;
 	}
 
-	if (camel_imap4_engine_next_token (engine, &token, ex) == -1)
+	if (camel_lite_imap4_engine_next_token (engine, &token, ex) == -1)
 		return -1;
 
 	while (token.token == CAMEL_IMAP4_TOKEN_ATOM || token.token == CAMEL_IMAP4_TOKEN_FLAG) {
@@ -451,13 +451,13 @@ camel_imap4_parse_flags_list (CamelIMAP4Engine *engine, guint32 *flags, CamelExc
 		if (i == G_N_ELEMENTS (imap4_flags))
 			d(fprintf (stderr, "Encountered unknown flag: %s\n", token.v.atom));
 
-		if (camel_imap4_engine_next_token (engine, &token, ex) == -1)
+		if (camel_lite_imap4_engine_next_token (engine, &token, ex) == -1)
 			return -1;
 	}
 
 	if (token.token != ')') {
 		d(fprintf (stderr, "Expected to find a ')' token terminating the flags list\n"));
-		camel_imap4_utils_set_unexpected_token_error (ex, engine, &token);
+		camel_lite_imap4_utils_set_unexpected_token_error (ex, engine, &token);
 		return -1;
 	}
 
@@ -480,10 +480,10 @@ static struct {
 };
 
 int
-camel_imap4_untagged_list (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guint32 index, camel_imap4_token_t *token, CamelException *ex)
+camel_lite_imap4_untagged_list (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guint32 index, camel_lite_imap4_token_t *token, CamelException *ex)
 {
 	GPtrArray *array = ic->user_data;
-	camel_imap4_list_t *list;
+	camel_lite_imap4_list_t *list;
 	unsigned char *buf;
 	guint32 flags = 0;
 	GString *literal;
@@ -491,14 +491,14 @@ camel_imap4_untagged_list (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guin
 	size_t n;
 	int i;
 
-	if (camel_imap4_engine_next_token (engine, token, ex) == -1)
+	if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1)
 		return -1;
 
 	/* parse the flag list */
 	if (token->token != '(')
 		goto unexpected;
 
-	if (camel_imap4_engine_next_token (engine, token, ex) == -1)
+	if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1)
 		return -1;
 
 	while (token->token == CAMEL_IMAP4_TOKEN_FLAG || token->token == CAMEL_IMAP4_TOKEN_ATOM) {
@@ -509,7 +509,7 @@ camel_imap4_untagged_list (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guin
 			}
 		}
 
-		if (camel_imap4_engine_next_token (engine, token, ex) == -1)
+		if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1)
 			return -1;
 	}
 
@@ -517,7 +517,7 @@ camel_imap4_untagged_list (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guin
 		goto unexpected;
 
 	/* parse the path delimiter */
-	if (camel_imap4_engine_next_token (engine, token, ex) == -1)
+	if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1)
 		return -1;
 
 	switch (token->token) {
@@ -532,10 +532,10 @@ camel_imap4_untagged_list (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guin
 	}
 
 	/* parse the folder name */
-	if (camel_imap4_engine_next_token (engine, token, ex) == -1)
+	if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1)
 		return -1;
 
-	list = g_new (camel_imap4_list_t, 1);
+	list = g_new (camel_lite_imap4_list_t, 1);
 	list->flags = flags;
 	list->delim = delim;
 
@@ -548,11 +548,11 @@ camel_imap4_untagged_list (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guin
 		break;
 	case CAMEL_IMAP4_TOKEN_LITERAL:
 		literal = g_string_new ("");
-		while ((i = camel_imap4_stream_literal (engine->istream, &buf, &n)) == 1)
+		while ((i = camel_lite_imap4_stream_literal (engine->istream, &buf, &n)) == 1)
 			g_string_append_len (literal, buf, n);
 
 		if (i == -1) {
-			camel_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
+			camel_lite_exception_setv (ex, CAMEL_EXCEPTION_SYSTEM,
 					      _("IMAP server %s unexpectedly disconnected: %s"),
 					      engine->url->host, errno ? g_strerror (errno) : _("Unknown"));
 			g_string_free (literal, TRUE);
@@ -570,11 +570,11 @@ camel_imap4_untagged_list (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guin
 
 	g_ptr_array_add (array, list);
 
-	return camel_imap4_engine_eat_line (engine, ex);
+	return camel_lite_imap4_engine_eat_line (engine, ex);
 
  unexpected:
 
-	camel_imap4_utils_set_unexpected_token_error (ex, engine, token);
+	camel_lite_imap4_utils_set_unexpected_token_error (ex, engine, token);
 
 	return -1;
 }
@@ -593,9 +593,9 @@ static struct {
 
 
 void
-camel_imap4_status_free (camel_imap4_status_t *status)
+camel_lite_imap4_status_free (camel_lite_imap4_status_t *status)
 {
-	camel_imap4_status_attr_t *attr, *next;
+	camel_lite_imap4_status_attr_t *attr, *next;
 
 	attr = status->attr_list;
 	while (attr != NULL) {
@@ -610,17 +610,17 @@ camel_imap4_status_free (camel_imap4_status_t *status)
 
 
 int
-camel_imap4_untagged_status (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guint32 index, camel_imap4_token_t *token, CamelException *ex)
+camel_lite_imap4_untagged_status (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, guint32 index, camel_lite_imap4_token_t *token, CamelException *ex)
 {
-	camel_imap4_status_attr_t *attr, *tail, *list = NULL;
+	camel_lite_imap4_status_attr_t *attr, *tail, *list = NULL;
 	GPtrArray *array = ic->user_data;
-	camel_imap4_status_t *status;
+	camel_lite_imap4_status_t *status;
 	char *mailbox;
 	size_t len;
 	int type;
 	int i;
 
-	if (camel_imap4_engine_next_token (engine, token, ex) == -1)
+	if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1)
 		return -1;
 
 	switch (token->token) {
@@ -631,35 +631,35 @@ camel_imap4_untagged_status (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, gu
 		mailbox = g_strdup (token->v.qstring);
 		break;
 	case CAMEL_IMAP4_TOKEN_LITERAL:
-		if (camel_imap4_engine_literal (engine, (unsigned char **) &mailbox, &len, ex) == -1)
+		if (camel_lite_imap4_engine_literal (engine, (unsigned char **) &mailbox, &len, ex) == -1)
 			return -1;
 		break;
 	default:
 		fprintf (stderr, "Unexpected token in IMAP4 untagged STATUS response: %s%c\n",
 			 token->token == CAMEL_IMAP4_TOKEN_NIL ? "NIL" : "",
 			 (unsigned char) (token->token & 0xff));
-		camel_imap4_utils_set_unexpected_token_error (ex, engine, token);
+		camel_lite_imap4_utils_set_unexpected_token_error (ex, engine, token);
 		return -1;
 	}
 
-	if (camel_imap4_engine_next_token (engine, token, ex) == -1) {
+	if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1) {
 		g_free (mailbox);
 		return -1;
 	}
 
 	if (token->token != '(') {
 		d(fprintf (stderr, "Expected to find a '(' token after the mailbox token in the STATUS response\n"));
-		camel_imap4_utils_set_unexpected_token_error (ex, engine, token);
+		camel_lite_imap4_utils_set_unexpected_token_error (ex, engine, token);
 		g_free (mailbox);
 		return -1;
 	}
 
-	if (camel_imap4_engine_next_token (engine, token, ex) == -1) {
+	if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1) {
 		g_free (mailbox);
 		return -1;
 	}
 
-	tail = (camel_imap4_status_attr_t *) &list;
+	tail = (camel_lite_imap4_status_attr_t *) &list;
 
 	while (token->token == CAMEL_IMAP4_TOKEN_ATOM) {
 		/* parse the status messages list */
@@ -674,13 +674,13 @@ camel_imap4_untagged_status (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, gu
 		if (type == CAMEL_IMAP4_STATUS_UNKNOWN)
 			fprintf (stderr, "unrecognized token in STATUS list: %s\n", token->v.atom);
 
-		if (camel_imap4_engine_next_token (engine, token, ex) == -1)
+		if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1)
 			goto exception;
 
 		if (token->token != CAMEL_IMAP4_TOKEN_NUMBER)
 			break;
 
-		attr = g_new (camel_imap4_status_attr_t, 1);
+		attr = g_new (camel_lite_imap4_status_attr_t, 1);
 		attr->next = NULL;
 		attr->type = type;
 		attr->value = token->v.number;
@@ -688,11 +688,11 @@ camel_imap4_untagged_status (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, gu
 		tail->next = attr;
 		tail = attr;
 
-		if (camel_imap4_engine_next_token (engine, token, ex) == -1)
+		if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1)
 			goto exception;
 	}
 
-	status = g_new (camel_imap4_status_t, 1);
+	status = g_new (camel_lite_imap4_status_t, 1);
 	status->mailbox = mailbox;
 	status->attr_list = list;
 	list = NULL;
@@ -701,16 +701,16 @@ camel_imap4_untagged_status (CamelIMAP4Engine *engine, CamelIMAP4Command *ic, gu
 
 	if (token->token != ')') {
 		d(fprintf (stderr, "Expected to find a ')' token terminating the untagged STATUS response\n"));
-		camel_imap4_utils_set_unexpected_token_error (ex, engine, token);
+		camel_lite_imap4_utils_set_unexpected_token_error (ex, engine, token);
 		return -1;
 	}
 
-	if (camel_imap4_engine_next_token (engine, token, ex) == -1)
+	if (camel_lite_imap4_engine_next_token (engine, token, ex) == -1)
 		return -1;
 
 	if (token->token != '\n') {
 		d(fprintf (stderr, "Expected to find a '\\n' token after the STATUS response\n"));
-		camel_imap4_utils_set_unexpected_token_error (ex, engine, token);
+		camel_lite_imap4_utils_set_unexpected_token_error (ex, engine, token);
 		return -1;
 	}
 
