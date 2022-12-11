@@ -11,7 +11,7 @@
  * with every copy.
  *
  * To compute the message digest of a chunk of bytes, declare an
- * MD5Context structure, pass it to md5_init, call md5_update as
+ * md5_context structure, pass it to md5_init, call md5_update as
  * needed on buffers full of bytes, and then call md5_Final, which
  * will fill a supplied 16-byte array with the digest.
  */
@@ -60,7 +60,7 @@ _byte_reverse (guchar *buf, guint32 longs)
  *
  **/
 void 
-md5_init (MD5Context *ctx)
+md5_init (md5_context *ctx)
 {
 	ctx->buf[0] = 0x67452301;
 	ctx->buf[1] = 0xefcdab89;
@@ -83,7 +83,7 @@ md5_init (MD5Context *ctx)
  * of bytes. Use this to progressively construct an md5 hash.
  **/
 void 
-md5_update (MD5Context *ctx, const guchar *buf, guint32 len)
+md5_update (md5_context *ctx, const guchar *buf, guint32 len)
 {
 	guint32 t;
 	
@@ -147,7 +147,7 @@ md5_update (MD5Context *ctx, const guchar *buf, guint32 len)
  * copy the final md5 hash to a bufer
  **/
 void 
-md5_final (MD5Context *ctx, guchar digest[16])
+md5_final (md5_context *ctx, guchar digest[16])
 {
 	guint32 count;
 	guchar *p;
@@ -312,7 +312,7 @@ md5_transform (guint32 buf[4], const guint32 in[16])
 void
 md5_get_digest (const gchar *buffer, gint buffer_size, guchar digest[16])
 {	
-	MD5Context ctx;
+	md5_context ctx;
 
 	md5_init (&ctx);
 	md5_update (&ctx, (const guchar*)buffer, buffer_size);
@@ -332,7 +332,7 @@ md5_get_digest (const gchar *buffer, gint buffer_size, guchar digest[16])
 void
 md5_get_digest_from_file (const gchar *filename, guchar digest[16])
 {	
-	MD5Context ctx;
+	md5_context ctx;
 	guchar tmp_buf[1024];
 	gint nb_bytes_read;
 	FILE *fp;

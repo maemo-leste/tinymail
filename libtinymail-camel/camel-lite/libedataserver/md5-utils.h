@@ -11,7 +11,7 @@
  * with every copy.
  *
  * To compute the message digest of a chunk of bytes, declare an
- * MD5Context structure, pass it to rpmMD5Init, call rpmMD5Update as
+ * md5_context structure, pass it to rpmMD5Init, call rpmMD5Update as
  * needed on buffers full of bytes, and then call rpmMD5Final, which
  * will fill a supplied 16-byte array with the digest.
  */
@@ -31,16 +31,16 @@
 G_BEGIN_DECLS
 
 /**
- * MD5Context:
+ * md5_context:
  *
  * A buffer structure used for md5 calculation.
  **/
-typedef struct _MD5Context {
+typedef struct _md5_context {
 	/*< private >*/
 	guint32 buf[4];
 	guint32 bits[2];
 	guchar in[64];
-} MD5Context;
+} md5_context;
 
 
 void md5_get_digest (const gchar *buffer, gint buffer_size, guchar digest[16]);
@@ -50,9 +50,9 @@ void md5_get_digest (const gchar *buffer, gint buffer_size, guchar digest[16]);
 void md5_get_digest_from_file (const gchar *filename, guchar digest[16]);
 
 /* raw routines */
-void md5_init (MD5Context *ctx);
-void md5_update (MD5Context *ctx, const guchar *buf, guint32 len);
-void md5_final (MD5Context *ctx, guchar digest[16]);
+void md5_init (md5_context *ctx);
+void md5_update (md5_context *ctx, const guchar *buf, guint32 len);
+void md5_final (md5_context *ctx, guchar digest[16]);
 
 G_END_DECLS
 

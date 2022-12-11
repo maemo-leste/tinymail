@@ -182,7 +182,7 @@ static int
 cmd_builduid(CamelPOP3Engine *pe, CamelPOP3Stream *stream, void *data)
 {
 	CamelPOP3FolderInfo *fi = data;
-	MD5Context md5;
+	md5_context md5;
 	unsigned char digest[16];
 	struct _camel_lite_header_raw *h;
 	CamelMimeParser *mp;

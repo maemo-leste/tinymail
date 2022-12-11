@@ -377,7 +377,7 @@ camel_lite_vee_folder_set_folders(CamelVeeFolder *vf, GList *folders)
 void
 camel_lite_vee_folder_hash_folder(CamelFolder *folder, char buffer[8])
 {
-	MD5Context ctx;
+	md5_context ctx;
 	unsigned char digest[16];
 	int state = 0, save = 0;
 	char *tmp;

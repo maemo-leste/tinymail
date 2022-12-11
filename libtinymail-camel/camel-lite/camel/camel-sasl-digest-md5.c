@@ -563,7 +563,7 @@ compute_response (struct _DigestResponse *resp, const char *passwd, gboolean cli
 {
 	guchar hex_a1[33], hex_a2[33];
 	guchar digest[16];
-	MD5Context ctx;
+	md5_context ctx;
 	char *buf;
 
 	/* compute A1 */
