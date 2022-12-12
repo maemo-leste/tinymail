@@ -1,3 +1,9 @@
+tinymail (1.1.97) unstable; urgency=low
+
+  * try to avoid conflicts with libeds files
+
+ -- Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>  Mon, 12 Dec 2022 17:03:05 +0200
+
 tinymail (1.1.96) unstable; urgency=low
 
   * Rename struct MD5Context to md5_context
