@@ -38,7 +38,7 @@
 
 #include <string.h>
 
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #include "camel-exception.h"
 #include "camel-net-utils.h"

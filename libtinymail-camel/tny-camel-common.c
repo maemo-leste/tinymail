@@ -30,7 +30,7 @@
 #include "tny-camel-account-priv.h"
 
 #include <tny-folder-store-query.h>
-#include <libedataserver/e-iconv.h>
+#include <libedataserver/e-lite-iconv.h>
 
 static void remove_quotes (gchar *buffer);
 static gchar **split_recipients (gchar *buffer);

@@ -28,8 +28,8 @@
 #include <ctype.h>
 #include <glib.h>
 #include <glib/gi18n-lib.h>
-#include "e-time-utils.h"
-#include "e-data-server-util.h"
+#include "e-lite-time-utils.h"
+#include "e-lite-data-server-util.h"
 
 #ifdef G_OS_WIN32
 /* The localtime_r() definition in pthreads-win32's pthread.h doesn't guard

@@ -28,7 +28,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #include "camel-exception.h"
 #include "camel-mime-filter-basic.h"

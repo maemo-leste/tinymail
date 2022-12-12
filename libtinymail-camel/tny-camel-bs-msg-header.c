@@ -33,7 +33,7 @@
 #include <tny-camel-shared.h>
 
 #include <camel/camel-mime-utils.h>
-#include <libedataserver/e-iconv.h>
+#include <libedataserver/e-lite-iconv.h>
 
 static GObjectClass *parent_class = NULL;
 

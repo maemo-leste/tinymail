@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /* 
- * e-iconv.h
+ * e-lite-iconv.h
  * Copyright 2000, 2001, Ximian, Inc.
  *
  * Authors:

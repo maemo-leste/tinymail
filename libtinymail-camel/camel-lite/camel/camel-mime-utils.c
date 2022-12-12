@@ -46,8 +46,8 @@
 
 #include <glib.h>
 
-#include <libedataserver/e-iconv.h>
-#include <libedataserver/e-time-utils.h>
+#include <libedataserver/e-lite-iconv.h>
+#include <libedataserver/e-lite-time-utils.h>
 
 #include "camel-charset-map.h"
 #include "camel-mime-utils.h"

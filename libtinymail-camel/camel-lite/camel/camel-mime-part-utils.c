@@ -32,7 +32,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <libedataserver/e-iconv.h>
+#include <libedataserver/e-lite-iconv.h>
 #ifdef CAMEL_USE_E_ARRAY
 #include <libedataserver/e-array.h>
 #else

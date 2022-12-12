@@ -31,7 +31,7 @@
 #include <glib.h>
 #include <glib/gi18n-lib.h>
 
-#include <libedataserver/e-memory.h>
+#include <libedataserver/e-lite-memory.h>
 
 #include "camel-debug.h"
 #include "camel-exception.h"

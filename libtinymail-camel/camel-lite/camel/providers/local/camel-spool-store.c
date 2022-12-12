@@ -38,7 +38,7 @@
 
 #include <glib/gi18n-lib.h>
 
-#include <libedataserver/e-data-server-util.h>
+#include <libedataserver/e-lite-data-server-util.h>
 
 #include "camel-exception.h"
 #include "camel-file-utils.h"

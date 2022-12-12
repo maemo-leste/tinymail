@@ -37,7 +37,7 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-#include <libedataserver/e-memory.h>
+#include <libedataserver/e-lite-memory.h>
 
 #include "camel-certdb.h"
 #include "camel-file-utils.h"

@@ -32,9 +32,9 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-#include <libedataserver/e-data-server-util.h>
-#include <libedataserver/e-memory.h>
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-data-server-util.h>
+#include <libedataserver/e-lite-memory.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #include "camel-file-utils.h"
 #include "camel-object.h"

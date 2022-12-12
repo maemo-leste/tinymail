@@ -45,8 +45,8 @@
 #include <sys/wait.h>
 #endif
 
-#include <libedataserver/e-iconv.h>
-#include <libedataserver/e-sexp.h>
+#include <libedataserver/e-lite-iconv.h>
+#include <libedataserver/e-lite-sexp.h>
 
 #include "camel-debug.h"
 #include "camel-exception.h"

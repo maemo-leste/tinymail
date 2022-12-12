@@ -35,7 +35,7 @@
 
 #include <glib.h>
 
-#include <libedataserver/e-memory.h>
+#include <libedataserver/e-lite-memory.h>
 
 #include "camel-folder-thread.h"
 

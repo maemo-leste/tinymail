@@ -29,7 +29,7 @@
 
 #include <glib.h>
 
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 #include <camel/camel-object.h>
 
 #define CAMEL_TYPE_OFFLINE_JOURNAL            (camel_lite_offline_journal_get_type ())

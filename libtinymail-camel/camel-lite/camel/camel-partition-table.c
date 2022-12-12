@@ -32,7 +32,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #include "camel-block-file.h"
 #include "camel-partition-table.h"

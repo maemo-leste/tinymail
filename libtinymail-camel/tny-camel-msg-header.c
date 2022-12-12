@@ -32,7 +32,7 @@
 #include "tny-camel-folder-priv.h"
 #include "tny-camel-msg-header-priv.h"
 
-#include <libedataserver/e-iconv.h>
+#include <libedataserver/e-lite-iconv.h>
 
 #include <tny-camel-shared.h>
 

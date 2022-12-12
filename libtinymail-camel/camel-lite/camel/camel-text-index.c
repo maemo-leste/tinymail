@@ -36,8 +36,8 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-#include <libedataserver/e-memory.h>
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-memory.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #include "camel-block-file.h"
 #include "camel-object.h"

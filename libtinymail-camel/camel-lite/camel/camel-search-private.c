@@ -37,7 +37,7 @@
 #include <glib.h>
 #include <glib/gi18n-lib.h>
 
-#include <libedataserver/e-sexp.h>
+#include <libedataserver/e-lite-sexp.h>
 
 #include "camel-exception.h"
 #include "camel-mime-message.h"

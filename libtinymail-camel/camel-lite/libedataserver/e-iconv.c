@@ -39,7 +39,7 @@
 #include <errno.h>
 
 #include <glib.h>
-#include "e-iconv.h"
+#include "e-lite-iconv.h"
 
 #include <locale.h>
 

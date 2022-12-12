@@ -31,7 +31,7 @@
 #include <camel/camel-provider.h>
 #include <camel/camel-junk-plugin.h>
 
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #define CAMEL_SESSION_TYPE     (camel_lite_session_get_type ())
 #define CAMEL_SESSION(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_SESSION_TYPE, CamelSession))

@@ -32,7 +32,7 @@
 #include <glib.h>
 #include <glib/gi18n-lib.h>
 
-#include <libedataserver/e-iconv.h>
+#include <libedataserver/e-lite-iconv.h>
 #include <libedataserver/md5-utils.h>
 
 #include "camel-charset-map.h"

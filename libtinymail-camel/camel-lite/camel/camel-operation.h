@@ -30,7 +30,7 @@
 
 #include <glib.h>
 
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #ifdef HAVE_NSS
 #include <nspr.h>

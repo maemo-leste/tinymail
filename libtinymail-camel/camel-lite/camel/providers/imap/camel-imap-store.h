@@ -50,7 +50,7 @@
 #include <sys/time.h>
 
 #ifdef ENABLE_THREADS
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 G_BEGIN_DECLS
 

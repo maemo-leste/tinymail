@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <libedataserver/e-data-server-util.h>
+#include <libedataserver/e-lite-data-server-util.h>
 
 #include "camel-debug.h"
 

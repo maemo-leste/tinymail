@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <libedataserver/e-trie.h>
+#include <libedataserver/e-lite-trie.h>
 
 #include "camel-url-scanner.h"
 #include "camel-utf8.h"

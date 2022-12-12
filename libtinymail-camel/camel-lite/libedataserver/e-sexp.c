@@ -92,8 +92,8 @@
 #include <time.h>
 #include <string.h>
 
-#include "e-sexp.h"
-#include "e-memory.h"
+#include "e-lite-sexp.h"
+#include "e-lite-memory.h"
 
 #define p(x)			/* parse debug */
 #define r(x)			/* run debug */

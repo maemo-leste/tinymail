@@ -56,8 +56,8 @@
 
 #include <glib/gi18n-lib.h>
 
-#include <libedataserver/e-data-server-util.h>
-#include <libedataserver/e-time-utils.h>
+#include <libedataserver/e-lite-data-server-util.h>
+#include <libedataserver/e-lite-time-utils.h>
 
 #include "camel-stream-fs.h"
 #include "camel-utf8.h"

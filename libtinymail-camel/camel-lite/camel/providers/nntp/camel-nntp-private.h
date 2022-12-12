@@ -30,7 +30,7 @@
 #include <config.h>
 #endif
 
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 G_BEGIN_DECLS
 

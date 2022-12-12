@@ -53,7 +53,7 @@
 #include <termios.h>
 #endif
 
-#include <libedataserver/e-iconv.h>
+#include <libedataserver/e-lite-iconv.h>
 
 #include "camel-debug.h"
 #include "camel-gpg-context.h"

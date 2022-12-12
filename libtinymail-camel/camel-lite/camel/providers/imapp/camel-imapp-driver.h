@@ -4,7 +4,7 @@
 
 #include <camel/camel-object.h>
 #include "camel-imapp-stream.h"
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #define CAMEL_IMAPP_DRIVER_TYPE     (camel_lite_imapp_driver_get_type ())
 #define CAMEL_IMAPP_DRIVER(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_IMAPP_DRIVER_TYPE, CamelIMAPPDriver))

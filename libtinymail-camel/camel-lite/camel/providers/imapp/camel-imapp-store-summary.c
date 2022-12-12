@@ -29,7 +29,7 @@
 #include <unistd.h>
 
 #include <libedataserver/md5-utils.h>
-#include <libedataserver/e-memory.h>
+#include <libedataserver/e-lite-memory.h>
 
 #include "camel-file-utils.h"
 #include "camel-private.h"

@@ -35,7 +35,7 @@
 
 #include <glib.h>
 
-#include <libedataserver/e-memory.h>
+#include <libedataserver/e-lite-memory.h>
 
 #include "camel-mime-filter.h"
 #include "camel-mime-parser.h"

@@ -28,8 +28,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "e-trie.h"
-#include "e-memory.h"
+#include "e-lite-trie.h"
+#include "e-lite-memory.h"
 
 #define d(x)
 

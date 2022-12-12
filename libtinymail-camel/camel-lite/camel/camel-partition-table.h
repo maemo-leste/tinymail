@@ -23,7 +23,7 @@
 
 #include <camel/camel-object.h>
 #include <glib.h>
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #include "camel-block-file.h"
 

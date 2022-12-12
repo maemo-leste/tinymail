@@ -39,7 +39,7 @@
 #include <glib/gstdio.h>
 #include <gmodule.h>
 
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #include "camel-exception.h"
 #include "camel-private.h"

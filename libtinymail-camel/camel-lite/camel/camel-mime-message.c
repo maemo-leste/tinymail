@@ -32,8 +32,8 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <libedataserver/e-iconv.h>
-#include <libedataserver/e-time-utils.h>
+#include <libedataserver/e-lite-iconv.h>
+#include <libedataserver/e-lite-time-utils.h>
 
 #include "camel-mime-filter-bestenc.h"
 #include "camel-mime-filter-charset.h"

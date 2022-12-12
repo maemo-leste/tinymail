@@ -3,7 +3,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include <libedataserver/e-memory.h>
+#include <libedataserver/e-lite-memory.h>
 
 #include "camel-folder-summary.h"
 #include "camel-store.h"

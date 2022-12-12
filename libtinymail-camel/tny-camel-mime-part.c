@@ -63,7 +63,7 @@ static GObjectClass *parent_class = NULL;
 #include <camel/camel-mime-filter-charset.h>
 #include <camel/camel-mime-filter-windows.h>
 
-#include <libedataserver/e-iconv.h>
+#include <libedataserver/e-lite-iconv.h>
 
 static ssize_t camel_lite_stream_format_text (CamelDataWrapper *dw, CamelStream *stream);
 

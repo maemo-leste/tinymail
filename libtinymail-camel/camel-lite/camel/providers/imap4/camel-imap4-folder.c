@@ -38,7 +38,7 @@
 #include <glib.h>
 #include <glib/gi18n-lib.h>
 
-#include <libedataserver/e-data-server-util.h>
+#include <libedataserver/e-lite-data-server-util.h>
 
 #include "camel-file-utils.h"
 #include "camel-mime-filter-crlf.h"

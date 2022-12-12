@@ -31,12 +31,12 @@ libedataserver_1_2_la_SOURCES =		\
 libedataserverincludedir = $(includedir)/libedataserver-lite/libedataserver
 
 libedataserverinclude_HEADERS =		\
-	e-trie.h			\
-	e-iconv.h			\
-	e-memory.h			\
-	e-msgport.h			\
-	e-sexp.h			\
-	e-time-utils.h			\
-	e-data-server-util.h		\
+	e-lite-trie.h			\
+	e-lite-iconv.h			\
+	e-lite-memory.h			\
+	e-lite-msgport.h		\
+	e-lite-sexp.h			\
+	e-lite-time-utils.h		\
+	e-lite-data-server-util.h	\
 	md5-utils.h
 

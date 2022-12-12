@@ -305,7 +305,7 @@ int main (int argc, char **argv)
 #include "camel-charset-map-private.h"
 #include "camel-utf8.h"
 
-#include <libedataserver/e-iconv.h>
+#include <libedataserver/e-lite-iconv.h>
 
 void
 camel_lite_charset_init (CamelCharset *c)

@@ -34,7 +34,7 @@
 
 #include <glib.h>
 
-#include <libedataserver/e-time-utils.h>
+#include <libedataserver/e-lite-time-utils.h>
 
 #include "broken-date-parser.h"
 

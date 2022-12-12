@@ -47,8 +47,8 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 
-#include <libedataserver/e-iconv.h>
-#include <libedataserver/e-memory.h>
+#include <libedataserver/e-lite-iconv.h>
+#include <libedataserver/e-lite-memory.h>
 #include <libedataserver/md5-utils.h>
 
 

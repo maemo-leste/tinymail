@@ -27,7 +27,7 @@
 #include <camel/camel-exception.h>
 
 /* FIXME: camelise */
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #define CAMEL_CIPHER_CONTEXT_TYPE     (camel_lite_cipher_context_get_type ())
 #define CAMEL_CIPHER_CONTEXT(obj)     (CAMEL_CHECK_CAST((obj), CAMEL_CIPHER_CONTEXT_TYPE, CamelCipherContext))

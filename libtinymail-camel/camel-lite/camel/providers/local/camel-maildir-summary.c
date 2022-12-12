@@ -36,7 +36,7 @@
 
 #include <glib/gi18n-lib.h>
 
-#include <libedataserver/e-memory.h>
+#include <libedataserver/e-lite-memory.h>
 
 #include "camel-mime-message.h"
 #include "camel-operation.h"

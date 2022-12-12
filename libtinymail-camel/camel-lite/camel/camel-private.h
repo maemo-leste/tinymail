@@ -31,7 +31,7 @@
 #endif
 
 #include <pthread.h>
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 #ifdef ENABLE_CST
 #include <cst.h>
 #endif

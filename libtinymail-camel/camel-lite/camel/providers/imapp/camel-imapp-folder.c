@@ -30,7 +30,7 @@
 #include <string.h>
 
 #include <libedataserver/md5-utils.h>
-#include <libedataserver/e-data-server-util.h>
+#include <libedataserver/e-lite-data-server-util.h>
 
 #include "camel-data-cache.h"
 #include "camel-exception.h"

@@ -43,8 +43,8 @@
 #include <winsock2.h>
 #endif
 
-#include "e-msgport.h"
-#include "e-data-server-util.h"
+#include "e-lite-msgport.h"
+#include "e-lite-data-server-util.h"
 
 #define m(x)			/* msgport debug */
 #define c(x)			/* cache debug */

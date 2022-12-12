@@ -24,7 +24,7 @@
 #ifndef __CAMEL_IMAP4_SEARCH_H__
 #define __CAMEL_IMAP4_SEARCH_H__
 
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #include <camel/camel-data-cache.h>
 #include <camel/camel-folder-search.h>

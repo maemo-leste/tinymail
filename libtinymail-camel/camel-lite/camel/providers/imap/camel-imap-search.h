@@ -27,7 +27,7 @@
 #define _CAMEL_IMAP_SEARCH_H
 
 #include <camel/camel-folder-search.h>
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 #include <camel/camel-data-cache.h>
 
 #define CAMEL_IMAP_SEARCH_TYPE         (camel_lite_imap_search_get_type ())

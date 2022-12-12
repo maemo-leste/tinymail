@@ -20,7 +20,7 @@
 
 */
 
-#include "e-memory.h"
+#include "e-lite-memory.h"
 
 #include <string.h> /* memset() */
 #include <stdlib.h> /* alloca() */

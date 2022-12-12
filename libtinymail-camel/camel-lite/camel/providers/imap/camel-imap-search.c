@@ -31,7 +31,7 @@
 #include <string.h>
 
 #include <libedataserver/md5-utils.h>	/* md5 hash building */
-#include <libedataserver/e-sexp.h>
+#include <libedataserver/e-lite-sexp.h>
 
 #include "camel-mime-utils.h"	/* base64 encoding */
 #include "camel-search-private.h"

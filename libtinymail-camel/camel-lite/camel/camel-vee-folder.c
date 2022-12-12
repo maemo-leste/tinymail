@@ -32,7 +32,7 @@
 #include <libedataserver/md5-utils.h>
 
 #if defined (DOEPOOLV) || defined (DOESTRV)
-#include <libedataserver/e-memory.h>
+#include <libedataserver/e-lite-memory.h>
 #endif
 
 #include "camel-debug.h"

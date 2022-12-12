@@ -28,7 +28,7 @@
 
 #include <glib.h>
 
-#include "e-data-server-util.h"
+#include "e-lite-data-server-util.h"
 
 /**
  * e_util_mkdir_hier:

@@ -27,7 +27,7 @@
 
 #include <glib.h>
 
-#include <libedataserver/e-msgport.h>
+#include <libedataserver/e-lite-msgport.h>
 
 #include <camel/camel-stream.h>
 #include <camel/camel-exception.h>

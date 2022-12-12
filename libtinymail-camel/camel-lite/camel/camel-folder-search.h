@@ -22,7 +22,7 @@
 #ifndef _CAMEL_FOLDER_SEARCH_H
 #define _CAMEL_FOLDER_SEARCH_H
 
-#include <libedataserver/e-sexp.h>
+#include <libedataserver/e-lite-sexp.h>
 #include <camel/camel-folder.h>
 #include <camel/camel-object.h>
 #include <camel/camel-index.h>
