@@ -510,11 +510,6 @@ else
 fi
 AC_SUBST(LIBTINYMAIL_OLPC_CFLAGS)
 AC_SUBST(LIBTINYMAIL_OLPC_LIBS)
-	      
-
-AC_DEFUN([ARMEL_TARGET],
-	[if sb-conf cu | grep -i 'armel' >/dev/null 2>&1; then
-	    armel_target=yes])
 
 dnl ### libtinymail-maemo, a platform library implementation for the maemo platform ##
 if test x$PLATFORMDIR = xlibtinymail-maemo; then
@@ -524,12 +519,8 @@ if test x$PLATFORMDIR = xlibtinymail-maemo; then
 		AC_MSG_RESULT(conic)
 		AC_SUBST(LIBYINYMAIL_MAEMO_CONIC_CFLAGS)
 		AC_SUBST(LIBTINYMAIL_MAEMO_CONIC_LIBS)
-		dnl HACK: unless we are building for arm, make the device a 'dummy' assuming it is always online
-		dnl this is because scratcbhox-Conic does not support ethernet, and will therefore never consider
-		dnl itself 'online'
  		if test -z "`sb-conf show -c | grep arm`"; then
 			use_conic_device_dummy=1
- 			AC_DEFINE_UNQUOTED(MAEMO_CONIC_DUMMY,1,["Whether to hack the TnyMaemoConicDevice to somewhat work in sbox"])
  		fi
 	else
 		AC_DEFINE_UNQUOTED(LIBTINYMAIL_MAEMO_WITHOUT_CONIC,1,["whether the dummy libconic should be built"])
@@ -538,8 +529,26 @@ if test x$PLATFORMDIR = xlibtinymail-maemo; then
 	AC_SUBST(LIBTINYMAIL_MAEMO_CFLAGS)
 	AC_SUBST(LIBTINYMAIL_MAEMO_LIBS)
 fi
-			
-AM_CONDITIONAL(MAEMO_CONIC_DEVICE_DUMMY, test -n "$use_conic_device_dummy")
+
+dnl HACK: unless we are building for arm, make the device a 'dummy' assuming it is always online
+dnl this is because conic does not support ethernet, and will therefore never consider
+dnl itself 'online'
+if test x$PLATFORMDIR = xlibtinymail-maemo; then
+	AC_ARG_ENABLE(doxygen,
+	AC_HELP_STRING([--use-conic-dummy],
+	  [Build doxygen docs (no, yes)]),
+	[case "${enableval}" in
+	  yes) use_conic_device_dummy=true ;;
+	  no)  use_conic_device_dummy=false ;;
+	  *) AC_MSG_ERROR(bad value ${enableval} for --use-conic-dummy) ;;
+	esac],[use_conic_device_dummy=false])
+
+	if test x$use_conic_device_dummy = xtrue; then
+		AC_DEFINE_UNQUOTED(MAEMO_CONIC_DUMMY,1,["Whether to hack the TnyMaemoConicDevice to somewhat work in sbox"])
+	fi
+fi
+
+AM_CONDITIONAL(MAEMO_CONIC_DEVICE_DUMMY, test x$use_conic_device_dummy = xtrue)
 AM_CONDITIONAL(MAEMO_CONIC_HAVE_CONIC, test "x$HAVE_CONIC" = "xyes")
 AM_CONDITIONAL(BUILD_MAEMO, test x$build_maemo = xtrue)
 AM_CONDITIONAL(BUILD_LESTE, test x$build_maemo_leste = xtrue)
