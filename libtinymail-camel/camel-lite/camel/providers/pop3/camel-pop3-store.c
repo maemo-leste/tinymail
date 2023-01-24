@@ -67,6 +67,7 @@
 #include "camel-tcp-stream-raw.h"
 #include "camel-tcp-stream.h"
 #include "camel-url.h"
+#include "camel-utf8.h"
 #include "camel/camel-string-utils.h"
 
 #ifdef HAVE_SSL
