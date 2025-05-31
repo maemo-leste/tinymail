@@ -364,7 +364,7 @@ imap_command_start (CamelImapStore *store, CamelFolder *folder,
 		debug_resp = g_strndup (resp, nread);
 		debug_resp_escaped = g_strescape (debug_resp, "");
 		g_free (debug_resp);
-		imap_debug (debug_resp_escaped);
+		imap_debug (debug_resp_escaped, NULL);
 		g_free (debug_resp_escaped);
 		imap_debug ("\n");
 #endif
@@ -381,7 +381,7 @@ imap_command_start (CamelImapStore *store, CamelFolder *folder,
 
 	nwritten = camel_lite_stream_write (store->ostream, full_cmd, len);
 
-	imap_debug ("(%d, %d) -> %s\n", len, nwritten, full_cmd);
+	imap_debug ("(%d, %ld) -> %s\n", len, nwritten, full_cmd);
 
 	g_free (full_cmd);
 
