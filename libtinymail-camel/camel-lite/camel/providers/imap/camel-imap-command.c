@@ -162,7 +162,7 @@ camel_lite_imap_command (CamelImapStore *store, CamelFolder *folder,
 			CamelImapSummary *imap_summary = CAMEL_IMAP_SUMMARY (folder->summary);
 
 			cmd = imap_command_strdup_printf (store,
-				"SELECT %F (QRESYNC (%d %s))",
+				"SELECT %F (QRESYNC (%u %s))",
 				folder->full_name,
 				imap_summary->validity, modseq);
 
@@ -1226,6 +1226,12 @@ imap_command_strdup_vprintf (CamelImapStore *store, const char *fmt,
 			start = p + 1;
 			len += 10;
 			break;
+		case 'u':
+			num = va_arg (ap, unsigned int);
+			g_ptr_array_add (args, GUINT_TO_POINTER (num));
+			start = p + 1;
+			len += 10;
+			break;
 		case 's':
 			string = va_arg (ap, char *);
 			g_ptr_array_add (args, string);
@@ -1291,6 +1297,10 @@ imap_command_strdup_vprintf (CamelImapStore *store, const char *fmt,
 		case 'd':
 			num = GPOINTER_TO_INT (args->pdata[i++]);
 			outptr += sprintf (outptr, "%d", num);
+			break;
+		case 'u':
+			num = GPOINTER_TO_UINT (args->pdata[i++]);
+			outptr += sprintf (outptr, "%u", num);
 			break;
 
 		case 's':
