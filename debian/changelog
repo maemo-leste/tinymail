@@ -1,3 +1,9 @@
+tinymail (1.1.99) unstable; urgency=low
+
+  * Support Stalwart email server
+
+ -- Merlijn Wajer <merlijn@wizzup.org>  Sun, 01 Jun 2025 00:09:47 +0200
+
 tinymail (1.1.98) unstable; urgency=low
 
   * make conic support work
