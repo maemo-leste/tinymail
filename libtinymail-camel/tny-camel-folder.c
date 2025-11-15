@@ -5487,7 +5487,7 @@ _tny_camel_folder_guess_folder_type (TnyCamelFolder *folder, CamelFolderInfo *fo
 		if (!g_ascii_strcasecmp (folder_info->name, "inbox")) {
 			/* Needed as some dovecot servers report the inbox as
 			 * normal */
-			TnyFolderStore *store = tny_folder_get_folder_store (folder);
+			TnyFolderStore *store = tny_folder_get_folder_store ((TnyFolder*)folder);
 			if (store) {
 				if (TNY_IS_ACCOUNT (store))
 					priv->cached_folder_type = TNY_FOLDER_TYPE_INBOX;

@@ -208,7 +208,7 @@ stripped_char (gunichar ch)
 {
         gunichar *decomp, retval;
         GUnicodeType utype;
-        guint dlen;
+        gsize dlen;
 
         utype = g_unichar_type (ch);
 

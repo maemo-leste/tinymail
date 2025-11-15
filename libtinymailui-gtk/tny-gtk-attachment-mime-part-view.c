@@ -97,7 +97,7 @@ tny_gtk_attachment_mime_part_view_set_part_default (TnyMimePartView *self, TnyMi
 	{
 		g_assert (TNY_IS_LIST (priv->imodel));
 		tny_list_prepend (TNY_LIST (priv->imodel), G_OBJECT (part));
-		priv->part = g_object_ref (G_OBJECT (part));
+		priv->part = (TnyMimePart*)g_object_ref (G_OBJECT (part));
 	}
 
 	return;

@@ -743,7 +743,7 @@ tny_gtk_msg_view_mp_set_part_default (TnyMimePartView *self, TnyMimePart *part)
 			}
 		}
 
-		priv->part = g_object_ref (G_OBJECT (part));
+		priv->part = (TnyMimePart*)g_object_ref (G_OBJECT (part));
 
 		if (!tny_mime_part_content_type_is (part, "multipart/*")) {
 

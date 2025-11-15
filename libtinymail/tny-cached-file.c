@@ -414,7 +414,7 @@ tny_cached_file_new (TnyFsStreamCache *stream_cache, const char *id, gint64 expe
 
 	priv->expected_size = expected_size;
 	priv->id = g_strdup (id);
-	priv->stream_cache = g_object_ref (stream_cache);
+	priv->stream_cache = (TnyStreamCache*)g_object_ref (stream_cache);
 
 	if (input_stream) {
 		AsyncFetchStreamData *afs_data;

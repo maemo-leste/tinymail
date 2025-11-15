@@ -305,7 +305,7 @@ camel_lite_tcp_stream_ssl_new (CamelService *service, const char *expected_host,
 				g_warning ("Failed to initialize NSS");
 				g_free (str);
 				stream->priv->session = NULL;
-				camel_lite_stream_close (stream);
+				camel_lite_stream_close ((CamelStream*)stream);
 				camel_lite_object_unref (stream);
 				return NULL;
 			}

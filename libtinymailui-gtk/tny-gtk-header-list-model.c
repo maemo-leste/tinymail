@@ -918,8 +918,8 @@ tny_gtk_header_list_model_remove (TnyList *self, GObject* item)
 
 	stuff = g_slice_new (notify_views_data_t);
 	stuff->src = -1;
-	stuff->self = g_object_ref (self);
-	stuff->item = g_object_ref (item);
+	stuff->self = (TnyGtkHeaderListModel*)g_object_ref (self);
+	stuff->item = (GObject*)g_object_ref (item);
 
 	/* stuff->loop = g_main_loop_new (NULL, FALSE); */
 
@@ -1035,7 +1035,7 @@ tny_gtk_header_list_model_remove_matches (TnyList *self, TnyListMatcher matcher,
 
 		stuff = g_slice_new (notify_views_data_list_t);
 		stuff->src = -1;
-		stuff->self = g_object_ref (self);
+		stuff->self = (TnyGtkHeaderListModel*)g_object_ref (self);
 		stuff->items = items;
 		src = g_timeout_add_full (G_PRIORITY_HIGH_IDLE, 0,
 			notify_views_delete_list, stuff, notify_views_delete_destroy_list);

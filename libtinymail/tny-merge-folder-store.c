@@ -34,6 +34,7 @@
 #endif
 
 #include <tny-folder-store.h>
+#include <libtinymail/tny-lockable.h>
 #include <tny-folder-store-observer.h>
 #include <tny-merge-folder-store.h>
 #include <tny-list.h>

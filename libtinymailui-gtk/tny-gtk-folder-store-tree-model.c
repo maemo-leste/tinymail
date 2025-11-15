@@ -178,7 +178,7 @@ recurse_folders_sync (TnyGtkFolderStoreTreeModel *self,
 				if (citem == (GObject *) ifound) {
 					if (mark_for_removal)
 						g_object_unref (mark_for_removal);
-					mark_for_removal = g_object_ref (ifound);
+					mark_for_removal = (GObject*)g_object_ref (ifound);
 				}
 				g_object_unref (ifound);
 				tny_iterator_next (niter);

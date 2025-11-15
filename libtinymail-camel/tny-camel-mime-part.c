@@ -265,7 +265,7 @@ decode_to_stream_async_thread (gpointer userdata)
 {
 	DecodeAsyncInfo *info = (DecodeAsyncInfo *) userdata;
 
-	tny_mime_part_decode_to_stream (info->self, info->stream, &(info->err));
+	tny_mime_part_decode_to_stream ((TnyMimePart*)info->self, (TnyStream*)info->stream, &(info->err));
 
 	g_idle_add_full (G_PRIORITY_HIGH, 
 			 decode_async_callback, 
@@ -286,8 +286,8 @@ tny_camel_mime_part_decode_to_stream_async_default (TnyMimePart *self, TnyStream
 {
 	DecodeAsyncInfo *info = g_slice_new0 (DecodeAsyncInfo);
 
-	info->self = g_object_ref (self);
-	info->stream = g_object_ref (stream);
+	info->self = (GObject*)g_object_ref (self);
+	info->stream = (GObject*)g_object_ref (stream);
 	info->callback = callback;
 	info->user_data = user_data;
 	info->err = NULL;

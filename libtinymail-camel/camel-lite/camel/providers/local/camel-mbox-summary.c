@@ -251,7 +251,7 @@ summary_header_load(CamelFolderSummary *s)
 	/* legacy version */
 	if (s->version == 0x120c) {
 		unsigned char* ptrchr = s->filepos;
-		ptrchr = camel_lite_file_util_mmap_decode_uint32 (ptrchr, &mbs->folder_size, FALSE);
+		ptrchr = camel_lite_file_util_mmap_decode_size_t (ptrchr, &mbs->folder_size);
 		s->filepos = ptrchr;
 	}
 
