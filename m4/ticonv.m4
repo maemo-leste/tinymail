@@ -43,7 +43,7 @@ if test $have_iconv = yes; then
 
 int main (int argc, char **argv)
 {
-	const char *from = "Some Text \xA4";
+	char *from = "Some Text \xA4";
 	const char *utf8 = "Some Text \xC2\xA4";
 	char *transbuf = (char *) malloc (20), *trans = transbuf;
 	iconv_t cd;
