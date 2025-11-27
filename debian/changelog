@@ -1,3 +1,10 @@
+tinymail (1.1.100) unstable; urgency=low
+
+  * Excalibur compilation fixes
+  * Revert one of the stalwart email server changes
+
+ -- Merlijn Wajer <merlijn@wizzup.org>  Thu, 27 Nov 2025 20:52:14 +0100
+
 tinymail (1.1.99) unstable; urgency=low
 
   * Support Stalwart email server
