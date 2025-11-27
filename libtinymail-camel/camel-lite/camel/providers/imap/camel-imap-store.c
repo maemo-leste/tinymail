@@ -2353,13 +2353,10 @@ imap_connect_online (CamelService *service, CamelException *ex)
 		/* Make sure INBOX is present/subscribed */
 		si = camel_lite_store_summary_path((CamelStoreSummary *)store->summary, "INBOX");
 		if (si == NULL || (si->flags & CAMEL_FOLDER_SUBSCRIBED) == 0) {
-			subscribe_folder(CAMEL_STORE(store), "INBOX", ex);
-			if (camel_lite_exception_is_set(ex)) {
-				if (strstr (camel_lite_exception_get_description (ex), "Mailbox is already subscribed")) {
-					camel_lite_exception_clear(ex);
-				}
+			response = camel_lite_imap_command (store, NULL, ex, "SUBSCRIBE INBOX");
+			if (response != NULL) {
+				camel_lite_imap_response_free (store, response);
 			}
-
 			if (si)
 				camel_lite_store_summary_info_free((CamelStoreSummary *)store->summary, si);
 			if (camel_lite_exception_is_set(ex))
